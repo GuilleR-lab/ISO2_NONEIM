@@ -1,0 +1,46 @@
+.App {
+  width: 300px;
+  margin: 20px auto;
+}
+
+h2 {
+  text-align: center;
+}
+
+.form-container {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.15);
+  border-radius: 5px;
+  width: 300px;
+  margin: 0 auto;
+  padding: 20px;
+  align-items: center;      /* centra inputs horizontalmente */
+  justify-content: center;  /* centra verticalmente si quieres */
+}
+
+input[type=email], input[type=password] {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid black;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input[type=email]:focus, input[type=password]:focus {
+  outline: none;
+  border: 2px solid black;
+}
+
+button {
+  padding: 10px;
+  font-size: 16px;
+  background-color: black;
+  border: 1px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+}
+
+
+
