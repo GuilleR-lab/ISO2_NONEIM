@@ -38,7 +38,7 @@ const Register = () => {
                     <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
                     <br/>
                     <button style={{ backgroundColor: "#a1eafb" }}>Register</button>
-                    <p>{message}</p>
+                    {message && <p>{message}</p>}
                 </form>
             </div>
         </>

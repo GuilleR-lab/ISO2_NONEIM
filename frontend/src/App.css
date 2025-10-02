@@ -13,8 +13,6 @@ h2 {
   width: 300px;
   margin: 0 auto;
   padding: 20px;
-  align-items: center;      /* centra inputs horizontalmente */
-  justify-content: center;  /* centra verticalmente si quieres */
 }
 
 input[type=email], input[type=password] {
@@ -40,6 +38,11 @@ button {
   border-radius: 5px;
   cursor: pointer;
   width: 100%;
+}
+
+p {
+  margin-top: 10px;
+  margin-bottom: 0px;
 }
 
 
