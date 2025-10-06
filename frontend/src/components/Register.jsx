@@ -3,7 +3,9 @@ import "../App.css";
 
 const Register = () => {
 
-    //obtain email and password from form
+    //obtain name, email and password from form
+    
+    const [name, setName] = React.useState("");
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [message, setMessage] = React.useState("");
@@ -16,7 +18,7 @@ const Register = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({email, password}),
+                body: JSON.stringify({name, email, password}),
             });
 
             const data = await response.json();
@@ -33,6 +35,8 @@ const Register = () => {
             <h2>Register</h2>
             <div className="form-container">
                 <form onSubmit={handleSubmit}>
+                    <input type="text" placeholder="Usuario" onChange={(e) => setName(e.target.value)}/>
+                    <br/>
                     <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)}/>
                     <br/>
                     <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
