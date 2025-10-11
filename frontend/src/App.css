@@ -7,6 +7,29 @@ h2 {
   text-align: center;
 }
 
+.home-container {
+  text-align: center;
+  margin-top: 100px;
+  font-family: Arial, sans-serif;
+}
+
+.login-icon {
+  margin-top: 40px;
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.login-icon:hover {
+  transform: scale(1.1);
+}
+
+.login-icom p {
+  margin-top: 8px;
+  font-size: 16px;
+  color: #007bff;
+}
+
 .form-container {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.15);
   border-radius: 5px;
@@ -15,7 +38,7 @@ h2 {
   padding: 20px;
 }
 
-input[type=email], input[type=password] {
+input[type=text], input[type=email], input[type=password] {
   padding: 10px;
   font-size: 16px;
   border: 1px solid black;
@@ -25,7 +48,7 @@ input[type=email], input[type=password] {
   box-sizing: border-box;
 }
 
-input[type=email]:focus, input[type=password]:focus {
+input[type=text]:focus, input[type=email]:focus, input[type=password]:focus {
   outline: none;
   border: 2px solid black;
 }
