@@ -52,6 +52,6 @@ El sistema se estructura en capas:
 Tecnologías usadas
 ------------------
 - Lenguaje de programación: Java 
-- Base de datos: 
+- Base de datos: H2
 - Frameworks: Spring Boot
 - Frontend: HTML
