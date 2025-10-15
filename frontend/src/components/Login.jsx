@@ -48,7 +48,7 @@ const Login = () => {
             <h2>Iniciar sesión</h2>
             <div className="form-container">
                 <form onSubmit={handleSubmit}>
-                <input type="text" placeholder="Usuario" value={username} onChange={(e) => setUsername(e.target.value)}/>
+                <input type="text" placeholder="Usuario o correo" value={username} onChange={(e) => setUsername(e.target.value)}/>
 
                 <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)}/>
 
