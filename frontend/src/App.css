@@ -64,8 +64,20 @@ button {
 }
 
 p {
-  margin-top: 10px;
-  margin-bottom: 0px;
+  margin-top: 0px;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.login-message {
+  margin-top: 0px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: red;
+}
+
+a {
+  text-decoration: none;
 }
 
 
