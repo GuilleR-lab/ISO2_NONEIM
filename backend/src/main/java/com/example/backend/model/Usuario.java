@@ -15,6 +15,10 @@ public class Usuario {
 
     private String password;
 
+    private String nombre;
+    private String apellidos;
+    private String direccion;
+
     //getters and setters
     public Long getId() {
         return id;
@@ -41,26 +45,26 @@ public class Usuario {
     }
 
     public void setNombre(String nombre){
-        return nombre;
-    }
-
-    public void getNombre(){
         this.nombre = nombre;
     }
 
-    public void setApellidos(String apellidos){
-        return apellidos;
+    public String getNombre(){
+        return nombre;
     }
 
-    public void getApellidos(){
-        this.apellidos = apellidos;
+    public String setApellidos(String apellidos){
+        this.apellidos = apellidos
     }
 
-    public void setDireccion(String direccion){
-        return direccion;
+    public String getApellidos(){
+        return apellidos
     }
 
-    public void getDireccion(){
+    public String setDireccion(String direccion){
         this.direccion = direccion;
+    }
+
+    public String getDireccion(){
+        return direccion;
     }
 }
