@@ -11,13 +11,15 @@ const Login = () => {
     const [message, setMessage] = React.useState("");
     
     //2º estado Register
+    let handleSubmitRegister;
     if(phase === "register"){
-      const handleSubmit = async (e) => {
+      handleSubmitRegister = async (e) => {
         e.preventDefault();
 
         // Validación rápida
-        if (!username || !password || !email) {
-            setMessage("⚠️ Debes introducir todos los datos en el formulario.");
+        if (!username || !password || !email || !address) {
+          setMessage("⚠️ Debes introducir todos los datos en el formulario.");
+          
           return;
         }
 
@@ -27,7 +29,7 @@ const Login = () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ username, email, password }),
+            body: JSON.stringify({ username, address, email, password }),
           });
 
           const data = await response.json();
@@ -46,7 +48,7 @@ const Login = () => {
     }
 
     // Maneja el envío del formulario(login)
-    const handleSubmit = async (e) => {
+    const handleSubmitLogin = async (e) => {
     e.preventDefault();
     
     // cambia color cuando introducimos algo en el input
@@ -78,20 +80,29 @@ const Login = () => {
       setMessage("⚠️ Es obligatorio introducir la contraseña")
     }
 
+
+
     if (!username && !password) {
       setMessage("⚠️ Es obligatorio rellenar todos los campos");
+      //    <span>
+      //      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
+      //        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+      //      </svg>
+      //      <span>Es obligatorio rellenar todos los campos</span>
+      //    </span> 
+      
       return;
     }
 
-
     try {
       // Petición al backend (simulada o real si ya existe endpoint)
+      const isEmail = email === "" ? { username, password } : { email, password };
       const response = await fetch("http://localhost:8090/api/auth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify(isEmail),
       });
 
       if (!response.ok) {
@@ -105,8 +116,6 @@ const Login = () => {
       if(data.message !== "✅ Inicio de sesión correcto"){
         setPhase("register"); //cambiar estado
       }
-      
-      // window.location.href = "/home";
 
     } catch (error) {
       console.error(error);
@@ -117,18 +126,52 @@ const Login = () => {
     return (
         <>
             <h2>Iniciar sesión / Registrarse</h2>
+
+            {/* Only for test */}
+            <button class="button_change" id="button_id" onClick={() => {
+              setPhase(phase === "register" ? "login" : "register");
+              setMessage("");
+            }}>cambiar estado</button>
+
+
             <div className="form-container">
-                <form onSubmit={handleSubmit}>  
+                <form onSubmit={phase === "login" ? handleSubmitLogin : handleSubmitRegister}>  
                   
                   {phase === "register" && 
-                  <button>
+                  <button class="return_button" onClick={() => {
+                    setPhase(phase === "register" ? "login" : "register");
+                    setMessage("");
+                  }}>
                     <span>
-                      <svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5"/>
                       </svg>
                     </span>
                   </button>}
 
-                  { phase === "login" && <input type="text" id="username" placeholder="Usuario o correo" value={username} onChange={(e) => setUsername(e.target.value)}/> } {/*change to recive email too*/}
+                  {phase === "login" && 
+                  <button class="quit_button" onClick={() => {
+                    {/* TODO: quit login form */}
+                  }}>
+                    <span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                      </svg>
+                    </span>
+                  </button>}
+
+                  { phase === "login" && <input type="text" id="username" placeholder="Usuario o correo" value={username} onChange={(e) => {
+                    const value = e.target.value;
+
+                    if(value.includes("@")){
+                      setEmail(value);
+                      setUsername("");
+                    }else{
+                      setUsername(value);
+                      setEmail("");
+                    }
+
+                  }}/> }
 
                   { phase === "login" && <input type="password" id="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)}/> }
 

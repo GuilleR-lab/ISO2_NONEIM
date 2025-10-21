@@ -63,6 +63,37 @@ button {
   width: 100%;
 }
 
+.return_button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  width: 16px;
+  height: 16px;
+  background-color: aqua;
+}
+
+.quit_button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  width: 16px;
+  height: 16px;
+  background-color: aqua;
+}
+
+/*Only for test*/
+.button_change {
+  padding: 10px;
+  font-size: 16px;
+  background-color: aqua;
+  border: 1px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 70%;
+}
+
 p {
   margin-top: 0px;
   margin-bottom: 10px;
