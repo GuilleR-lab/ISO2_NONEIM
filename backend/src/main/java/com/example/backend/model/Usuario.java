@@ -39,4 +39,28 @@ public class Usuario {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public void setNombre(String nombre){
+        return nombre;
+    }
+
+    public void getNombre(){
+        this.nombre = nombre;
+    }
+
+    public void setApellidos(String apellidos){
+        return apellidos;
+    }
+
+    public void getApellidos(){
+        this.apellidos = apellidos;
+    }
+
+    public void setDireccion(String direccion){
+        return direccion;
+    }
+
+    public void getDireccion(){
+        this.direccion = direccion;
+    }
 }
