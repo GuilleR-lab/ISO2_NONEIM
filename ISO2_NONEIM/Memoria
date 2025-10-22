@@ -1,0 +1,57 @@
+Proyecto: Sistema de Alquiler de Viviendas/NONEIM
+=================================================
+
+Descripción General
+-------------------
+Este proyecto consiste en el desarrollo de una plataforma web similar a Airbnb, donde propietarios pueden publicar inmuebles (viviendas completas o habitaciones) y los inquilinos pueden buscar, reservar y pagar alojamientos.
+
+Objetivo
+--------
+Crear un sistema que permita la interacción entre propietarios e inquilinos para facilitar el alquiler de viviendas o habitaciones de forma segura y eficiente.
+
+Roles del Sistema
+-----------------
+- Propietario: Publica propiedades, gestiona disponibilidad y confirma reservas.
+- Inquilino: Busca alojamientos, realiza reservas y pagos.
+
+Funcionalidades Principales
+---------------------------
+- Registro y autenticación de usuarios (propietarios e inquilinos).
+- Alta de propiedades por parte de propietarios.
+- Búsqueda de inmuebles con filtros avanzados:
+  - Reserva inmediata
+  - Comodidades específicas
+  - Política de cancelación
+- Lista de deseos para usuarios registrados.
+- Reserva inmediata o mediante solicitud.
+- Pagos por tarjeta de crédito, débito o PayPal.
+- Notificaciones de confirmación o rechazo de reservas.
+
+Políticas de Cancelación
+------------------------
+- NO_REEMBOLSABLE
+- REEMBOLSABLE
+- REEMBOLSABLE_50_PER
+
+Arquitectura del Sistema
+------------------------
+El sistema se estructura en capas:
+
+1. Vista (UI):
+   - Ventanas de registro, alta de inmuebles, búsqueda, reservas, confirmación y pago.
+
+2. Controladores:
+   - Gestores para usuarios, inmuebles, búsquedas, reservas y notificaciones.
+
+3. Dominio:
+   - Clases principales: Usuario, Propietario, Inquilino, Inmueble, Reserva, SolicitudReserva, Pago, ListaDeseos.
+
+4. Persistencia:
+   - DAOs para cada entidad con operaciones CRUD (select, insert, update, delete).
+
+Tecnologías usadas
+------------------
+- Lenguaje de programación: Java 
+- Base de datos: H2
+- Frameworks: Spring Boot
+- Frontend: HTML
