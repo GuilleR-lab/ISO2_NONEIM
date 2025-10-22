@@ -17,12 +17,64 @@ const Login = () => {
         e.preventDefault();
 
         // Validación rápida
-        if (!username || !password || !email || !address) {
-          setMessage("⚠️ Debes introducir todos los datos en el formulario.");
-          
-          return;
+        
+        const inputUsernameRegister = document.getElementById("username");
+        inputUsernameRegister.addEventListener("input", function() {
+          if (this.value.length > 0) {
+            this.style.borderColor = "black";
+            this.style.background = "white";
+          }
+        });
+
+        if (!username) {
+          inputUsernameRegister.style.borderColor = "red";
+          inputUsernameRegister.style.background = "#FFF3F3";
         }
 
+        const inputAddressRegister = document.getElementById("address");
+        inputAddressRegister.addEventListener("input", function() {
+          if (this.value.length > 0) {
+            this.style.borderColor = "black";
+            this.style.background = "white";
+          }
+        });
+
+        if (!address) {
+          inputAddressRegister.style.borderColor = "red";
+          inputAddressRegister.style.background = "#FFF3F3";
+        }
+
+        const inputEmailRegister = document.getElementById("email");
+        inputEmailRegister.addEventListener("input", function() {
+          if (this.value.length > 0) {
+            this.style.borderColor = "black";
+            this.style.background = "white";
+          }
+        });
+
+        if (!email) {
+          inputEmailRegister.style.borderColor = "red";
+          inputEmailRegister.style.background = "#FFF3F3";
+        }
+
+        const inputPasswordRegister = document.getElementById("password");
+        inputPasswordRegister.addEventListener("input", function() {
+          if (this.value.length > 0) {
+            this.style.borderColor = "black";
+            this.style.background = "white";
+          }
+        });
+
+        if (!password) {
+          inputPasswordRegister.style.borderColor = "red";
+          inputPasswordRegister.style.background = "#FFF3F3";
+        }
+
+        if (!password || !username || !email || !address) {
+          setMessage("⚠️ Es obligatorio rellenar todos los campos");
+          return;
+        }
+        
         try {
           const response = await fetch("http://localhost:8090/api/auth", {
             method: "POST",
@@ -175,15 +227,15 @@ const Login = () => {
 
                   { phase === "login" && <input type="password" id="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)}/> }
 
-                  { phase === "register" && <input type="text" placeholder="Nombre de usuario" value={username} onChange={(e) => setUsername(e.target.value)}/> }
+                  { phase === "register" && <input type="text" id="username" placeholder="Nombre de usuario" value={username} onChange={(e) => setUsername(e.target.value)}/> }
 
-                  { phase === "register" && <input type="text" placeholder="Dirección" value={address} onChange={(e) => setAddress(e.target.value)}/> }
+                  { phase === "register" && <input type="text" id="address" placeholder="Dirección" value={address} onChange={(e) => setAddress(e.target.value)}/> }
 
-                  { phase === "register" && <input type="text" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)}/> }
+                  { phase === "register" && <input type="text" id="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)}/> }
 
-                  { phase === "register" && <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)}/> }
+                  { phase === "register" && <input type="password" id="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)}/> }
                   
-                  { phase === "register" && <input type="password" placeholder="Confirmar contraseña" value={password} onChange={(e) => setPassword(e.target.value)}/> }
+                  { phase === "register" && <input type="password" id="password" placeholder="Confirmar contraseña" value={password} onChange={(e) => setPassword(e.target.value)}/> }
                   
                   {/* Mensaje de estado */}
                   {message && <p class="login-message" >{message}</p>}
