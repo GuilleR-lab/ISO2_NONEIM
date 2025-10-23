@@ -4,9 +4,12 @@ import java.util.List;
 import com.example.backend.model.Usuario;
 
 public interface UsuarioService {
-    List<Usuario> showAllUsuarios();
+    //Usuario findById(Long id);
+    Usuario findByEmail(String email);
+    Usuario getUsuarioById(Long usuarioId);
+    Usuario updateUsuario(Long usuarioId, Usuario usuarioActualizado);
+    boolean usuarioExists(String email);
     Usuario createUsuario(Usuario usuario);
-    Usuario updateUsuario(Usuario usuario, Long UsuarioId);
-    void deleteUsuario(Long UsuarioId);
-    boolean usuarioExits(String email);
+    List<Usuario> showAllUsuarios();
+    void deleteUsuario(Long usuarioId);
 }

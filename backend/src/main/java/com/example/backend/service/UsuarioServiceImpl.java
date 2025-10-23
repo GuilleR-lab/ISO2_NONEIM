@@ -24,15 +24,35 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public boolean usuarioExits(String email) {
-        return usuarioRepository.findByEmail(email) != null;
+    public boolean usuarioExists(String email) {
+        return usuarioRepository.existsByEmail(email);
     }
 
+    @Override
+        public Usuario getUsuarioById(Long id) {
+        return usuarioRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Usuario findByEmail(String email){
+        return usuarioRepository.findByEmail(email);
+    }
     //TODO: Update usuario
     @Override
-    public Usuario updateUsuario(Usuario usuario, Long usuarioId) {
-        return null;
+    public Usuario updateUsuario(Long usuarioId, Usuario usuarioActualizado) {
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
+        if (usuario == null) return null;
+
+        usuario.setNombre(usuarioActualizado.getNombre());
+        usuario.setApellidos(usuarioActualizado.getApellidos());
+        usuario.setDireccion(usuarioActualizado.getDireccion());
+        usuario.setEmail(usuarioActualizado.getEmail());
+        usuario.setPassword(usuarioActualizado.getPassword());
+
+        return usuarioRepository.save(usuario);
     }
+
+
 
     @Override
     public void deleteUsuario(Long usuarioId) {
