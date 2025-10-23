@@ -1,7 +1,7 @@
 import React from "react";
 import "../App.css";
 
-const Login = () => {
+const Auth = () => {
     // Estados para los campos y mensajes
     const [phase, setPhase] = React.useState("login"); //states login, register
     const [username, setUsername] = React.useState("");
@@ -10,7 +10,7 @@ const Login = () => {
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [message, setMessage] = React.useState("");
-    
+    const [showAuth, setShowAuth] = React.useState(true);
     //2º estado Register
     let handleSubmitRegister;
     if(phase === "register"){
@@ -191,7 +191,7 @@ const Login = () => {
 
     return (
         <>
-            <h2>Iniciar sesión / Registrarse</h2>
+            
 
             {/* Only for test */}
             <button class="button_change" id="button_id" onClick={() => {
@@ -200,9 +200,8 @@ const Login = () => {
             }}>cambiar estado</button>
 
 
-            <div className="form-container">
-                <form onSubmit={phase === "login" ? handleSubmitLogin : handleSubmitRegister}>  
-                  
+            {showAuth && <div className="form-container">
+                <header>
                   {phase === "register" && <button class="return_button" onClick={() => {
                       setPhase(phase === "register" ? "login" : "register");
                       setMessage("");
@@ -216,7 +215,7 @@ const Login = () => {
 
                   {phase === "login" && 
                   <button class="quit_button" onClick={() => {
-                    {/* TODO: quit login form */}
+                    setShowAuth(false);
                   }}>
                     <span>
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
@@ -224,6 +223,12 @@ const Login = () => {
                       </svg>
                     </span>
                   </button>}
+                  <h2>Iniciar sesión / Registrarse</h2>
+                </header>
+
+                <form onSubmit={phase === "login" ? handleSubmitLogin : handleSubmitRegister}>  
+                  
+                  
 
                   { phase === "login" && <input type="text" id="username" placeholder="Usuario o correo" value={username} onChange={(e) => {
                     const value = e.target.value;
@@ -262,10 +267,10 @@ const Login = () => {
                   { phase === "login" && <a href="#">Has olvidado tu contraseña?</a>} {/*show in Login*/}
 
                 </form>
-            </div>
+            </div>}
         </>
     );
 
 };
 
-export default Login;
+export default Auth;
