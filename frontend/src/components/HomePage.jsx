@@ -11,7 +11,7 @@ const HomePage = () => {
                 <p>Tu portal de alquileres y viviendas.</p>
 
                 {/* Icono de login */}
-                <div className="login-icon" onClick={() => (window.location.href = "/login")}>
+                <div className="login-icon" onClick={() => (window.location.href = "/auth")}>
                     <FaUserCircle size={60} color="#007bff" />
                     <p>Iniciar sesión</p>
                 </div>
