@@ -109,6 +109,7 @@ const Auth = () => {
           setMessage(data.message);
 
           if(data.message !== "Usuario registrado correctamente"){
+            setMessage("Error ya existe un usuario con ese nombre o correo");
             return;
           }else{
             const messageAuth = document.getElementById("auth-message");
@@ -286,15 +287,15 @@ const Auth = () => {
                   { phase === "register" && <input type="password" id="password" placeholder="Confirmar contraseña" value={password} onChange={(e) => setPassword(e.target.value)}/> }
                   
                   {/* Phase message */}
-                  {message && (
+                  
                     <div id="auth-message" className="login-message" role="alert" aria-live="polite">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                      {message && <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                           className="bi bi-exclamation-circle-fill" viewBox="0 0 16 16" style={{marginRight:6}}>
                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
-                      </svg>
+                      </svg>}
                       <span>{message}</span>
                     </div>
-                  )}
+                  
 
                   <button style={{ backgroundColor: "#a1eafb" }}>
                     { phase === "login" ? "Iniciar sesión" : "Registrarme" }
