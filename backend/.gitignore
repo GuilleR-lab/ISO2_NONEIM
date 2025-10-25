@@ -6,6 +6,7 @@ target/
 
 ### DATA ###
 /data/*.trace.db
+/data/*.mv.db
 
 ### STS ###
 .apt_generated
