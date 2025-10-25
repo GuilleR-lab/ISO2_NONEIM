@@ -40,11 +40,15 @@ public class UsuarioController {
 
     @PostMapping("/register")
     public ResponseEntity<?> RegistrarUsuario(@RequestBody Usuario usuario) {
-        
-        
-        String message = "Usuario registrado correctamente";
-        
-        usuarioService.createUsuario(usuario);
+        String message;
+        boolean exists = usuarioService.usuarioExists(usuario.getUsername()) || usuarioService.usuarioExists(usuario.getEmail());
+
+        if (exists){
+            message = "Error usuario ya registrado";
+        }else {
+            message = "Usuario registrado correctamente";
+            usuarioService.createUsuario(usuario);
+        }
         
         return ResponseEntity.ok(Map.of(
             "message", message
