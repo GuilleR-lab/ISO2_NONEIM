@@ -220,11 +220,11 @@ const Auth = () => {
 
     return (
         <>
-            {/* Only for test(delete after test) */}
+            {/* Only for test(delete after test) 
             <button class="button_change" id="button_id" onClick={() => {
               setPhase(phase === "register" ? "login" : "register");
               setMessage("");
-            }}>cambiar estado</button>
+            }}>cambiar estado</button>*/}
 
 
             {showAuth && <div className="form-container">
