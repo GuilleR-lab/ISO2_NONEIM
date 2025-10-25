@@ -91,7 +91,7 @@ const Auth = () => {
         }
 
         if (!password || !username || !surname || !email || !address) {
-          setMessage("⚠️ Es obligatorio rellenar todos los campos");
+          setMessage("Es obligatorio rellenar todos los campos");
           return;
         }
         
@@ -120,7 +120,7 @@ const Auth = () => {
 
         } catch (error) {
           console.error(error);
-          setMessage("⚠️ Error al conectar con el servidor");
+          setMessage("Error al conectar con el servidor");
         }
       };
     }
@@ -132,7 +132,7 @@ const Auth = () => {
     e.preventDefault();
     
     // change color when put anything in the input
-    const inputUsername = document.getElementById("username");
+    const inputUsername = document.getElementById("identifier");
     inputUsername.addEventListener("input", function() {
       if (this.value.length > 0) {
         this.style.borderColor = "black";
@@ -140,13 +140,13 @@ const Auth = () => {
       }
     });
 
-    if(!username && !email){
+    if(!identifier){
       inputUsername.style.borderColor = "red";
       inputUsername.style.background = "#FFF3F3";
     }
 
-    if ((!username && !email && password)) {
-      setMessage("⚠️ Es obligatorio introducir el nombre o correo")
+    if ((!identifier && password)) {
+      setMessage("Es obligatorio introducir el nombre o correo")
       return;
     }
 
@@ -163,13 +163,13 @@ const Auth = () => {
       inputPassword.style.background = "#FFF3F3"
     }
     
-    if (!password && (username || email)) {
-      setMessage("⚠️ Es obligatorio introducir la contraseña")
+    if (!password && identifier) {
+      setMessage("Es obligatorio introducir la contraseña")
       return;
     }
 
-    if ((!username && !email) && !password) {
-      setMessage("⚠️ Es obligatorio rellenar todos los campos"); 
+    if (!identifier && !password) {
+      setMessage("Es obligatorio rellenar todos los campos"); 
       return;
     }
 
@@ -213,7 +213,7 @@ const Auth = () => {
 
     } catch (error) {
       console.error(error);
-      setMessage("⚠️ Error al conectar con el servidor");
+      setMessage("Error al conectar con el servidor");
     }
   };
 
