@@ -8,5 +8,5 @@ public interface UsuarioService {
     Usuario createUsuario(Usuario usuario);
     Usuario updateUsuario(Usuario usuario, Long UsuarioId);
     void deleteUsuario(Long UsuarioId);
-    boolean usuarioExists(String email);
+    boolean usuarioExits(String email);
 }
