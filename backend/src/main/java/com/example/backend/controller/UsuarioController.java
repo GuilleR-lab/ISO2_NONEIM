@@ -5,50 +5,53 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.dto.AuthDTO.LoginRequest;
+import com.example.backend.dto.AuthDTO.RegisterRequest;
 import com.example.backend.model.Usuario;
 import com.example.backend.service.UsuarioService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
+@RequestMapping("/api/auth")
 public class UsuarioController {
-
     @Autowired
     private UsuarioService usuarioService;
 
-    @PostMapping("/api/usuarios")
-    public ResponseEntity<Map<String, Object>> crearUsuario(@RequestBody Usuario usuario) {
-        boolean exists = usuarioService.usuarioExists(usuario.getEmail());
-
-        String message = exists ? "❌ Usuario ya existe" : "✅ Usuario creado correctamente";
+   @PostMapping("/login")
+    public ResponseEntity<?> crearUsuario(@RequestBody LoginRequest dto) {
         
-        if (!exists) {
-            usuarioService.createUsuario(usuario);
-        }
+        boolean exists = dto.getEmail() == null ? usuarioService.usuarioExits(dto.getUsername()) : usuarioService.usuarioExits(dto.getEmail());
 
-        return ResponseEntity.ok(Map.of("message", message));
-    }
-
-    @PostMapping("/api/usuarios/login")
-    public ResponseEntity<Map<String, Object>> loginUsuario(@RequestBody Usuario usuario) {
-        Usuario usuarioExistente = usuarioService.findByEmail(usuario.getEmail());
-
-        if (usuarioExistente == null) {
-            return ResponseEntity.badRequest().body(Map.of("message", "❌ Usuario no encontrado"));
-        }
-
-        if (!usuarioExistente.getPassword().equals(usuario.getPassword())) {
-            return ResponseEntity.badRequest().body(Map.of("message", "❌ Contraseña incorrecta"));
-        }
-
+        String message = exists ? "Inicio de sesion correcto" : "Este usuario no existe";  //usuarioService.createUsuario(usuario);
+        
         return ResponseEntity.ok(Map.of(
-            "message", "✅ Inicio de sesión exitoso",
-            "usuario", usuarioExistente
+            "message", message
         ));
     }
 
-    @GetMapping("/api/usuarios/{id}")
+    @PostMapping("/register")
+    public ResponseEntity<?> RegistrarUsuario(@RequestBody Usuario usuario) {
+        
+        
+        String message = "Usuario registrado correctamente";
+        
+        usuarioService.createUsuario(usuario);
+        
+        return ResponseEntity.ok(Map.of(
+            "message", message
+        ));
+    }
+
+    /*@GetMapping("/api/usuarios/{id}")
     public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
         Usuario usuario = usuarioService.getUsuarioById(id);
 
@@ -57,14 +60,14 @@ public class UsuarioController {
         }
 
         return ResponseEntity.ok(usuario);
-    }
+    }*/
 
-    @GetMapping("/api/usuarios")
+    @GetMapping("/login")
     public List<Usuario> showAllUsuarios() {
         return usuarioService.showAllUsuarios();
     }
 
-    @PutMapping("/api/usuarios/{id}")
+    /*@PutMapping("/api/usuarios/{id}")
     public ResponseEntity<Map<String, Object>> updateUsuario(@PathVariable Long id,
             @RequestBody Usuario usuarioActualizado) {
 
@@ -77,11 +80,11 @@ public class UsuarioController {
             "message", "✅ Usuario actualizado correctamente",
             "usuario", usuario
         ));
-    }
+    }*/
 
-    @DeleteMapping("/api/usuarios/{id}")
+    @DeleteMapping("/login/{id}")
     public String deleteUsuario(@PathVariable("id") Long usuarioId) {
         usuarioService.deleteUsuario(usuarioId);
         return "Usuario eliminado";
-    }
+    }  
 }
