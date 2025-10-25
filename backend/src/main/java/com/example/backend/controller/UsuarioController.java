@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.AuthDTO.LoginRequest;
-import com.example.backend.dto.AuthDTO.RegisterRequest;
+//import com.example.backend.dto.AuthDTO.RegisterRequest;
 import com.example.backend.model.Usuario;
 import com.example.backend.service.UsuarioService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +29,7 @@ public class UsuarioController {
    @PostMapping("/login")
     public ResponseEntity<?> crearUsuario(@RequestBody LoginRequest dto) {
         
-        boolean exists = dto.getEmail() == null ? usuarioService.usuarioExits(dto.getUsername()) : usuarioService.usuarioExits(dto.getEmail());
+        boolean exists = dto.getEmail() == null ? usuarioService.usuarioExists(dto.getUsername()) : usuarioService.usuarioExists(dto.getEmail());
 
         String message = exists ? "Inicio de sesion correcto" : "Este usuario no existe";  //usuarioService.createUsuario(usuario);
         

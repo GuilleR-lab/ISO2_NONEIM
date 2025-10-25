@@ -24,8 +24,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public boolean usuarioExists(String email) {
-        return usuarioRepository.existsByEmail(email);
+    public boolean usuarioExists(String data) {
+        return usuarioRepository.existsByEmail(data) || usuarioRepository.existsByUsername(data);
     }
 
     /*@Override
@@ -39,15 +39,16 @@ public class UsuarioServiceImpl implements UsuarioService {
     }*/
     //Update usuario
     @Override
-    public Usuario updateUsuario(Long usuarioId, Usuario usuarioActualizado) {
+    public Usuario updateUsuario(Usuario newUsuario, Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
+        
         if (usuario == null) return null;
 
-        usuario.setUsername(usuarioActualizado.getUsername());
-        usuario.setSurname(usuarioActualizado.getSurname());
-        usuario.setAddress(usuarioActualizado.getAddress());
-        usuario.setEmail(usuarioActualizado.getEmail());
-        usuario.setPassword(usuarioActualizado.getPassword());
+        usuario.setUsername(newUsuario.getUsername());
+        usuario.setSurname(newUsuario.getSurname());
+        usuario.setAddress(newUsuario.getAddress());
+        usuario.setEmail(newUsuario.getEmail());
+        usuario.setPassword(newUsuario.getPassword());
 
         return usuarioRepository.save(usuario);
     }
