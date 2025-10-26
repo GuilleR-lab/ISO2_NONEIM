@@ -29,8 +29,39 @@ public class UsuarioController {
 
         String message = exists ? "❌ Usuario ya existe" : "✅ Usuario creado correctamente";  //usuarioService.createUsuario(usuario);
         
+<<<<<<< HEAD
         if (!exists) {
             usuarioService.createUsuario(usuario);
+=======
+        return ResponseEntity.ok(Map.of(
+            "message", message
+        ));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> RegistrarUsuario(@RequestBody Usuario usuario) {
+        String message;
+        boolean exists = usuarioService.usuarioExists(usuario.getUsername()) || usuarioService.usuarioExists(usuario.getEmail());
+
+        if (exists){
+            message = "Error usuario ya registrado";
+        }else {
+            message = "Usuario registrado correctamente";
+            usuarioService.createUsuario(usuario);
+        }
+        
+        return ResponseEntity.ok(Map.of(
+            "message", message
+        ));
+    }
+
+    /*@GetMapping("/api/usuarios/{id}")
+    public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
+        Usuario usuario = usuarioService.getUsuarioById(id);
+
+        if (usuario == null) {
+            return ResponseEntity.notFound().build();
+>>>>>>> feature/backend-api-integration
         }
 
         return ResponseEntity.ok(Map.of(
