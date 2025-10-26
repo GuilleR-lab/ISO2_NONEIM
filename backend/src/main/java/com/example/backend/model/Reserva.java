@@ -30,6 +30,11 @@ public class Reserva {
     @JoinColumn(name = "idDisponibilidad", nullable = false)
     private Disponibilidad disponibilidad;
 
+    // Relación con Inmueble (many reservas belong to one inmueble)
+    @ManyToOne
+    @JoinColumn(name = "inmueble_id", nullable = false)
+    private Inmueble inmueble;
+
     // Relación con Pago (1:1)
     @OneToOne(mappedBy = "reserva", cascade = CascadeType.ALL)
     private Pago pago;
@@ -38,6 +43,11 @@ public class Reserva {
     @ManyToOne
     @JoinColumn(name = "idPolitica", nullable = false)
     private PoliticaCancelacion politicaCancelacion;
+
+    // Relación opcional con SolicitudReserva (1:0..1) - lado propietario
+    @OneToOne
+    @JoinColumn(name = "idSolicitud")
+    private SolicitudReserva solicitudReserva;
 
     public Reserva() {}
 
@@ -113,5 +123,21 @@ public class Reserva {
 
     public void setPoliticaCancelacion(PoliticaCancelacion politicaCancelacion) {
         this.politicaCancelacion = politicaCancelacion;
+    }
+
+    public SolicitudReserva getSolicitudReserva() {
+        return solicitudReserva;
+    }
+
+    public void setSolicitudReserva(SolicitudReserva solicitudReserva) {
+        this.solicitudReserva = solicitudReserva;
+    }
+
+    public Inmueble getInmueble() {
+        return inmueble;
+    }
+
+    public void setInmueble(Inmueble inmueble) {
+        this.inmueble = inmueble;
     }
 }
