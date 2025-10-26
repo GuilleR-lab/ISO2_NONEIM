@@ -42,3 +42,5 @@ public class PoliticaCancelacionController {
             return ResponseEntity.notFound().build();
         }
     }
+}
+
