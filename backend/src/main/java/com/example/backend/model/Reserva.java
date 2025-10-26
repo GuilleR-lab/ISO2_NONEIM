@@ -1,22 +1,17 @@
 package com.example.backend.model;
 
+
+
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "Reserva")
 public class Reserva {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
-
-    @ManyToOne
-    @JoinColumn(name = "propiedad_id", nullable = false)
-    private Propiedad propiedad;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idReserva;
 
     @Column(nullable = false)
     private LocalDate fechaInicio;
@@ -25,42 +20,98 @@ public class Reserva {
     private LocalDate fechaFin;
 
     @Column(nullable = false)
-    private double precioTotal;
+    private boolean isPagado;
 
     @Column(nullable = false)
-    private String estado; // PENDIENTE, CONFIRMADA, RECHAZADA, CANCELADA
+    private boolean isActiva;
+
+    // Relación con Disponibilidad
+    @ManyToOne
+    @JoinColumn(name = "idDisponibilidad", nullable = false)
+    private Disponibilidad disponibilidad;
+
+    // Relación con Pago (1:1)
+    @OneToOne(mappedBy = "reserva", cascade = CascadeType.ALL)
+    private Pago pago;
+
+    // Relación con PoliticaCancelacion (N:1)
+    @ManyToOne
+    @JoinColumn(name = "idPolitica", nullable = false)
+    private PoliticaCancelacion politicaCancelacion;
 
     public Reserva() {}
 
-    public Reserva(Usuario usuario, Propiedad propiedad, LocalDate fechaInicio,
-                   LocalDate fechaFin, double precioTotal, String estado) {
-        this.usuario = usuario;
-        this.propiedad = propiedad;
+    public Reserva(LocalDate fechaInicio, LocalDate fechaFin, boolean isPagado,
+                   boolean isActiva, Disponibilidad disponibilidad) {
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
-        this.precioTotal = precioTotal;
-        this.estado = estado;
+        this.isPagado = isPagado;
+        this.isActiva = isActiva;
+        this.disponibilidad = disponibilidad;
     }
 
     // Getters y Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getIdReserva() {
+        return idReserva;
+    }
 
-    public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    public void setIdReserva(Long idReserva) {
+        this.idReserva = idReserva;
+    }
 
-    public Propiedad getPropiedad() { return propiedad; }
-    public void setPropiedad(Propiedad propiedad) { this.propiedad = propiedad; }
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
 
-    public LocalDate getFechaInicio() { return fechaInicio; }
-    public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
 
-    public LocalDate getFechaFin() { return fechaFin; }
-    public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }
+    public LocalDate getFechaFin() {
+        return fechaFin;
+    }
 
-    public double getPrecioTotal() { return precioTotal; }
-    public void setPrecioTotal(double precioTotal) { this.precioTotal = precioTotal; }
+    public void setFechaFin(LocalDate fechaFin) {
+        this.fechaFin = fechaFin;
+    }
 
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
+    public boolean isPagado() {
+        return isPagado;
+    }
+
+    public void setPagado(boolean pagado) {
+        isPagado = pagado;
+    }
+
+    public boolean isActiva() {
+        return isActiva;
+    }
+
+    public void setActiva(boolean activa) {
+        isActiva = activa;
+    }
+
+    public Disponibilidad getDisponibilidad() {
+        return disponibilidad;
+    }
+
+    public void setDisponibilidad(Disponibilidad disponibilidad) {
+        this.disponibilidad = disponibilidad;
+    }
+
+    public Pago getPago() {
+        return pago;
+    }
+
+    public void setPago(Pago pago) {
+        this.pago = pago;
+    }
+
+    public PoliticaCancelacion getPoliticaCancelacion() {
+        return politicaCancelacion;
+    }
+
+    public void setPoliticaCancelacion(PoliticaCancelacion politicaCancelacion) {
+        this.politicaCancelacion = politicaCancelacion;
+    }
 }
