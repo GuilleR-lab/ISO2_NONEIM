@@ -1,39 +1,40 @@
 package com.example.backend.model;
 
+
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
+@Table(name = "ListaDeseos")
 public class ListaDeseos {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idLista;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @ManyToOne
-    @JoinColumn(name = "propiedad_id", nullable = false)
-    private Propiedad propiedad;
-
-    @Column(nullable = false)
-    private LocalDate fechaAgregado = LocalDate.now();
+    @ManyToMany
+    @JoinTable(
+        name = "lista_inmuebles",
+        joinColumns = @JoinColumn(name = "lista_id"),
+        inverseJoinColumns = @JoinColumn(name = "inmueble_id")
+    )
+    private Set<Inmueble> inmuebles = new HashSet<>();
 
     public ListaDeseos() {}
 
-    public ListaDeseos(Usuario usuario, Propiedad propiedad) {
+    public ListaDeseos(Usuario usuario) {
         this.usuario = usuario;
-        this.propiedad = propiedad;
     }
 
     // Getters y Setters
-    public Long getId() { return id; }
+    public Long getIdLista() { return idLista; }
     public Usuario getUsuario() { return usuario; }
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }
-    public Propiedad getPropiedad() { return propiedad; }
-    public void setPropiedad(Propiedad propiedad) { this.propiedad = propiedad; }
-    public LocalDate getFechaAgregado() { return fechaAgregado; }
-    public void setFechaAgregado(LocalDate fechaAgregado) { this.fechaAgregado = fechaAgregado; }
+    public Set<Inmueble> getInmuebles() { return inmuebles; }
+    public void setInmuebles(Set<Inmueble> inmuebles) { this.inmuebles = inmuebles; }
 }
