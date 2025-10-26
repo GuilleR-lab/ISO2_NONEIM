@@ -17,7 +17,7 @@ public class BackendConfig {
             .cors().and()     // 🔑 habilitar CORS
             .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin())) // permitir frames
             .authorizeRequests((requests) -> requests
-                .requestMatchers("/api/usuarios/**", "/h2-console/**").permitAll() // Permitir acceso sin autenticación a /api/usuarios
+                .requestMatchers("/api/auth/**", "/h2-console/**").permitAll() // Permitir acceso sin autenticación a /api/usuarios
                 .anyRequest().authenticated() // Requiere autenticación para cualquier otra solicitud
             );
 
