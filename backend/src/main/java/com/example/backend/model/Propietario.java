@@ -1,4 +1,4 @@
-/*package com.example.backend.model;
+package com.example.backend.model;
 
 import jakarta.persistence.*;
 
@@ -19,4 +19,3 @@ public class Propietario extends Usuario {
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
 }
-*/

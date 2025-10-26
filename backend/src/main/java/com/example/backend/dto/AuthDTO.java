@@ -1,19 +1,19 @@
 package com.example.backend.dto;
 
 public class AuthDTO {
-    
-    public static class LoginRequest {
-        private String username;
-        private String email;
-        private String password;
 
-        //gets and sets
-        public String getUsername(){
-            return username;
+    public static class LoginRequest {
+        private String nombre;
+        private String email;
+        private String contraseña;
+
+        // Getters y setters
+        public String getNombre() {
+            return nombre;
         }
 
-        public void setUsername(String username){
-            this.username = username;
+        public void setNombre(String nombre) {
+            this.nombre = nombre;
         }
 
         public String getEmail() {
@@ -24,37 +24,36 @@ public class AuthDTO {
             this.email = email;
         }
 
-        public String getPassword() {
-            return password;
+        public String getContraseña() {
+            return contraseña;
         }
 
-        public void setPassword(String password) {
-            this.password = password;
+        public void setContraseña(String contraseña) {
+            this.contraseña = contraseña;
         }
     }
 
-    //Misma que usuario tal vez eliminar...
     public static class RegisterRequest {
-        private String username;
+        private String nombre;
         private String surname;
         private String email;
         private String address;
-        private String password;
+        private String contraseña;
 
-        //gets and sets
-        public String getUsername(){
-            return username;
+        // Getters y setters
+        public String getNombre() {
+            return nombre;
         }
 
-        public void setUsername(String username){
-            this.username = username;
+        public void setNombre(String nombre) {
+            this.nombre = nombre;
         }
 
-        public String getSurname(){
+        public String getSurname() {
             return surname;
         }
 
-        public void setSurname(String surname){
+        public void setSurname(String surname) {
             this.surname = surname;
         }
 
@@ -66,20 +65,20 @@ public class AuthDTO {
             this.email = email;
         }
 
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-
         public String getAddress() {
             return address;
         }
 
         public void setAddress(String address) {
             this.address = address;
+        }
+
+        public String getContraseña() {
+            return contraseña;
+        }
+
+        public void setContraseña(String contraseña) {
+            this.contraseña = contraseña;
         }
     }
 }
