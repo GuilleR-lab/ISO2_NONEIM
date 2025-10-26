@@ -5,6 +5,33 @@
 
 h2 {
   text-align: center;
+  font-size: 20px;
+  padding-bottom: 10px;
+  margin: 0;
+  margin-left: 10px;
+}
+
+.home-container {
+  text-align: center;
+  margin-top: 100px;
+  font-family: Arial, sans-serif;
+}
+
+.login-icon {
+  margin-top: 40px;
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.login-icon:hover {
+  transform: scale(1.1);
+}
+
+.login-icom p {
+  margin-top: 8px;
+  font-size: 16px;
+  color: #007bff;
 }
 
 .home-container {
@@ -36,8 +63,6 @@ h2 {
   width: 300px;
   margin: 0 auto;
   padding: 20px;
-  align-items: center;      /* centra inputs horizontalmente */
-  justify-content: center;  /* centra verticalmente si quieres */
 }
 
 input[type=text], input[type=email], input[type=password] {
@@ -63,6 +88,59 @@ button {
   border-radius: 5px;
   cursor: pointer;
   width: 100%;
+}
+
+.return_button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  width: 16px;
+  height: 16px;
+  background-color: aqua;
+}
+
+.quit_button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  width: 16px;
+  height: 16px;
+  background-color: aqua;
+}
+
+/*Only for test*/
+.button_change {
+  padding: 10px;
+  font-size: 16px;
+  background-color: aqua;
+  border: 1px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 70%;
+}
+
+header {
+  align-items: center;
+  display: flex;
+}
+
+p {
+  margin-top: 0px;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.login-message {
+  margin-top: 0px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: red;
+}
+
+a {
+  text-decoration: none;
 }
 
 
