@@ -5,54 +5,90 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.AuthDTO.LoginRequest;
+//import com.example.backend.dto.AuthDTO.RegisterRequest;
 import com.example.backend.model.Usuario;
 import com.example.backend.service.UsuarioService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/auth")
 public class UsuarioController {
-
     @Autowired
     private UsuarioService usuarioService;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> loginUsuario(@RequestBody LoginRequest dto) {
-        boolean exists = dto.getEmail() == null
-                ? usuarioService.usuarioExists(dto.getNombre())
-                : usuarioService.usuarioExists(dto.getEmail());
+   @PostMapping("/login")
+    public ResponseEntity<?> crearUsuario(@RequestBody LoginRequest dto) {
+        
+        boolean exists = dto.getEmail() == null ? usuarioService.usuarioExists(dto.getUsername()) : usuarioService.usuarioExists(dto.getEmail());
 
-        String message = exists ? "Inicio de sesión correcto" : "Este usuario no existe";
-
-        return ResponseEntity.ok(Map.of("message", message));
+        String message = exists ? "Inicio de sesion correcto" : "Este usuario no existe";  //usuarioService.createUsuario(usuario);
+        
+        return ResponseEntity.ok(Map.of(
+            "message", message
+        ));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registrarUsuario(@RequestBody Usuario usuario) {
-        boolean exists = usuarioService.usuarioExists(usuario.getNombre()) || usuarioService.usuarioExists(usuario.getEmail());
+    public ResponseEntity<?> RegistrarUsuario(@RequestBody Usuario usuario) {
         String message;
+        boolean exists = usuarioService.usuarioExists(usuario.getUsername()) || usuarioService.usuarioExists(usuario.getEmail());
 
-        if (exists) {
-            message = "❌ Error: usuario ya registrado";
-        } else {
+        if (exists){
+            message = "Error usuario ya registrado";
+        }else {
+            message = "Usuario registrado correctamente";
             usuarioService.createUsuario(usuario);
-            message = "✅ Usuario registrado correctamente";
+        }
+        
+        return ResponseEntity.ok(Map.of(
+            "message", message
+        ));
+    }
+
+    /*@GetMapping("/api/usuarios/{id}")
+    public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
+        Usuario usuario = usuarioService.getUsuarioById(id);
+
+        if (usuario == null) {
+            return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(Map.of("message", message));
+        return ResponseEntity.ok(usuario);
+    }*/
+
+    @GetMapping("/login")
+    public List<Usuario> showAllUsuarios() {
+        return usuarioService.showAllUsuarios();
     }
 
-    @GetMapping("/usuarios")
-    public ResponseEntity<List<Usuario>> showAllUsuarios() {
-        return ResponseEntity.ok(usuarioService.showAllUsuarios());
-    }
+    /*@PutMapping("/api/usuarios/{id}")
+    public ResponseEntity<Map<String, Object>> updateUsuario(@PathVariable Long id,
+            @RequestBody Usuario usuarioActualizado) {
 
-    @DeleteMapping("/usuarios/{id}")
-    public ResponseEntity<?> deleteUsuario(@PathVariable("id") Long usuarioId) {
+        Usuario usuario = usuarioService.updateUsuario(id, usuarioActualizado);
+        if (usuario == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "❌ Usuario no encontrado"));
+        }
+
+        return ResponseEntity.ok(Map.of(
+            "message", "✅ Usuario actualizado correctamente",
+            "usuario", usuario
+        ));
+    }*/
+
+    @DeleteMapping("/login/{id}")
+    public String deleteUsuario(@PathVariable("id") Long usuarioId) {
         usuarioService.deleteUsuario(usuarioId);
-        return ResponseEntity.ok(Map.of("message", "Usuario eliminado"));
-    }
+        return "Usuario eliminado";
+    }  
 }
