@@ -11,17 +11,32 @@ h2 {
   margin-left: 10px;
 }
 
-.home-container {
+/*.home-container {
   text-align: center;
   margin-top: 100px;
   font-family: Arial, sans-serif;
+}*/
+.home-container {
+    position: relative;
+    text-align: center;
+    padding-top: 60px; /* espacio para el icono */
 }
 
-.login-icon {
+/*.login-icon {
   margin-top: 40px;
   cursor: pointer;
   display: inline-block;
   transition: transform 0.2s ease;
+}*/
+/* Icono de login en la esquina superior derecha */
+.login-icon {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s ease-in-out;
 }
 
 .login-icon:hover {

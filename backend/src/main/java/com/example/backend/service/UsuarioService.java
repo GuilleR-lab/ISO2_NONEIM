@@ -4,6 +4,8 @@ import java.util.List;
 import com.example.backend.model.Usuario;
 
 public interface UsuarioService {
+    Usuario findByUsername(String username);
+    Usuario findByEmail(String email);
     List<Usuario> showAllUsuarios();
     Usuario createUsuario(Usuario usuario);
     Usuario updateUsuario(Usuario usuario, Long UsuarioId);

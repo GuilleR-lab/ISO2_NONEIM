@@ -13,8 +13,8 @@ public class BackendConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf().disable() // 🔑 desactivar CSRF para facilitar peticiones POST desde React
-            .cors().and()     // 🔑 habilitar CORS
+            .csrf().disable() // desactivar CSRF para facilitar peticiones POST desde React
+            .cors().and()     // habilitar CORS
             .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin())) // permitir frames
             .authorizeRequests((requests) -> requests
                 .requestMatchers("/api/auth/**", "/h2-console/**").permitAll() // Permitir acceso sin autenticación a /api/usuarios

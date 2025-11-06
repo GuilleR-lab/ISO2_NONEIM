@@ -32,9 +32,11 @@ public class UsuarioController {
         boolean exists = dto.getEmail() == null ? usuarioService.usuarioExists(dto.getUsername()) : usuarioService.usuarioExists(dto.getEmail());
 
         String message = exists ? "Inicio de sesion correcto" : "Este usuario no existe";  //usuarioService.createUsuario(usuario);
+        Usuario usuario = dto.getUsername() != null ? usuarioService.findByUsername(dto.getUsername()) : usuarioService.findByEmail(dto.getEmail());
         
         return ResponseEntity.ok(Map.of(
-            "message", message
+            "message", message,
+            "usuario", usuario
         ));
     }
 
