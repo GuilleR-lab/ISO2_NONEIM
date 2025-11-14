@@ -1,37 +1,71 @@
+import { useEffect, useState } from "react";
 import "../App.css";
-import { FaUserCircle } from "react-icons/fa"; // Icono de usuario
+import { FaUserCircle } from "react-icons/fa";
 
 const HomePage = () => {
-    let usuario = null;
+  const [usuario, setUsuario] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-    try {
-        const usuarioData = localStorage.getItem("usuario");
-        usuario = usuarioData ? JSON.parse(usuarioData) : null;
-    } catch (e) {
-        console.error("⚠ Error parseando usuario en localStorage:", e);
-        localStorage.removeItem("usuario");
-    }
+  // Consultar sesión mediante cookie
+  useEffect(() => {
+    fetch("http://localhost:8090/api/auth/me", {
+      method: "GET",
+      credentials: "include"
+    })
+      .then(res => res.status === 401 ? null : res.json())
+      .then(data => {
+        if (data && data.usuario) {
+          setUsuario(data.usuario);
+        }
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-    return (
-        <div className="home-container">
+  const handleLogout = async () => {
+    await fetch("http://localhost:8090/api/auth/logout", {
+      method: "POST",
+      credentials: "include"
+    });
 
-            {/* Icono de usuario */}
-            <div
-                className="login-icon"
-                onClick={() => (window.location.href = usuario ? "/perfil" : "/auth")}
-                style={{ position: "absolute", top: 20, right: 20, cursor: "pointer", textAlign: "center" }}
-            >
-                <FaUserCircle size={50} color="#007bff" />
-                <p style={{ fontSize: "14px" }}>
-                    {usuario ? usuario.username : "Iniciar sesión"}
-                </p>
-            </div>
+    window.location.reload(); // refrescar estado
+  };
 
-            <h1>🏠 Bienvenido a NONEIM</h1>
-            <p>Tu portal de alquileres y viviendas.</p>
+  if (loading) return <p>Cargando...</p>;
 
-        </div>
-    );
+  return (
+    <div className="home-container">
+
+      {/* ICONO DEL USUARIO */}
+      <div
+        className="login-icon"
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
+        <FaUserCircle size={50} color="#007bff" />
+        <p style={{ fontSize: "14px" }}>
+          {usuario ? usuario.username : "Iniciar sesión"}
+        </p>
+
+        {/* MENÚ DESPLEGABLE */}
+        {menuOpen && (
+          <div className="user-menu">
+            {usuario ? (
+              <button onClick={handleLogout} className="logout-btn">
+                Cerrar sesión
+              </button>
+            ) : (
+              <button onClick={() => window.location.href = "/auth"} className="logout-btn">
+                Iniciar sesión
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      <h1>🏠 Bienvenido a NONEIM</h1>
+      <p>Tu portal de alquileres y viviendas.</p>
+    </div>
+  );
 };
 
 export default HomePage;

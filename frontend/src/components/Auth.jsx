@@ -1,6 +1,6 @@
 import React from "react";
 import "../App.css";
-import { useNavigate } from 'react-router-dom';
+/*import { useNavigate } from 'react-router-dom';
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -32,6 +32,7 @@ const Auth = () => {
       const response = await fetch("http://localhost:8090/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: 'include',
         body: JSON.stringify({ username, surname, address, email, password }),
       });
 
@@ -54,7 +55,7 @@ const Auth = () => {
     }
   };
 
-  // --- LOGIN ---
+
 
 // --- LOGIN ---
 const handleSubmitLogin = async (e) => {
@@ -72,11 +73,12 @@ const handleSubmitLogin = async (e) => {
     const response = await fetch("http://localhost:8090/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: 'include',
       body: JSON.stringify(body),
     });
 
     const data = await response.json();
-    console.log("🟢 Respuesta login:", data); // ← AHORA SÍ
+    console.log("Respuesta login:", data); 
 
     setMessage(data.message);
 
@@ -89,7 +91,7 @@ const handleSubmitLogin = async (e) => {
     } 
     else {
 
-      // ✅ Guardar sesión si existe usuario en la respuesta
+      //  Guardar sesión si existe usuario en la respuesta
       if (data.usuario) {
         localStorage.setItem("usuario", JSON.stringify(data.usuario));
       } else {
@@ -100,7 +102,7 @@ const handleSubmitLogin = async (e) => {
       messageAuth.style.color = "green";
       await sleep(800);
 
-      // ✅ Volver a HomePage
+      // Volver a HomePage
       navigate('/');
     }
 
@@ -180,4 +182,160 @@ const handleSubmitLogin = async (e) => {
   );
 };
 
-export default Auth;
+export default Auth;*/
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+export default function Auth() {
+  const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(true);
+
+  const [username, setUsername] = useState("");
+  const [surname, setSurname] = useState("");
+  const [address, setAddress] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    const body = {
+      email: email.includes("@") ? email : null,
+      username: !email.includes("@") ? email : null,
+      password,
+    };
+
+    try {
+      const res = await fetch("http://localhost:8090/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+      const msg = document.getElementById("auth-message");
+      msg.textContent = data.message;
+
+      if (data.message === "Inicio de sesion correcto") {
+        msg.style.color = "green";
+        await sleep(800);
+        navigate("/");
+      } else msg.style.color = "red";
+    } catch (err) {
+      console.error("Error en login", err);
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("http://localhost:8090/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ username, surname, address, email, password }),
+      });
+
+      const data = await res.json();
+      const msg = document.getElementById("auth-message");
+      msg.textContent = data.message;
+
+      if (data.message === "Usuario registrado correctamente") {
+        msg.style.color = "green";
+        await sleep(800);
+        setIsLogin(true);
+      } else msg.style.color = "red";
+    } catch (err) {
+      console.error("Error en registro", err);
+    }
+  };
+
+  return (
+    <div className="auth-container">
+      
+      <h2>{isLogin ? "Iniciar Sesión" : "Registrarse"}</h2>
+
+      <div className="form-container">
+        <form onSubmit={isLogin ? handleLogin : handleRegister}>
+
+          {!isLogin && (
+            <>
+              <input
+                type="text"
+                placeholder="Nombre de usuario"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+
+              <input
+                type="text"
+                placeholder="Apellidos"
+                value={surname}
+                onChange={(e) => setSurname(e.target.value)}
+                required
+              />
+
+              <input
+                type="text"
+                placeholder="Dirección"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                required
+              />
+
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </>
+          )}
+
+          {isLogin && (
+            <input
+              type="text"
+              placeholder="Email o Usuario"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          )}
+
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <button type="submit">
+            {isLogin ? "Entrar" : "Crear Cuenta"}
+          </button>
+        </form>
+      </div>
+
+      <p id="auth-message" className="login-message"></p>
+
+      <p
+        onClick={() => {
+          setIsLogin(!isLogin);
+          setEmail("");
+          setPassword("");
+        }}
+        style={{ cursor: "pointer", textDecoration: "underline" }}
+      >
+        {isLogin
+          ? "¿No tienes cuenta? Regístrate"
+          : "¿Ya tienes cuenta? Inicia sesión"}
+      </p>
+    </div>
+  );
+}
