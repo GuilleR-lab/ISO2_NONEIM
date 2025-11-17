@@ -1,0 +1,5 @@
+mvn clean verify sonar:sonar \
+  -Dsonar.projectKey=ISO2_NONEIM-backend \
+  -Dsonar.organization=guiller-lab \
+  -Dsonar.host.url=https://sonarcloud.io \
+  -Dsonar.login=07c50fefadb13cf8455042983c650a70470b68f1
