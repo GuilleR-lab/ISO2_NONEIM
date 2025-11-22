@@ -1,215 +1,52 @@
 import React from "react";
 import "../App.css";
-import { useNavigate } from 'react-router-dom';
+/*import { useNavigate } from 'react-router-dom';
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-
 const Auth = () => {
-    // Estados para los campos y mensajes
-    const [phase, setPhase] = React.useState("login"); //phases login, register
-    const [username, setUsername] = React.useState("");
-    const [surname, setSurname] = React.useState("");
-    const [address, setAddress] = React.useState("");
-    const [email, setEmail] = React.useState("");
-    const [password, setPassword] = React.useState("");
-    const [message, setMessage] = React.useState("");
-    const [showAuth, setShowAuth] = React.useState(true);
-    const [identifier, setIdentifier] = React.useState(""); // estado
-    
-    //2º Phase Register
-    let handleSubmitRegister;
-    if(phase === "register"){
-      handleSubmitRegister = async (e) => {
-        e.preventDefault();
-        
-        const inputUsernameRegister = document.getElementById("username");
-        inputUsernameRegister.addEventListener("input", function() {
-          if (this.value.length > 0) {
-            this.style.borderColor = "black";
-            this.style.background = "white";
-          }
-        });
-
-        if (!username) {
-          inputUsernameRegister.style.borderColor = "red";
-          inputUsernameRegister.style.background = "#FFF3F3";
-        }
-
-        const inputSurnameRegister = document.getElementById("surname");
-        inputSurnameRegister.addEventListener("input", function() {
-          if (this.value.length > 0) {
-            this.style.borderColor = "black";
-            this.style.background = "white";
-          }
-        });
-
-        if (!surname) {
-          inputSurnameRegister.style.borderColor = "red";
-          inputSurnameRegister.style.background = "#FFF3F3";
-        }
-
-        const inputAddressRegister = document.getElementById("address");
-        inputAddressRegister.addEventListener("input", function() {
-          if (this.value.length > 0) {
-            this.style.borderColor = "black";
-            this.style.background = "white";
-          }
-        });
-
-        if (!address) {
-          inputAddressRegister.style.borderColor = "red";
-          inputAddressRegister.style.background = "#FFF3F3";
-        }
-
-        const inputEmailRegister = document.getElementById("email");
-        inputEmailRegister.addEventListener("input", function() {
-          if (this.value.length > 0) {
-            this.style.borderColor = "black";
-            this.style.background = "white";
-          }
-        });
-
-        if (!email) {
-          inputEmailRegister.style.borderColor = "red";
-          inputEmailRegister.style.background = "#FFF3F3";
-        }
-
-        const inputPasswordRegister = document.getElementById("password");
-        inputPasswordRegister.addEventListener("input", function() {
-          if (this.value.length > 0) {
-            this.style.borderColor = "black";
-            this.style.background = "white";
-          }
-        });
-
-        if (!password) {
-          inputPasswordRegister.style.borderColor = "red";
-          inputPasswordRegister.style.background = "#FFF3F3";
-        }
-
-        if (!password || !username || !surname || !email || !address) {
-          setMessage("Es obligatorio rellenar todos los campos");
-          return;
-        }
-        
-        try {
-          const response = await fetch("http://localhost:8090/api/auth/register", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ username, surname, address, email, password }),
-          });
-
-          const data = await response.json();
-          
-          setMessage(data.message);
-
-          if(data.message !== "Usuario registrado correctamente"){
-            setMessage("Error ya existe un usuario con ese nombre o correo");
-            return;
-          }else{
-            const messageAuth = document.getElementById("auth-message");
-            messageAuth.style.color = "green";
-            await sleep(1000); //wait 1 second
-            navigate('/');
-            return;
-          }
-
-        } catch (error) {
-          console.error(error);
-          setMessage("Error al conectar con el servidor");
-        }
-      };
-    }
-
-    // Mannage the request by the form(login)
+  const [phase, setPhase] = React.useState("login");
+  const [username, setUsername] = React.useState("");
+  const [surname, setSurname] = React.useState("");
+  const [address, setAddress] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [message, setMessage] = React.useState("");
+  const [showAuth, setShowAuth] = React.useState(true);
+  const [identifier, setIdentifier] = React.useState("");
+  
   const navigate = useNavigate();
 
-  const handleSubmitLogin = async (e) => {
+  // --- REGISTRO ---
+  const handleSubmitRegister = async (e) => {
     e.preventDefault();
-    
-    // change color when put anything in the input
-    const inputUsername = document.getElementById("identifier");
-    inputUsername.addEventListener("input", function() {
-      if (this.value.length > 0) {
-        this.style.borderColor = "black";
-        this.style.background = "white";
-      }
-    });
 
-    if(!identifier){
-      inputUsername.style.borderColor = "red";
-      inputUsername.style.background = "#FFF3F3";
-    }
-
-    if ((!identifier && password)) {
-      setMessage("Es obligatorio introducir el nombre o correo")
+    if (!password || !username || !surname || !email || !address) {
+      setMessage("Es obligatorio rellenar todos los campos");
       return;
-    }
-
-    const inputPassword = document.getElementById("password");
-    inputPassword.addEventListener("input", function() {
-      if (this.value.length > 0) {
-        this.style.borderColor = "black";
-        this.style.background = "white";
-      }
-    });
-
-    if (!password) {
-      inputPassword.style.borderColor = "red";
-      inputPassword.style.background = "#FFF3F3"
     }
     
-    if (!password && identifier) {
-      setMessage("Es obligatorio introducir la contraseña")
-      return;
-    }
-
-    if (!identifier && !password) {
-      setMessage("Es obligatorio rellenar todos los campos"); 
-      return;
-    }
-
     try {
-      // Backend request
-      const isEmail = identifier.includes("@"); // o usar regex más estricto
-      const body = isEmail ? { email: identifier, password } : { username: identifier, password };
-      const response = await fetch("http://localhost:8090/api/auth/login", {
+      const response = await fetch("http://localhost:8090/api/auth/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
+        body: JSON.stringify({ username, surname, address, email, password }),
       });
 
       const data = await response.json();
-
       setMessage(data.message);
 
-      if(data.message !== "Inicio de sesion correcto"){
-        const messageAuth = document.getElementById("auth-message");
-        messageAuth.style.color = "red";
-        
-        await sleep(1000); //wait 1 second
-        setMessage("");
-        setPhase("register"); //change phase
-        
-        //clean data put in login phase
-        setEmail("");
-        setPassword("");
-        setUsername("");
-      } 
-      else {
+      if(data.message !== "Usuario registrado correctamente"){
+        setMessage("Error ya existe un usuario con ese nombre o correo");
+        return;
+      } else {
         const messageAuth = document.getElementById("auth-message");
         messageAuth.style.color = "green";
-        
-        await sleep(1000); //wait 1 second
+        await sleep(1000);
         navigate('/');
-        return;
       }
 
     } catch (error) {
@@ -218,96 +55,287 @@ const Auth = () => {
     }
   };
 
-    return (
-        <>
-            {/* Only for test(delete after test) 
-            <button class="button_change" id="button_id" onClick={() => {
-              setPhase(phase === "register" ? "login" : "register");
-              setMessage("");
-            }}>cambiar estado</button>*/}
 
 
-            {showAuth && <div className="form-container">
-                <header>
-                  {phase === "register" && <button class="return_button" onClick={() => {
-                      setPhase(phase === "register" ? "login" : "register");
-                      setMessage("");
+// --- LOGIN ---
+const handleSubmitLogin = async (e) => {
+  e.preventDefault();
 
-                      //clean data put in register when back to login
-                      setPassword("");
-                      setUsername("");
-                      setEmail("");
-                    }}>
-                    <span>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5"/>
-                      </svg>
-                    </span>
-                  </button>}
+  if (!identifier || !password) {
+    setMessage("Es obligatorio rellenar todos los campos");
+    return;
+  }
 
-                  {phase === "login" && 
-                  <button class="quit_button" onClick={() => {
-                    setShowAuth(false);
-                  }}>
-                    <span>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-                      </svg>
-                    </span>
-                  </button>}
+  try {
+    const isEmail = identifier.includes("@");
+    const body = isEmail ? { email: identifier, password } : { username: identifier, password };
 
-                  <h2>Iniciar sesión / Registrarse</h2>
-                </header>
+    const response = await fetch("http://localhost:8090/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: 'include',
+      body: JSON.stringify(body),
+    });
 
-                <form onSubmit={phase === "login" ? handleSubmitLogin : handleSubmitRegister}>  
+    const data = await response.json();
+    console.log("Respuesta login:", data); 
 
-                  {/*Ya se puede introducir un correo en el login, es decir que admita correo o usuario*/}
-                  { phase === "login" &&
-                    <input
-                      type="text"
-                      id="identifier"
-                      placeholder="Usuario o correo"
-                      value={identifier}
-                      onChange={(e) => setIdentifier(e.target.value)}
-                    />
-                  }
+    setMessage(data.message);
 
-                  { phase === "login" && <input type="password" id="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)}/> }
+    if(data.message !== "Inicio de sesion correcto"){
+      const messageAuth = document.getElementById("auth-message");
+      messageAuth.style.color = "red";
+      await sleep(1000);
+      setMessage("");
+      setPhase("register");
+    } 
+    else {
 
-                  { phase === "register" && <input type="text" id="username" placeholder="Nombre de usuario" value={username} onChange={(e) => setUsername(e.target.value)}/> }
+      //  Guardar sesión si existe usuario en la respuesta
+      if (data.usuario) {
+        localStorage.setItem("usuario", JSON.stringify(data.usuario));
+      } else {
+        console.warn("⚠ El backend no envía 'usuario'. Revisa respuesta del login.");
+      }
 
-                  { phase === "register" && <input type="text" id="surname" placeholder="Apellidos" value={surname} onChange={(e) => setSurname(e.target.value)}/> }
+      const messageAuth = document.getElementById("auth-message");
+      messageAuth.style.color = "green";
+      await sleep(800);
 
-                  { phase === "register" && <input type="text" id="address" placeholder="Dirección" value={address} onChange={(e) => setAddress(e.target.value)}/> }
+      // Volver a HomePage
+      navigate('/');
+    }
 
-                  { phase === "register" && <input type="email" id="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)}/> }
-
-                  { phase === "register" && <input type="password" id="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)}/> }
-                  
-                  { phase === "register" && <input type="password" id="password" placeholder="Confirmar contraseña" value={password} onChange={(e) => setPassword(e.target.value)}/> }
-                  
-                  {/* Phase message */}
-                  
-                    <div id="auth-message" className="login-message" role="alert" aria-live="polite">
-                      {message && <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                          className="bi bi-exclamation-circle-fill" viewBox="0 0 16 16" style={{marginRight:6}}>
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
-                      </svg>}
-                      <span>{message}</span>
-                    </div>
-                  
-
-                  <button style={{ backgroundColor: "#a1eafb" }}>
-                    { phase === "login" ? "Iniciar sesión" : "Registrarme" }
-                  </button>
-
-                  { phase === "login" && <a href="#">Has olvidado tu contraseña?</a>} {/*show in Login*/}
-
-                </form>
-            </div>}
-        </>
-    );
-
+  } catch (error) {
+    console.error(error);
+    setMessage("Error al conectar con el servidor");
+  }
 };
 
-export default Auth;
+
+  return (
+    <>
+      {showAuth && (
+        <div className="form-container">
+          <header>
+            {phase === "register" && (
+              <button className="return_button" onClick={() => {
+                setPhase("login");
+                setMessage("");
+                setPassword(""); setUsername(""); setEmail("");
+              }}>
+                <span>&larr;</span>
+              </button>
+            )}
+
+            {phase === "login" && (
+              <button className="quit_button" onClick={() => setShowAuth(false)}>
+                <span>X</span>
+              </button>
+            )}
+
+            <h2>Iniciar sesión / Registrarse</h2>
+          </header>
+
+          <form onSubmit={phase === "login" ? handleSubmitLogin : handleSubmitRegister}>
+            
+            {phase === "login" && (
+              <input type="text" id="identifier" placeholder="Usuario o correo"
+                value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
+            )}
+
+            {phase === "login" && (
+              <input type="password" id="password" placeholder="Contraseña"
+                value={password} onChange={(e) => setPassword(e.target.value)} />
+            )}
+
+            {phase === "register" && (
+              <>
+                <input type="text" id="username" placeholder="Nombre de usuario"
+                  value={username} onChange={(e) => setUsername(e.target.value)} />
+
+                <input type="text" id="surname" placeholder="Apellidos"
+                  value={surname} onChange={(e) => setSurname(e.target.value)} />
+
+                <input type="text" id="address" placeholder="Dirección"
+                  value={address} onChange={(e) => setAddress(e.target.value)} />
+
+                <input type="email" id="email" placeholder="Correo electrónico"
+                  value={email} onChange={(e) => setEmail(e.target.value)} />
+
+                <input type="password" id="password" placeholder="Contraseña"
+                  value={password} onChange={(e) => setPassword(e.target.value)} />
+              </>
+            )}
+
+            <div id="auth-message" className="login-message">
+              <span>{message}</span>
+            </div>
+
+            <button style={{ backgroundColor: "#a1eafb" }}>
+              {phase === "login" ? "Iniciar sesión" : "Registrarme"}
+            </button>
+          </form>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default Auth;*/
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+export default function Auth() {
+  const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(true);
+
+  const [username, setUsername] = useState("");
+  const [surname, setSurname] = useState("");
+  const [address, setAddress] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    const body = {
+      email: email.includes("@") ? email : null,
+      username: !email.includes("@") ? email : null,
+      password,
+    };
+
+    try {
+      const res = await fetch("http://localhost:8090/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+      const msg = document.getElementById("auth-message");
+      msg.textContent = data.message;
+
+      if (data.message === "Inicio de sesion correcto") {
+        msg.style.color = "green";
+        await sleep(800);
+        navigate("/");
+      } else msg.style.color = "red";
+    } catch (err) {
+      console.error("Error en login", err);
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("http://localhost:8090/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ username, surname, address, email, password }),
+      });
+
+      const data = await res.json();
+      const msg = document.getElementById("auth-message");
+      msg.textContent = data.message;
+
+      if (data.message === "Usuario registrado correctamente") {
+        msg.style.color = "green";
+        await sleep(800);
+        setIsLogin(true);
+      } else msg.style.color = "red";
+    } catch (err) {
+      console.error("Error en registro", err);
+    }
+  };
+
+  return (
+    <div className="auth-container">
+      
+      <h2>{isLogin ? "Iniciar Sesión" : "Registrarse"}</h2>
+
+      <div className="form-container">
+        <form onSubmit={isLogin ? handleLogin : handleRegister}>
+
+          {!isLogin && (
+            <>
+              <input
+                type="text"
+                placeholder="Nombre de usuario"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+
+              <input
+                type="text"
+                placeholder="Apellidos"
+                value={surname}
+                onChange={(e) => setSurname(e.target.value)}
+                required
+              />
+
+              <input
+                type="text"
+                placeholder="Dirección"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                required
+              />
+
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </>
+          )}
+
+          {isLogin && (
+            <input
+              type="text"
+              placeholder="Email o Usuario"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          )}
+
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <button type="submit">
+            {isLogin ? "Entrar" : "Crear Cuenta"}
+          </button>
+        </form>
+      </div>
+
+      <p id="auth-message" className="login-message"></p>
+
+      <p
+        onClick={() => {
+          setIsLogin(!isLogin);
+          setEmail("");
+          setPassword("");
+        }}
+        style={{ cursor: "pointer", textDecoration: "underline" }}
+      >
+        {isLogin
+          ? "¿No tienes cuenta? Regístrate"
+          : "¿Ya tienes cuenta? Inicia sesión"}
+      </p>
+    </div>
+  );
+}

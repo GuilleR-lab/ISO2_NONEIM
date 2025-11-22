@@ -28,6 +28,15 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.existsByEmail(data) || usuarioRepository.existsByUsername(data);
     }
 
+    @Override
+    public Usuario findByUsername(String username) {
+        return usuarioRepository.findByUsername(username);
+    }
+
+    @Override
+    public Usuario findByEmail(String email) {
+        return usuarioRepository.findByEmail(email);
+    }
     /*@Override
         public Usuario getUsuarioById(Long id) {
         return usuarioRepository.findById(id).orElse(null);

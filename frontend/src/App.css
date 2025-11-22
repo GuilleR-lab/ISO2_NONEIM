@@ -11,17 +11,32 @@ h2 {
   margin-left: 10px;
 }
 
-.home-container {
+/*.home-container {
   text-align: center;
   margin-top: 100px;
   font-family: Arial, sans-serif;
+}*/
+.home-container {
+    position: relative;
+    text-align: center;
+    padding-top: 60px; /* espacio para el icono */
 }
 
-.login-icon {
+/*.login-icon {
   margin-top: 40px;
   cursor: pointer;
   display: inline-block;
   transition: transform 0.2s ease;
+}*/
+/* Icono de login en la esquina superior derecha */
+.login-icon {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s ease-in-out;
 }
 
 .login-icon:hover {
@@ -60,7 +75,7 @@ input[type=text]:focus, input[type=email]:focus, input[type=password]:focus {
 button {
   padding: 10px;
   font-size: 16px;
-  background-color: black;
+  background-color: aqua;
   border: 1px solid black;
   border-radius: 5px;
   cursor: pointer;
@@ -85,6 +100,34 @@ button {
   width: 16px;
   height: 16px;
   background-color: aqua;
+}
+
+.user-menu {
+  position: absolute;
+  top: 70px;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  width: 140px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  border-radius: 5px;
+  z-index: 100;
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  background: rgb(84, 137, 190);
+  color: white;
+  border-radius: 5px;
+  border: none;
+}
+
+.logout-btn:hover {
+  background: #333;
 }
 
 /*Only for test*/
