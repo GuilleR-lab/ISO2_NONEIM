@@ -17,10 +17,24 @@ h2 {
   font-family: Arial, sans-serif;
 }*/
 .home-container {
-    position: relative;
-    text-align: center;
-    padding-top: 60px; /* espacio para el icono */
+  position: relative;
+  text-align: center;
+  padding-top: 60px; /* espacio para el icono */
 }
+
+.top-right-container {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;    
+}
+
+
+
 
 /*.login-icon {
   margin-top: 40px;
@@ -30,13 +44,13 @@ h2 {
 }*/
 /* Icono de login en la esquina superior derecha */
 .login-icon {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    transition: transform 0.2s ease-in-out;
+ /* position: absolute;
+  top: 15px;
+  right: 20px;*/
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease-in-out;
 }
 
 .login-icon:hover {
@@ -128,6 +142,32 @@ button {
 
 .logout-btn:hover {
   background: #333;
+}
+
+.hazte-prop-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  background-color: #FF385C;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+
+
+
+.hazte-prop-btn:hover {
+  opacity: 0.9;
+  transform: scale(1.03);
+}
+
+.prop-ya {
+  margin-top: 20px;
+  font-weight: bold;
+  color: #28a745; /* verde tipo success */
+  font-size: 16px;
 }
 
 /*Only for test*/

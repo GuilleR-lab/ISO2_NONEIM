@@ -6,6 +6,7 @@ const HomePage = () => {
   const [usuario, setUsuario] = useState(null);
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isPropietario, setIsPropietario] = useState(false);
 
   // Consultar sesión mediante cookie
   useEffect(() => {
@@ -22,6 +23,40 @@ const HomePage = () => {
       .finally(() => setLoading(false));
   }, []);
 
+  //COnsultar si es propietario
+  useEffect(() => {
+    if (usuario){
+        fetch("http://localhost:8090/api/propietarios/esPropietario", {
+            method: "GET",
+            credentials: "include"
+        })
+        .then(res => {
+            if(!res.ok) return null;
+            return res.json();
+        })
+        .then(data => {
+            if (data) setIsPropietario(data.isPropietario);
+        })
+        .catch(err => console.error("Error al verificar propietario:", err));
+    }
+  }, [usuario]);
+
+  const handleHaztePropietario = () => {
+    fetch("http://localhost:8090/api/propietarios/activar", {
+        method: "POST",
+        credentials: "include"
+    })
+    .then(res => {
+        if (res.ok){
+            setIsPropietario(true);
+            alert("Ahora eres propietario.");
+        }else{
+            alert("Error al activarte como propietario.");
+        }
+    })
+    .catch(err => console.error("Error al activar propietario:", err));
+  }
+
   const handleLogout = async () => {
     await fetch("http://localhost:8090/api/auth/logout", {
       method: "POST",
@@ -35,35 +70,53 @@ const HomePage = () => {
 
   return (
     <div className="home-container">
-
-      {/* ICONO DEL USUARIO */}
-      <div
-        className="login-icon"
-        onClick={() => setMenuOpen(!menuOpen)}
-      >
-        <FaUserCircle size={50} color="#007bff" />
-        <p style={{ fontSize: "14px" }}>
-          {usuario ? usuario.username : "Iniciar sesión"}
-        </p>
-
-        {/* MENÚ DESPLEGABLE */}
-        {menuOpen && (
-          <div className="user-menu">
-            {usuario ? (
-              <button onClick={handleLogout} className="logout-btn">
-                Cerrar sesión
-              </button>
-            ) : (
-              <button onClick={() => window.location.href = "/auth"} className="logout-btn">
-                Iniciar sesión
-              </button>
+        {/*Contenerdor superior derecha*/}
+        <div className = "top-right-container">
+            {/*Botón Hazte Propietario*/}
+            {usuario && !isPropietario && (
+                <button
+                    onClick={handleHaztePropietario}
+                    className = "hazte-prop-btn"
+                >
+                    Hazte Propietario
+                </button>
             )}
-          </div>
-        )}
-      </div>
+            {/*Icono de usuario*/}
+            <div
+                className="login-icon"
+                onClick={() => setMenuOpen(!menuOpen)}
+            >
+                <FaUserCircle size={50} color="#007bff" />
+                <p style={{ fontSize: "14px" }}>
+                    {usuario ? usuario.username : "Iniciar sesión"}
+                </p>
 
-      <h1>🏠 Bienvenido a NONEIM</h1>
-      <p>Tu portal de alquileres y viviendas.</p>
+                {/*Menú desplegable*/}
+                {menuOpen && (
+                <div className="user-menu">
+                    {usuario ? (
+                        <button onClick={handleLogout} className="logout-btn">
+                            Cerrar sesión
+                        </button>
+                    ) : (
+                        <button onClick={() => window.location.href = "/auth"} className="logout-btn">
+                            Iniciar sesión
+                        </button>
+                    )}
+                </div>
+                )}
+            </div>
+        </div>
+
+        {/*Mensaje si ya es propietario*/}
+        {isPropietario && (
+            <p className = "prop-ya">
+                🎉¡Ya eres propietario!
+            </p>
+        )}
+
+        <h1>🏠 Bienvenido a NONEIM</h1>
+        <p>Tu portal de alquileres y viviendas.</p>
     </div>
   );
 };
