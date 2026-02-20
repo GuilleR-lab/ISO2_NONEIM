@@ -17,10 +17,10 @@ public class Inmueble {
     @Column(nullable = false)
     private double precioNoche;
 
-    // Relación con el propietario (hereda de Usuario)
+    // Relación con el usuario
     @ManyToOne(optional = false)
     @JoinColumn(name = "propietario_id")
-    private Propietario propietario;
+    private Usuario propietario;
 
     // Relación con Disponibilidad (1:N)
     @OneToMany(mappedBy = "inmueble", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -32,7 +32,7 @@ public class Inmueble {
 
     public Inmueble() {}
 
-    public Inmueble(String direccion, double precioNoche, Propietario propietario) {
+    public Inmueble(String direccion, double precioNoche, Usuario propietario) {
         this.direccion = direccion;
         this.precioNoche = precioNoche;
         this.propietario = propietario;
@@ -48,8 +48,8 @@ public class Inmueble {
     public double getPrecioNoche() { return precioNoche; }
     public void setPrecioNoche(double precioNoche) { this.precioNoche = precioNoche; }
 
-    public Propietario getPropietario() { return propietario; }
-    public void setPropietario(Propietario propietario) { this.propietario = propietario; }
+    public Usuario getPropietario() { return propietario; }
+    public void setPropietario(Usuario propietario) { this.propietario = propietario; }
 
     public List<Disponibilidad> getDisponibilidades() { return disponibilidades; }
     public void setDisponibilidades(List<Disponibilidad> disponibilidades) { this.disponibilidades = disponibilidades; }

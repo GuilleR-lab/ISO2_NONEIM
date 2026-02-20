@@ -1,94 +1,94 @@
 package com.example.backend.controller;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.backend.dto.AuthDTO.LoginRequest;
-//import com.example.backend.dto.AuthDTO.RegisterRequest;
+import com.example.backend.dto.AuthDTO.LoginResponse;
+import com.example.backend.dto.AuthDTO.RegisterRequest;
 import com.example.backend.model.Usuario;
+import com.example.backend.model.Usuario.Rol;
 import com.example.backend.service.UsuarioService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/auth")
 public class UsuarioController {
+
     @Autowired
     private UsuarioService usuarioService;
 
-   @PostMapping("/login")
-    public ResponseEntity<?> crearUsuario(@RequestBody LoginRequest dto) {
-        
-        boolean exists = dto.getEmail() == null ? usuarioService.usuarioExists(dto.getUsername()) : usuarioService.usuarioExists(dto.getEmail());
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest dto) {
+        String identifier = dto.getEmail() != null ? dto.getEmail() : dto.getUsername();
 
-        String message = exists ? "Inicio de sesion correcto" : "Este usuario no existe";  //usuarioService.createUsuario(usuario);
-        
-        return ResponseEntity.ok(Map.of(
-            "message", message
-        ));
+        if (identifier == null || identifier.isBlank() || dto.getPassword() == null || dto.getPassword().isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Faltan campos obligatorios"));
+        }
+
+        Optional<Usuario> usuarioOpt = usuarioService.findByEmailOrUsername(identifier);
+
+        if (usuarioOpt.isEmpty()) {
+            return ResponseEntity.status(401).body(Map.of("message", "Usuario no encontrado"));
+        }
+
+        Usuario usuario = usuarioOpt.get();
+
+        if (!usuario.getPassword().equals(dto.getPassword())) {
+            return ResponseEntity.status(401).body(Map.of("message", "Contraseña incorrecta"));
+        }
+
+        LoginResponse response = new LoginResponse(
+            "Inicio de sesion correcto",
+            usuario.getId(),
+            usuario.getUsername(),
+            usuario.getEmail(),
+            usuario.getRol().name()
+        );
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> RegistrarUsuario(@RequestBody Usuario usuario) {
-        String message;
-        boolean exists = usuarioService.usuarioExists(usuario.getUsername()) || usuarioService.usuarioExists(usuario.getEmail());
-
-        if (exists){
-            message = "Error usuario ya registrado";
-        }else {
-            message = "Usuario registrado correctamente";
-            usuarioService.createUsuario(usuario);
+    public ResponseEntity<?> register(@RequestBody RegisterRequest dto) {
+        if (dto.getUsername() == null || dto.getEmail() == null || dto.getPassword() == null
+                || dto.getSurname() == null || dto.getAddress() == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Faltan campos obligatorios"));
         }
-        
-        return ResponseEntity.ok(Map.of(
-            "message", message
-        ));
+
+        boolean exists = usuarioService.usuarioExists(dto.getUsername())
+                      || usuarioService.usuarioExists(dto.getEmail());
+
+        if (exists) {
+            return ResponseEntity.status(409).body(Map.of("message", "Error usuario ya registrado"));
+        }
+
+        Rol rol = Rol.INQUILINO;
+        if ("PROPIETARIO".equalsIgnoreCase(dto.getRol())) {
+            rol = Rol.PROPIETARIO;
+        }
+
+        Usuario nuevo = new Usuario(
+            dto.getUsername(),
+            dto.getSurname(),
+            dto.getEmail(),
+            dto.getPassword(),
+            dto.getAddress(),
+            rol
+        );
+
+        usuarioService.createUsuario(nuevo);
+
+        return ResponseEntity.ok(Map.of("message", "Usuario registrado correctamente", "rol", rol.name()));
     }
 
-    /*@GetMapping("/api/usuarios/{id}")
-    public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
-        Usuario usuario = usuarioService.getUsuarioById(id);
-
-        if (usuario == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(usuario);
-    }*/
-
-    @GetMapping("/login")
-    public List<Usuario> showAllUsuarios() {
-        return usuarioService.showAllUsuarios();
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUsuario(@PathVariable Long id) {
+        usuarioService.deleteUsuario(id);
+        return ResponseEntity.ok(Map.of("message", "Usuario eliminado"));
     }
-
-    /*@PutMapping("/api/usuarios/{id}")
-    public ResponseEntity<Map<String, Object>> updateUsuario(@PathVariable Long id,
-            @RequestBody Usuario usuarioActualizado) {
-
-        Usuario usuario = usuarioService.updateUsuario(id, usuarioActualizado);
-        if (usuario == null) {
-            return ResponseEntity.badRequest().body(Map.of("message", "❌ Usuario no encontrado"));
-        }
-
-        return ResponseEntity.ok(Map.of(
-            "message", "✅ Usuario actualizado correctamente",
-            "usuario", usuario
-        ));
-    }*/
-
-    @DeleteMapping("/login/{id}")
-    public String deleteUsuario(@PathVariable("id") Long usuarioId) {
-        usuarioService.deleteUsuario(usuarioId);
-        return "Usuario eliminado";
-    }  
 }
