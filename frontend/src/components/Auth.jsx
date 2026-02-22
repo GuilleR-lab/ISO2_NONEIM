@@ -9,8 +9,18 @@ function sleep(ms) {
 const Auth = () => {
   const [phase, setPhase] = React.useState("login");
   const [username, setUsername] = React.useState("");
+  const [name, setName] = React.useState("");
   const [surname, setSurname] = React.useState("");
-  const [address, setAddress] = React.useState("");
+  const [address, setAddress] = React.useState({
+    pais: "",
+    ciudad: "",
+    codigoPostal: "",
+    calle: "",
+    edificio: "",
+    piso: ""
+  }
+
+  );
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
@@ -21,9 +31,22 @@ const Auth = () => {
   const navigate = useNavigate();
 
   const resetFields = () => {
-    setUsername(""); setSurname(""); setAddress("");
-    setEmail(""); setPassword(""); setConfirmPassword("");
+    setUsername(""); setName(""); setSurname(""); setEmail(""); 
+    setPassword(""); setConfirmPassword("");
     setIdentifier(""); setMessage(""); setRol("INQUILINO");
+    setAddress({
+      pais: "",
+      ciudad: "",
+      codigoPostal: "",
+      calle: "",
+      edificio: "",
+      piso: ""
+    });
+  };
+
+  const handleAddressChange = (e) => {
+    const {name, value} = e.target;
+    setAddress({...address, [name]: value});
   };
 
   const handleSubmitLogin = async (e) => {
@@ -70,8 +93,10 @@ const Auth = () => {
 
   const handleSubmitRegister = async (e) => {
     e.preventDefault();
-    if (!username || !surname || !address || !email || !password || !confirmPassword) {
-      setMessage("Es obligatorio rellenar todos los campos");
+    // Validación de campos (en el caso del piso, puede estar vacío, pero el resto no)
+    if (!username || !name || !surname || !email || !password || !confirmPassword || !address.pais || 
+      !address.ciudad || !address.codigoPostal || !address.calle || !address.edificio) {
+      setMessage("Es obligatorio rellenar todos los campos excepto el piso");
       setMessageColor("red");
       return;
     }
@@ -85,7 +110,7 @@ const Auth = () => {
       const response = await fetch("http://localhost:8090/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, surname, address, email, password, rol }),
+        body: JSON.stringify({ username, name, surname, address, email, password, rol }),
       });
 
       const data = await response.json();
@@ -136,10 +161,24 @@ const Auth = () => {
           <>
             <input type="text" placeholder="Nombre de usuario" value={username}
               onChange={(e) => setUsername(e.target.value)} />
+            <input type="text" placeholder="Nombre" value={name}
+              onChange={(e) => setName(e.target.value)} />
             <input type="text" placeholder="Apellidos" value={surname}
               onChange={(e) => setSurname(e.target.value)} />
-            <input type="text" placeholder="Dirección" value={address}
-              onChange={(e) => setAddress(e.target.value)} />
+            
+            <input type="text" placeholder="Pais" name="pais" value={address.pais}
+              onChange={handleAddressChange} />
+            <input type="text" placeholder="Ciudad" name="ciudad" value={address.ciudad}
+              onChange={handleAddressChange} />
+            <input type="text" placeholder="Codigo postal" name="codigoPostal" value={address.codigoPostal}
+              onChange={handleAddressChange} />
+            <input type="text" placeholder="Calle" name="calle" value={address.calle}
+              onChange={handleAddressChange} />
+            <input type="text" placeholder="Edificio" name="edificio" value={address.edificio}
+              onChange={handleAddressChange} />
+            <input type="text" placeholder="Piso" name="piso" value={address.piso}
+              onChange={handleAddressChange} />
+
             <input type="email" placeholder="Correo electrónico" value={email}
               onChange={(e) => setEmail(e.target.value)} />
             <input type="password" placeholder="Contraseña" value={password}

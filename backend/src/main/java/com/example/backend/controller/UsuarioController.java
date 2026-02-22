@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.backend.dto.AuthDTO.LoginRequest;
 import com.example.backend.dto.AuthDTO.LoginResponse;
 import com.example.backend.dto.AuthDTO.RegisterRequest;
+import com.example.backend.model.Direccion;
 import com.example.backend.model.Usuario;
 import com.example.backend.model.Usuario.Rol;
 import com.example.backend.service.UsuarioService;
@@ -55,11 +56,8 @@ public class UsuarioController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest dto) {
-        if (dto.getUsername() == null || dto.getEmail() == null || dto.getPassword() == null
-                || dto.getSurname() == null || dto.getAddress() == null) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Faltan campos obligatorios"));
-        }
 
+        //Validacion de usuario y email duplicados
         boolean exists = usuarioService.usuarioExists(dto.getUsername())
                       || usuarioService.usuarioExists(dto.getEmail());
 
@@ -72,12 +70,35 @@ public class UsuarioController {
             rol = Rol.PROPIETARIO;
         }
 
+        Direccion address = dto.getAddress();//Obtención del objeto direccion del DTO
+
+        //Validación de los campos obligatorios
+        if (dto.getUsername() == null || dto.getUsername().isBlank() ||
+            dto.getName() == null || dto.getName().isBlank() ||
+            dto.getSurname() == null || dto.getSurname().isBlank() ||
+            dto.getEmail() == null || dto.getEmail().isBlank() ||
+            dto.getPassword() == null || dto.getPassword().isBlank() ||
+            address == null ||
+            address.getPais() == null || address.getPais().isBlank() ||
+            address.getCiudad() == null || address.getCiudad().isBlank() ||
+            address.getCodigoPostal() == null || address.getCodigoPostal().isBlank() ||
+            address.getCalle() == null || address.getCalle().isBlank() ||
+            address.getEdificio() == null || address.getEdificio().isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Faltan campos obligatorios"));
+        }
+
+        //Normalizacion del campos opcionales
+        if(address.getPiso() == null || address.getPiso().isBlank()) {
+            address.setPiso(null);
+        }
+
         Usuario nuevo = new Usuario(
             dto.getUsername(),
+            dto.getName(),
             dto.getSurname(),
             dto.getEmail(),
             dto.getPassword(),
-            dto.getAddress(),
+            dto.getAddress(), // el objeto de tipo Direccion 
             rol
         );
 
