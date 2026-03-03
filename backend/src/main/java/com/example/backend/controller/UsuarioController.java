@@ -1,11 +1,18 @@
 package com.example.backend.controller;
 
-import java.util.Optional;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.AuthDTO.LoginRequest;
 import com.example.backend.dto.AuthDTO.LoginResponse;
@@ -105,6 +112,14 @@ public class UsuarioController {
         usuarioService.createUsuario(nuevo);
 
         return ResponseEntity.ok(Map.of("message", "Usuario registrado correctamente", "rol", rol.name()));
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id){
+        Optional<Usuario> usuarioOpt = usuarioService.findById(id);
+        if (usuarioOpt.isEmpty()){
+            return ResponseEntity.status(404).body(Map.of("message", "Usuario no encontrado"));
+        }
+        return ResponseEntity.ok(usuarioOpt.get());
     }
 
     @DeleteMapping("/{id}")

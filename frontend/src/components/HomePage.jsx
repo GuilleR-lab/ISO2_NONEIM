@@ -10,7 +10,8 @@ const HomePage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const storedUser = localStorage.getItem("username");
+        //const storedUser = localStorage.getItem("username");
+        const storedUser = sessionStorage.getItem("username");
         if(storedUser){
             setUsername(storedUser);
         }
@@ -25,7 +26,8 @@ const HomePage = () => {
     }; 
 
     const handleLogout = () => {
-        localStorage.clear();
+        //localStorage.clear();
+        sessionStorage.clear();
         setUsername(null);
         setMenuOpen(false);
         navigate("/");

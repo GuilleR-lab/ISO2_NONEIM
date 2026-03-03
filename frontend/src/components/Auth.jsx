@@ -75,10 +75,14 @@ const Auth = () => {
         return;
       }
 
-      localStorage.setItem("userId", data.id);
+      /*localStorage.setItem("userId", data.id);
       localStorage.setItem("username", data.username);
       localStorage.setItem("email", data.email);
-      localStorage.setItem("rol", data.rol);
+      localStorage.setItem("rol", data.rol);*/
+      sessionStorage.setItem("userId", data.id);
+      sessionStorage.setItem("username", data.username);
+      sessionStorage.setItem("email", data.email);
+      sessionStorage.setItem("rol", data.rol);
 
       setMessage("Inicio de sesión correcto");
       setMessageColor("green");

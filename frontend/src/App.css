@@ -17,6 +17,193 @@ h2 {
   font-family: Arial, sans-serif;
 }
 
+.perfil-dashbord {
+  display: flex;
+  min-height: 100vh;
+  background-color: #e5e8eb;
+}
+
+.dashboard-menu-btn-hidden {
+  opacity: 0;
+  pointer-events: none; /* Evita que el botón sea clickeable cuando está oculto */
+  visibility: hidden;
+}
+
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f4f7f6;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dashboard-home-btn {
+  position: fixed;
+  top: 20px;
+  left: 60px;
+  z-index: 10;
+  width: 110px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 5px;
+  background:#3498db;
+  border: none;
+  color: #e7e1e1;
+  align-items: center;
+}
+
+.dashbord-home-btn.sidebar-open {
+  left: 290px;
+}
+
+.dashboard-menu-btn {
+  
+  position: fixed;
+  top: 20px;
+  z-index: 150; 
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: left;
+  gap: 10px;
+  padding: 10px 5px;
+  background: transparent;
+  border: none;
+  color: #e7e1e1;
+  margin-right: 20px;
+  padding: 8px 16px;
+  border-radius: 8px; 
+  cursor: pointer;
+  font-weight: 600;
+  
+  transition: all 0.2s ease;
+}
+
+.dashboard-sidebar {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100%;
+  background: #2c3e50;
+  color: white;
+  transition: 0.3s ease-in-out;
+  z-index: 100;
+  padding: 20px;
+}
+
+.dashboard-sidebar.open {
+  left: 0;
+}
+
+.sidebar-nav button {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #bdc3c7;
+  padding: 12px;
+  margin-bottom: 10px;
+  margin-left: 20px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.2s;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+
+.close-sidebar {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+  transition: transform 0.2s;
+}
+
+.close-sidebar:hover {
+  transform: scale(1.2);
+  color: #e74c3c; /* Un toque rojo al pasar el ratón para cerrar */
+}
+
+.sidebar-nav button.active, .sidebar-nav button:hover {
+  background: #34495e;
+  color: white;
+  width: 80%;
+}
+
+.dashboard-main {
+  flex: 10;
+  align-items: center;
+  padding: 80px 40px 40px 40px;
+  margin-left: 25px;
+}
+
+.grid-dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.dash-card {
+  background: rgb(255, 255, 255);
+  border: 1px solid #838181;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  padding: 25px;
+}
+
+.badge {
+  background: #e1f5fe;
+  border-radius: 4px;
+  color: #0288d1;
+  font-size: 0.85rem;
+  padding: 4px 8px;
+}
+
+.btn-add {
+  background: #22c049;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 15px;
+} 
+
+.btn-secondary {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.dashboard-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(204, 193, 198, 0.03);
+  z-index: 50;
+}
+
+.perfil-layout {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+
+
 .login-icon {
   position: fixed;
   top: 20px;
