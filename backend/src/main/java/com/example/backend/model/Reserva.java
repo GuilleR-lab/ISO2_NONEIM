@@ -3,6 +3,7 @@ package com.example.backend.model;
 
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 
 @Entity
@@ -31,6 +32,7 @@ public class Reserva {
     private Disponibilidad disponibilidad;
 
     // Relación con Inmueble (many reservas belong to one inmueble)
+    @JsonIgnore 
     @ManyToOne
     @JoinColumn(name = "inmueble_id", nullable = false)
     private Inmueble inmueble;
