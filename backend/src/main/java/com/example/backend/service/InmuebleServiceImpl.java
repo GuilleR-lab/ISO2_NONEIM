@@ -1,10 +1,10 @@
-
 package com.example.backend.service;
 
 import com.example.backend.model.Inmueble;
 import com.example.backend.repository.InmuebleRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,7 +37,10 @@ public class InmuebleServiceImpl implements InmuebleService {
         return inmuebleRepository.findById(id)
                 .map(inmueble -> {
                     inmueble.setDireccion(nuevoInmueble.getDireccion());
+                    inmueble.setCiudad(nuevoInmueble.getCiudad());
                     inmueble.setPrecioNoche(nuevoInmueble.getPrecioNoche());
+                    inmueble.setTipo(nuevoInmueble.getTipo());
+                    inmueble.setDescripcion(nuevoInmueble.getDescripcion());
                     inmueble.setPropietario(nuevoInmueble.getPropietario());
                     return inmuebleRepository.save(inmueble);
                 })
@@ -51,5 +54,14 @@ public class InmuebleServiceImpl implements InmuebleService {
         }
         inmuebleRepository.deleteById(id);
     }
-}
 
+    @Override
+    public List<Inmueble> buscarConFiltros(String ciudad, Inmueble.Tipo tipo, boolean soloDirecta, LocalDate fechaInicio, LocalDate fechaFin) {
+        return inmuebleRepository.buscarConFiltros(ciudad, tipo, soloDirecta, fechaInicio, fechaFin);
+    }
+
+    @Override
+    public List<Inmueble> obtenerPorPropietario(Long propietarioId) {
+        return inmuebleRepository.findByPropietarioId(propietarioId);
+    }
+}
