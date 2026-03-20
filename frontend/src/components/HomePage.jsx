@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import "../App.css";
 import { FaUserCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
