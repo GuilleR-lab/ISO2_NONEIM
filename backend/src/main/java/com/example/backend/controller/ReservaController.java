@@ -1,37 +1,156 @@
 package com.example.backend.controller;
 
-
-import com.example.backend.model.Reserva;
+import com.example.backend.model.*;
+import com.example.backend.repository.*;
 import com.example.backend.service.ReservaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/reservas")
 public class ReservaController {
 
     private final ReservaService reservaService;
+    private final UsuarioRepository usuarioRepository;
+    private final InmuebleRepository inmuebleRepository;
+    private final PagoRepository pagoRepository;
+    private final SolicitudReservaRepository solicitudReservaRepository;
 
-    public ReservaController(ReservaService reservaService) {
+    public ReservaController(ReservaService reservaService,
+                             UsuarioRepository usuarioRepository,
+                             InmuebleRepository inmuebleRepository,
+                             PagoRepository pagoRepository,
+                             SolicitudReservaRepository solicitudReservaRepository) {
         this.reservaService = reservaService;
+        this.usuarioRepository = usuarioRepository;
+        this.inmuebleRepository = inmuebleRepository;
+        this.pagoRepository = pagoRepository;
+        this.solicitudReservaRepository = solicitudReservaRepository;
     }
 
-    // Crear una nueva reserva
-    @PostMapping
-    public ResponseEntity<Reserva> crearReserva(@RequestBody Reserva reserva) {
-        Reserva nuevaReserva = reservaService.crearReserva(reserva);
-        return ResponseEntity.ok(nuevaReserva);
+    // Flujo principal: reservar un inmueble
+    @PostMapping("/reservar")
+    public ResponseEntity<?> reservar(@RequestBody Map<String, Object> body) {
+        try {
+            Long inquilinoId = Long.valueOf(body.get("inquilinoId").toString());
+            Long inmuebleId = Long.valueOf(body.get("inmuebleId").toString());
+            LocalDate fechaInicio = LocalDate.parse(body.get("fechaInicio").toString());
+            LocalDate fechaFin = LocalDate.parse(body.get("fechaFin").toString());
+            String metodoPago = body.get("metodoPago").toString();
+
+            // Validar inquilino
+            Optional<Usuario> inquilinoOpt = usuarioRepository.findById(inquilinoId);
+            if (inquilinoOpt.isEmpty())
+                return ResponseEntity.badRequest().body(Map.of("message", "Inquilino no encontrado"));
+
+            Usuario inquilino = inquilinoOpt.get();
+            if (inquilino.getRol() != Usuario.Rol.INQUILINO)
+                return ResponseEntity.status(403).body(Map.of("message", "Solo los inquilinos pueden hacer reservas"));
+
+            // Validar inmueble
+            Optional<Inmueble> inmuebleOpt = inmuebleRepository.findById(inmuebleId);
+            if (inmuebleOpt.isEmpty())
+                return ResponseEntity.badRequest().body(Map.of("message", "Inmueble no encontrado"));
+
+            Inmueble inmueble = inmuebleOpt.get();
+
+            // Buscar disponibilidad válida para esas fechas
+            Optional<Disponibilidad> dispOpt = inmueble.getDisponibilidades().stream()
+                .filter(d -> !d.getFechaInicio().isAfter(fechaInicio) && !d.getFechaFin().isBefore(fechaFin))
+                .findFirst();
+
+            if (dispOpt.isEmpty())
+                return ResponseEntity.badRequest().body(Map.of("message", "No hay disponibilidad para esas fechas"));
+
+            Disponibilidad disponibilidad = dispOpt.get();
+
+            // Calcular importe
+            long dias = fechaInicio.until(fechaFin).getDays();
+            if (dias <= 0)
+                return ResponseEntity.badRequest().body(Map.of("message", "Las fechas no son válidas"));
+
+            double importe = dias * inmueble.getPrecioNoche();
+
+            // RESERVA DIRECTA
+            if (disponibilidad.isDirecta()) {
+                Reserva reserva = new Reserva();
+                reserva.setFechaInicio(fechaInicio);
+                reserva.setFechaFin(fechaFin);
+                reserva.setActiva(true);
+                reserva.setPagado(true);
+                reserva.setInquilino(inquilino);
+                reserva.setInmueble(inmueble);
+                reserva.setDisponibilidad(disponibilidad);
+
+                Reserva guardada = reservaService.crearReserva(reserva);
+
+                Pago pago = new Pago(metodoPago, importe, guardada);
+                pagoRepository.save(pago);
+
+                return ResponseEntity.ok(Map.of(
+                    "message", "Reserva confirmada",
+                    "tipo", "DIRECTA",
+                    "idReserva", guardada.getIdReserva(),
+                    "importe", importe
+                ));
+
+            // SOLICITUD DE RESERVA
+            } else {
+                SolicitudReserva solicitud = new SolicitudReserva();
+                solicitud.setEstado("PENDIENTE");
+                solicitud.setUsuario(inquilino);
+                solicitud.setDisponibilidad(disponibilidad);
+                solicitud.setFechaInicio(fechaInicio);
+                solicitud.setFechaFin(fechaFin);
+
+                SolicitudReserva solicitudGuardada = solicitudReservaRepository.save(solicitud);
+
+                // El pago se guarda pero la reserva queda pendiente de confirmación
+                Reserva reserva = new Reserva();
+                reserva.setFechaInicio(fechaInicio);
+                reserva.setFechaFin(fechaFin);
+                reserva.setActiva(false); // inactiva hasta que propietario confirme
+                reserva.setPagado(true);  // el dinero se retiene
+                reserva.setInquilino(inquilino);
+                reserva.setInmueble(inmueble);
+                reserva.setDisponibilidad(disponibilidad);
+                reserva.setSolicitudReserva(solicitudGuardada);
+
+                Reserva reservaGuardada = reservaService.crearReserva(reserva);
+
+                Pago pago = new Pago(metodoPago, importe, reservaGuardada);
+                pagoRepository.save(pago);
+
+                return ResponseEntity.ok(Map.of(
+                    "message", "Solicitud enviada al propietario, pendiente de confirmación",
+                    "tipo", "SOLICITUD",
+                    "idSolicitud", solicitudGuardada.getIdSolicitud(),
+                    "importe", importe
+                ));
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Error: " + e.getMessage()));
+        }
     }
 
-    // Obtener todas las reservas
+    // Obtener reservas de un inquilino
+    @GetMapping("/inquilino/{inquilinoId}")
+    public ResponseEntity<List<Reserva>> obtenerPorInquilino(@PathVariable Long inquilinoId) {
+        return ResponseEntity.ok(reservaService.obtenerPorInquilino(inquilinoId));
+    }
+
+    // CRUD básico
     @GetMapping
     public ResponseEntity<List<Reserva>> obtenerTodas() {
         return ResponseEntity.ok(reservaService.obtenerTodas());
     }
 
-    // Obtener una reserva por ID
     @GetMapping("/{id}")
     public ResponseEntity<Reserva> obtenerPorId(@PathVariable Long id) {
         return reservaService.obtenerPorId(id)
@@ -39,18 +158,6 @@ public class ReservaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Actualizar una reserva
-    @PutMapping("/{id}")
-    public ResponseEntity<Reserva> actualizarReserva(@PathVariable Long id, @RequestBody Reserva reserva) {
-        try {
-            Reserva actualizada = reservaService.actualizarReserva(id, reserva);
-            return ResponseEntity.ok(actualizada);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    // Eliminar una reserva
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarReserva(@PathVariable Long id) {
         reservaService.eliminarReserva(id);
