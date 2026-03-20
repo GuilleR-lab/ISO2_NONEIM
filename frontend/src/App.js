@@ -1,15 +1,15 @@
 import React from 'react';
-import "./App.css";
-import Auth from "./components/Auth";
-import HomePage from "./components/HomePage";
-import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import './App.css';
+import Auth from './components/Auth';
+import HomePage from './components/HomePage';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/auth" element = {<Auth/>}/>
-        <Route path="/" element = {<HomePage/>}/>
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/" element={<HomePage />} />
       </Routes>
     </Router>
   );
