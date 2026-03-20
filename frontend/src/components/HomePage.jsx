@@ -1,124 +1,108 @@
 import { useEffect, useState } from "react";
 import "../App.css";
 import { FaUserCircle } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
-  const [usuario, setUsuario] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [isPropietario, setIsPropietario] = useState(false);
+    const [username, setUsername] = useState(null);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [ciudad, setCiudad] = useState("");
+    const [fechaInicio, setFechaInicio] = useState("");
+    const [fechaFin, setFechaFin] = useState("");
+    const [tipo, setTipo] = useState("");
+    const [soloDirecta, setSoloDirecta] = useState(false);
 
-  // Consultar sesión mediante cookie
-  useEffect(() => {
-    fetch("http://localhost:8090/api/auth/me", {
-      method: "GET",
-      credentials: "include"
-    })
-      .then(res => res.status === 401 ? null : res.json())
-      .then(data => {
-        if (data && data.usuario) {
-          setUsuario(data.usuario);
-        }
-      })
-      .finally(() => setLoading(false));
-  }, []);
+    const navigate = useNavigate();
 
-  //COnsultar si es propietario
-  useEffect(() => {
-    if (usuario){
-        fetch("http://localhost:8090/api/propietarios/esPropietario", {
-            method: "GET",
-            credentials: "include"
-        })
-        .then(res => {
-            if(!res.ok) return null;
-            return res.json();
-        })
-        .then(data => {
-            if (data) setIsPropietario(data.isPropietario);
-        })
-        .catch(err => console.error("Error al verificar propietario:", err));
-    }
-  }, [usuario]);
+    useEffect(() => {
+        const storedUser = sessionStorage.getItem("username");
+        if (storedUser) setUsername(storedUser);
+    }, []);
 
-  const handleHaztePropietario = () => {
-    fetch("http://localhost:8090/api/propietarios/activar", {
-        method: "POST",
-        credentials: "include"
-    })
-    .then(res => {
-        if (res.ok){
-            setIsPropietario(true);
-            alert("Ahora eres propietario.");
-        }else{
-            alert("Error al activarte como propietario.");
-        }
-    })
-    .catch(err => console.error("Error al activar propietario:", err));
-  }
+    const toggleMenu = () => {
+        if (!username) navigate("/auth");
+        else setMenuOpen(!menuOpen);
+    };
 
-  const handleLogout = async () => {
-    await fetch("http://localhost:8090/api/auth/logout", {
-      method: "POST",
-      credentials: "include"
-    });
+    const handleLogout = () => {
+        sessionStorage.clear();
+        setUsername(null);
+        setMenuOpen(false);
+        navigate("/");
+    };
 
-    window.location.reload(); // refrescar estado
-  };
+    const handleBuscar = () => {
+        const params = new URLSearchParams();
+        if (ciudad) params.append("ciudad", ciudad);
+        if (fechaInicio) params.append("fechaInicio", fechaInicio);
+        if (fechaFin) params.append("fechaFin", fechaFin);
+        if (tipo) params.append("tipo", tipo);
+        if (soloDirecta) params.append("soloDirecta", "true");
+        navigate(`/resultados?${params.toString()}`);
+    };
 
-  if (loading) return <p>Cargando...</p>;
+    return (
+        <div className="home-container">
+            <h1>🏠 NONEIM</h1>
+            <p>Tu portal de alquileres y viviendas.</p>
 
-  return (
-    <div className="home-container">
-        {/*Contenerdor superior derecha*/}
-        <div className = "top-right-container">
-            {/*Botón Hazte Propietario*/}
-            {usuario && !isPropietario && (
-                <button
-                    onClick={handleHaztePropietario}
-                    className = "hazte-prop-btn"
-                >
-                    Hazte Propietario
-                </button>
-            )}
-            {/*Icono de usuario*/}
-            <div
-                className="login-icon"
-                onClick={() => setMenuOpen(!menuOpen)}
-            >
-                <FaUserCircle size={50} color="#007bff" />
-                <p style={{ fontSize: "14px" }}>
-                    {usuario ? usuario.username : "Iniciar sesión"}
-                </p>
-
-                {/*Menú desplegable*/}
+            {/* Icono usuario */}
+            <div className="login-icon">
+                <FaUserCircle size={60} color={username ? "#28a745" : "#007bff"} onClick={toggleMenu} />
+                <p onClick={toggleMenu}>{username ? username : "Iniciar sesión"}</p>
                 {menuOpen && (
-                <div className="user-menu">
-                    {usuario ? (
-                        <button onClick={handleLogout} className="logout-btn">
-                            Cerrar sesión
-                        </button>
-                    ) : (
-                        <button onClick={() => window.location.href = "/auth"} className="logout-btn">
-                            Iniciar sesión
-                        </button>
-                    )}
-                </div>
+                    <div className="user-menu">
+                        <p className="menu-username">{username}</p>
+                        <hr />
+                        <button onClick={() => navigate("/perfil")}>Mi perfil</button>
+                        <button onClick={handleLogout}>Cerrar sesión</button>
+                    </div>
                 )}
             </div>
+
+            {/* Buscador */}
+            <div className="buscador-container">
+                <h2>Busca tu alojamiento</h2>
+
+                <div className="buscador-campos">
+                    <input
+                        type="text"
+                        placeholder="🏙️ Ciudad o destino"
+                        value={ciudad}
+                        onChange={(e) => setCiudad(e.target.value)}
+                    />
+                    <input
+                        type="date"
+                        value={fechaInicio}
+                        onChange={(e) => setFechaInicio(e.target.value)}
+                    />
+                    <input
+                        type="date"
+                        value={fechaFin}
+                        onChange={(e) => setFechaFin(e.target.value)}
+                    />
+                    <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
+                        <option value="">Cualquier tipo</option>
+                        <option value="VIVIENDA_COMPLETA">Vivienda completa</option>
+                        <option value="HABITACION">Habitación</option>
+                    </select>
+                    <label className="checkbox-label">
+                        <input
+                            type="checkbox"
+                            checked={soloDirecta}
+                            onChange={(e) => setSoloDirecta(e.target.checked)}
+                        />
+                        Solo reserva inmediata
+                    </label>
+                </div>
+
+                <button className="btn-buscar" onClick={handleBuscar}>
+                    🔍 Buscar
+                </button>
+            </div>
         </div>
-
-        {/*Mensaje si ya es propietario*/}
-        {isPropietario && (
-            <p className = "prop-ya">
-                🎉¡Ya eres propietario!
-            </p>
-        )}
-
-        <h1>🏠 Bienvenido a NONEIM</h1>
-        <p>Tu portal de alquileres y viviendas.</p>
-    </div>
-  );
+    );
 };
 
 export default HomePage;

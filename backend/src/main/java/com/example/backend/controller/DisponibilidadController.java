@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/disponibilidades")
+@RequestMapping("/api/disponibilidades")
 public class DisponibilidadController {
 
     private final DisponibilidadService disponibilidadService;

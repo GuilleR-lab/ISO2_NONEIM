@@ -1,20 +1,26 @@
 package com.example.backend.controller;
 
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.AuthDTO.LoginRequest;
+import com.example.backend.dto.AuthDTO.LoginResponse;
+import com.example.backend.dto.AuthDTO.RegisterRequest;
+import com.example.backend.model.Direccion;
 import com.example.backend.model.Usuario;
-import com.example.backend.service.SessionService;
+import com.example.backend.model.Usuario.Rol;
 import com.example.backend.service.UsuarioService;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 @CrossOrigin(
     origins = "http://localhost:3000",
@@ -27,140 +33,104 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @Autowired
-    private SessionService sessionService;
-
-
-    
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest dto, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest dto) {
+        String identifier = dto.getEmail() != null ? dto.getEmail() : dto.getUsername();
 
-        // Buscar usuario por email o username
-        Usuario usuario = dto.getEmail() != null
-                ? usuarioService.findByEmail(dto.getEmail())
-                : usuarioService.findByUsername(dto.getUsername());
-
-        if (usuario == null) {
-            return ResponseEntity.status(401).body(Map.of(
-                    "message", "Este usuario no existe"
-            ));
+        if (identifier == null || identifier.isBlank() || dto.getPassword() == null || dto.getPassword().isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Faltan campos obligatorios"));
         }
 
-        // Comprobar contraseña
+        Optional<Usuario> usuarioOpt = usuarioService.findByEmailOrUsername(identifier);
+
+        if (usuarioOpt.isEmpty()) {
+            return ResponseEntity.status(401).body(Map.of("message", "Usuario no encontrado"));
+        }
+
+        Usuario usuario = usuarioOpt.get();
+
         if (!usuario.getPassword().equals(dto.getPassword())) {
-            return ResponseEntity.status(401).body(Map.of(
-                    "message", "Contraseña incorrecta"
-            ));
+            return ResponseEntity.status(401).body(Map.of("message", "Contraseña incorrecta"));
         }
 
-        
-        String sessionToken = UUID.randomUUID().toString();
+        LoginResponse response = new LoginResponse(
+            "Inicio de sesion correcto",
+            usuario.getId(),
+            usuario.getUsername(),
+            usuario.getEmail(),
+            usuario.getRol().name()
+        );
 
-        // Guardar sesión en memoria
-        sessionService.storeSession(sessionToken, usuario);
-
-        
-        ResponseCookie cookie = ResponseCookie.from("SESSIONID", sessionToken)
-                .httpOnly(true)
-                .secure(false)          // PONLO EN true SI USAS HTTPS
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(7 * 24 * 60 * 60)
-                .build();
-
-        response.addHeader("Set-Cookie", cookie.toString());
-
-        return ResponseEntity.ok(Map.of(
-                "message", "Inicio de sesion correcto",
-                "usuario", usuario
-        ));
+        return ResponseEntity.ok(response);
     }
 
 
 
     
     @PostMapping("/register")
-    public ResponseEntity<?> RegistrarUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest dto) {
 
-        boolean exists = usuarioService.usuarioExists(usuario.getUsername()) ||
-                         usuarioService.usuarioExists(usuario.getEmail());
+        //Validacion de usuario y email duplicados
+        boolean exists = usuarioService.usuarioExists(dto.getUsername())
+                      || usuarioService.usuarioExists(dto.getEmail());
 
         if (exists) {
-            return ResponseEntity.ok(Map.of(
-                    "message", "Error usuario ya registrado"
-            ));
+            return ResponseEntity.status(409).body(Map.of("message", "Error usuario ya registrado"));
         }
 
-        usuarioService.createUsuario(usuario);
-
-        return ResponseEntity.ok(Map.of(
-                "message", "Usuario registrado correctamente"
-        ));
-    }
-
-
-
-    
-    @GetMapping("/me")
-    public ResponseEntity<?> sessionUser(
-            @CookieValue(value = "SESSIONID", required = false) String token) {
-
-        if (token == null) {
-            return ResponseEntity.status(401).body(Map.of(
-                    "message", "No autenticado"
-            ));
+        Rol rol = Rol.INQUILINO;
+        if ("PROPIETARIO".equalsIgnoreCase(dto.getRol())) {
+            rol = Rol.PROPIETARIO;
         }
 
-        Usuario usuario = sessionService.getUsuarioFromToken(token);
+        Direccion address = dto.getAddress();//Obtención del objeto direccion del DTO
 
-        if (usuario == null) {
-            return ResponseEntity.status(401).body(Map.of(
-                    "message", "Sesión inválida"
-            ));
+        //Validación de los campos obligatorios
+        if (dto.getUsername() == null || dto.getUsername().isBlank() ||
+            dto.getName() == null || dto.getName().isBlank() ||
+            dto.getSurname() == null || dto.getSurname().isBlank() ||
+            dto.getEmail() == null || dto.getEmail().isBlank() ||
+            dto.getPassword() == null || dto.getPassword().isBlank() ||
+            address == null ||
+            address.getPais() == null || address.getPais().isBlank() ||
+            address.getCiudad() == null || address.getCiudad().isBlank() ||
+            address.getCodigoPostal() == null || address.getCodigoPostal().isBlank() ||
+            address.getCalle() == null || address.getCalle().isBlank() ||
+            address.getEdificio() == null || address.getEdificio().isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Faltan campos obligatorios"));
         }
 
-        return ResponseEntity.ok(Map.of(
-                "message", "Usuario autenticado",
-                "usuario", usuario
-        ));
-    }
-
-
-
-    
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(
-            @CookieValue(value = "SESSIONID", required = false) String token,
-            HttpServletResponse response) {
-
-        if (token != null) {
-            sessionService.deleteSession(token);
+        //Normalizacion del campos opcionales
+        if(address.getPiso() == null || address.getPiso().isBlank()) {
+            address.setPiso(null);
         }
 
-        ResponseCookie cookie = ResponseCookie.from("SESSIONID", "")
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(0)
-                .build();
+        Usuario nuevo = new Usuario(
+            dto.getUsername(),
+            dto.getName(),
+            dto.getSurname(),
+            dto.getEmail(),
+            dto.getPassword(),
+            dto.getAddress(), // el objeto de tipo Direccion 
+            rol
+        );
 
-        response.addHeader("Set-Cookie", cookie.toString());
+        usuarioService.createUsuario(nuevo);
 
-        return ResponseEntity.ok(Map.of("message", "Sesión cerrada"));
+        return ResponseEntity.ok(Map.of("message", "Usuario registrado correctamente", "rol", rol.name()));
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id){
+        Optional<Usuario> usuarioOpt = usuarioService.findById(id);
+        if (usuarioOpt.isEmpty()){
+            return ResponseEntity.status(404).body(Map.of("message", "Usuario no encontrado"));
+        }
+        return ResponseEntity.ok(usuarioOpt.get());
     }
 
-
-
-    
-    @GetMapping("/login")
-    public List<Usuario> showAllUsuarios() {
-        return usuarioService.showAllUsuarios();
-    }
-
-    @DeleteMapping("/login/{id}")
-    public String deleteUsuario(@PathVariable("id") Long usuarioId) {
-        usuarioService.deleteUsuario(usuarioId);
-        return "Usuario eliminado";
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUsuario(@PathVariable Long id) {
+        usuarioService.deleteUsuario(id);
+        return ResponseEntity.ok(Map.of("message", "Usuario eliminado"));
     }
 }
