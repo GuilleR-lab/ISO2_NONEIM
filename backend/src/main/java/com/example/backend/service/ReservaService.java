@@ -32,6 +32,10 @@ public class ReservaService {
         return reservaRepository.findByInquilinoId(inquilinoId);
     }
 
+    public List<Reserva> obtenerPorInmueble(Long inmuebleId) {
+        return reservaRepository.findByInmuebleId(inmuebleId);
+    }
+
     public void eliminarReserva(Long idReserva) {
         reservaRepository.deleteById(idReserva);
     }

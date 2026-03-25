@@ -209,3 +209,52 @@
     padding: 16px;
     text-align: center;
 }
+
+/* ===== RESERVAR ===== */
+.reserva-form {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.reserva-fechas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.reserva-fechas label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+.reserva-fechas input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+.reserva-resumen {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 15px;
+}
+
+.reserva-resumen p {
+    margin: 4px 0;
+}
+
+.badge-pendiente {
+    background: #fde8e8;
+    color: #c0392b;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 20px;
+}

@@ -20,20 +20,22 @@ public class ReservaController {
     private final InmuebleRepository inmuebleRepository;
     private final PagoRepository pagoRepository;
     private final SolicitudReservaRepository solicitudReservaRepository;
+    private final ReservaRepository reservaRepository;
 
     public ReservaController(ReservaService reservaService,
                              UsuarioRepository usuarioRepository,
                              InmuebleRepository inmuebleRepository,
                              PagoRepository pagoRepository,
-                             SolicitudReservaRepository solicitudReservaRepository) {
+                             SolicitudReservaRepository solicitudReservaRepository,
+                             ReservaRepository reservaRepository) {
         this.reservaService = reservaService;
         this.usuarioRepository = usuarioRepository;
         this.inmuebleRepository = inmuebleRepository;
         this.pagoRepository = pagoRepository;
         this.solicitudReservaRepository = solicitudReservaRepository;
+        this.reservaRepository = reservaRepository;
     }
 
-    // Flujo principal: reservar un inmueble
     @PostMapping("/reservar")
     public ResponseEntity<?> reservar(@RequestBody Map<String, Object> body) {
         try {
@@ -76,6 +78,17 @@ public class ReservaController {
 
             double importe = dias * inmueble.getPrecioNoche();
 
+            // Validar que no hay reservas solapadas
+            List<Reserva> reservasExistentes = reservaRepository.findByInmuebleId(inmuebleId);
+            boolean hayConflicto = reservasExistentes.stream()
+                .anyMatch(r ->
+                    !r.getFechaFin().isBefore(fechaInicio) &&
+                    !r.getFechaInicio().isAfter(fechaFin)
+                );
+
+            if (hayConflicto)
+                return ResponseEntity.badRequest().body(Map.of("message", "Ya existe una reserva para esas fechas"));
+
             // RESERVA DIRECTA
             if (disponibilidad.isDirecta()) {
                 Reserva reserva = new Reserva();
@@ -110,12 +123,11 @@ public class ReservaController {
 
                 SolicitudReserva solicitudGuardada = solicitudReservaRepository.save(solicitud);
 
-                // El pago se guarda pero la reserva queda pendiente de confirmación
                 Reserva reserva = new Reserva();
                 reserva.setFechaInicio(fechaInicio);
                 reserva.setFechaFin(fechaFin);
-                reserva.setActiva(false); // inactiva hasta que propietario confirme
-                reserva.setPagado(true);  // el dinero se retiene
+                reserva.setActiva(false);
+                reserva.setPagado(true);
                 reserva.setInquilino(inquilino);
                 reserva.setInmueble(inmueble);
                 reserva.setDisponibilidad(disponibilidad);
