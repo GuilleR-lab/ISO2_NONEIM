@@ -9,7 +9,7 @@ const DetalleInmueble = () => {
     const [cargando, setCargando] = useState(true);
 
     const usuarioLogueado = sessionStorage.getItem("userId");
-    const rol = sessionStorage.getItem("rol");
+    //const rol = sessionStorage.getItem("rol");
 
     useEffect(() => {
         fetch(`http://localhost:8090/api/inmuebles/${id}`)
@@ -65,6 +65,11 @@ const DetalleInmueble = () => {
                     )}
                 </div>
 
+                {/* Lógica de comparaciones: Si no hay usuario logueado sse envía al Auth,
+                si el usuario logueado es el propietario del inmuble no puede reservar ese inmueble,
+                ya no se tiene en cuenta si tiene el rol de propietario o inquilino (si es propietario de otro
+                inmueble sí podría reservarlo)
+                */}
                 {!usuarioLogueado ? (
                     <div className="detalle-aviso">
                         <p>Debes iniciar sesión para hacer una reserva.</p>
@@ -72,15 +77,22 @@ const DetalleInmueble = () => {
                             Iniciar sesión
                         </button>
                     </div>
-                ) : rol === "PROPIETARIO" ? (
+                ) : String(usuarioLogueado) === String(inmueble.propietario.id) ? (
+
                     <div className="detalle-aviso">
                         <p>Eres propietario, no puedes reservar inmuebles.</p>
+
+                        <button className="btn-secondary" onClick={() => navigate(`/propiedadform/${id}`)}>
+                            Editar inmueble
+                        </button>
                     </div>
+
                 ) : (
                     <button className="btn-reservar" onClick={() => navigate(`/reservar/${id}`)}>
                         {disponibilidad?.directa ? "⚡ Reservar ahora" : "📩 Solicitar reserva"}
                     </button>
                 )}
+
             </div>
         </div>
     );

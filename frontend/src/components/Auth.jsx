@@ -75,10 +75,6 @@ const Auth = () => {
         return;
       }
 
-      /*localStorage.setItem("userId", data.id);
-      localStorage.setItem("username", data.username);
-      localStorage.setItem("email", data.email);
-      localStorage.setItem("rol", data.rol);*/
       sessionStorage.setItem("userId", data.id);
       sessionStorage.setItem("username", data.username);
       sessionStorage.setItem("email", data.email);

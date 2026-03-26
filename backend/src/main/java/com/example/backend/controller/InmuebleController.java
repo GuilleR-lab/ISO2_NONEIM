@@ -1,18 +1,27 @@
 package com.example.backend.controller;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.backend.model.Disponibilidad;
 import com.example.backend.model.Inmueble;
 import com.example.backend.model.Usuario;
 import com.example.backend.service.DisponibilidadService;
 import com.example.backend.service.InmuebleService;
 import com.example.backend.service.UsuarioService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/inmuebles")
@@ -58,6 +67,15 @@ public class InmuebleController {
     @PostMapping("/alta")
     public ResponseEntity<?> darDeAlta(@RequestBody Map<String, Object> body) {
         try {
+            // --- 1. Verificación de Campos Obligatorios ---
+            String[] camposObligatorios = {"propietarioId", "direccion", "ciudad", "precioNoche", "tipo", "fechaInicio", "fechaFin"};
+            for (String campo : camposObligatorios) {
+                if (body.get(campo) == null || body.get(campo).toString().isBlank()) {
+                    return ResponseEntity.badRequest().body(Map.of("message", "El campo '" + campo + "' es obligatorio"));
+                }
+            }
+
+            // --- 2. Procesamiento del Propietario ---
             Long propietarioId = Long.valueOf(body.get("propietarioId").toString());
             Optional<Usuario> propietarioOpt = usuarioService.findById(propietarioId);
 
@@ -70,31 +88,43 @@ public class InmuebleController {
                 return ResponseEntity.status(403).body(Map.of("message", "Solo los propietarios pueden dar de alta inmuebles"));
             }
 
-            // Crear el inmueble
+            // --- 3. Crear el Inmueble de forma segura ---
             Inmueble inmueble = new Inmueble();
             inmueble.setDireccion(body.get("direccion").toString());
             inmueble.setCiudad(body.get("ciudad").toString());
             inmueble.setPrecioNoche(Double.parseDouble(body.get("precioNoche").toString()));
             inmueble.setDescripcion(body.getOrDefault("descripcion", "").toString());
-            inmueble.setTipo(Inmueble.Tipo.valueOf(body.getOrDefault("tipo", "VIVIENDA_COMPLETA").toString()));
+            
+            // Manejo de Enum más robusto (ignora mayúsculas/minúsculas del front)
+            String tipoStr = body.get("tipo").toString().toUpperCase().trim();
+            inmueble.setTipo(Inmueble.Tipo.valueOf(tipoStr));
+            
             inmueble.setPropietario(propietario);
 
+            // Guardar inmueble
             Inmueble guardado = inmuebleService.crearInmueble(inmueble);
 
-            // Crear la disponibilidad asociada
+            // --- 4. Crear la Disponibilidad ---
             Disponibilidad disp = new Disponibilidad();
             disp.setFechaInicio(LocalDate.parse(body.get("fechaInicio").toString()));
             disp.setFechaFin(LocalDate.parse(body.get("fechaFin").toString()));
-            disp.setPrecio(Double.parseDouble(body.get("precioNoche").toString()));
+            disp.setPrecio(inmueble.getPrecioNoche());
             disp.setDirecta(Boolean.parseBoolean(body.getOrDefault("directa", "true").toString()));
             disp.setInmueble(guardado);
 
             disponibilidadService.crearDisponibilidad(disp);
 
-            return ResponseEntity.ok(Map.of("message", "Inmueble creado correctamente", "idInmueble", guardado.getIdInmueble()));
+            return ResponseEntity.ok(Map.of(
+                "message", "Inmueble creado correctamente", 
+                "idInmueble", guardado.getIdInmueble()
+            ));
 
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Valor de tipo de inmueble no válido"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Error al crear el inmueble: " + e.getMessage()));
+            // Imprimimos el error en consola para que tú como dev sepas qué pasó exactamente
+            e.printStackTrace(); 
+            return ResponseEntity.status(500).body(Map.of("message", "Error interno: " + e.getMessage()));
         }
     }
 

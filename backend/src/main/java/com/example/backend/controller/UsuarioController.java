@@ -8,10 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.AuthDTO.LoginRequest;
@@ -24,6 +26,7 @@ import com.example.backend.service.UsuarioService;
 
 @CrossOrigin(
     origins = "http://localhost:3000",
+    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS},
     allowCredentials = "true"   
 )
 @RestController
@@ -119,6 +122,31 @@ public class UsuarioController {
 
         return ResponseEntity.ok(Map.of("message", "Usuario registrado correctamente", "rol", rol.name()));
     }
+
+    @PatchMapping("/{id}/rol")
+    public ResponseEntity<?> cambiarRol(@PathVariable Long id, @RequestBody Map<String, String> body){
+        String nuevoRolStr = body.get("rol");
+        Optional<Usuario> usuarioOpt = usuarioService.findById(id);
+
+        if (usuarioOpt.isEmpty()){
+            return ResponseEntity.status(404).body(Map.of("message", "Usuario no encontrado"));
+        }
+
+        Usuario user = usuarioOpt.get();
+        
+        try{
+            Rol nuevoRol = Rol.valueOf(nuevoRolStr.toUpperCase()); 
+            user.setRol(nuevoRol);
+            usuarioService.updateUsuario(user, id);
+            return ResponseEntity.ok(Map.of(
+                "message", "Rol actualizado correctamente",
+                "nuevoRol", nuevoRol.name()
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Rol no válido"));
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id){
         Optional<Usuario> usuarioOpt = usuarioService.findById(id);

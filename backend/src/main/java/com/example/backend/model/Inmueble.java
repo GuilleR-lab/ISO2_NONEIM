@@ -7,7 +7,7 @@ import java.util.List;
 public class Inmueble {
 
     public enum Tipo {
-        VIVIENDA_COMPLETA, HABITACION
+        VIVIENDA_COMPLETA, HABITACION, ESTUDIO, APARTAMENTO
     }
 
     @Id
