@@ -8,9 +8,8 @@ function sleep(ms) {
 }
 
 const PropiedadForm = () => {
-    // Mantengo tus estados originales
     const [precioNoche, setPrecioNoche] = useState("");
-    const [tipo, setTipo] = useState("APARTAMENTO");
+    const [tipo, setTipo] = useState("VIVIENDA_COMPLETA");
     const [ciudad, setCiudad] = useState("");
     const [direccion, setDireccion] = useState("");
     const [descripcion, setDescripcion] = useState("");
@@ -18,12 +17,11 @@ const PropiedadForm = () => {
 
     const [message, setMessage] = useState("");
     const [messageColor, setMessageColor] = useState("red");
-    
+
     const navigate = useNavigate();
-    const { id } = useParams(); // Detectamos si hay ID en la URL
+    const { id } = useParams();
     const isEditing = Boolean(id);
 
-    // EFECTO PARA CARGAR DATOS SI ESTAMOS EDITANDO
     useEffect(() => {
         if (isEditing) {
             fetch(`http://localhost:8090/api/inmuebles/${id}`)
@@ -34,7 +32,8 @@ const PropiedadForm = () => {
                     setCiudad(data.ciudad);
                     setDireccion(data.direccion);
                     setDescripcion(data.descripcion);
-                    setReservaDirecta(data.reservaDirecta);
+                    const disp = data.disponibilidades?.[0];
+                    setReservaDirecta(disp?.directa || false);
                 })
                 .catch(error => console.error("Error al cargar:", error));
         }
@@ -51,7 +50,6 @@ const PropiedadForm = () => {
 
         const propietarioId = sessionStorage.getItem("userId");
 
-        // Fechas automáticas para el backend
         const fechaInicio = new Date().toISOString().split("T")[0];
         const plusYear = new Date();
         plusYear.setFullYear(plusYear.getFullYear() + 1);
@@ -69,11 +67,10 @@ const PropiedadForm = () => {
             reservaDirecta: reservaDirecta
         };
 
-        // LÓGICA DINÁMICA: Si editamos usamos PUT a /{id}, si es alta usamos POST a /alta
-        const url = isEditing 
-            ? `http://localhost:8090/api/inmuebles/${id}` 
+        const url = isEditing
+            ? `http://localhost:8090/api/inmuebles/alta/${id}`
             : "http://localhost:8090/api/inmuebles/alta";
-        
+
         const method = isEditing ? "PUT" : "POST";
 
         try {
@@ -107,27 +104,27 @@ const PropiedadForm = () => {
                 <button className="return_button" onClick={() => navigate(-1)}>
                     <HiArrowSmallLeft size={28} />
                 </button>
-                <h2> {isEditing ? "Editar Propiedad" : "Alta de Propiedad"} </h2>
+                <h2>{isEditing ? "Editar Propiedad" : "Alta de Propiedad"}</h2>
             </header>
 
             <form onSubmit={handleSubmit}>
                 <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>Precio por noche (€)</label>
-                <input 
-                    type="number" 
-                    placeholder="Precio por noche (€)" 
+                <input
+                    type="number"
+                    placeholder="Precio por noche (€)"
                     value={precioNoche}
-                    onChange={(e) => setPrecioNoche(e.target.value)} 
+                    onChange={(e) => setPrecioNoche(e.target.value)}
                 />
 
                 <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>Tipo de propiedad</label>
-                <select 
-                    value={tipo} 
+                <select
+                    value={tipo}
                     onChange={(e) => setTipo(e.target.value)}
                     style={{ padding: "10px", borderRadius: "5px", border: "1px solid black", width: "100%", marginBottom: "10px" }}
                 >
-                    <option value="APARTAMENTO">Apartamento</option>
-                    <option value="VIVIENDA_COMPLETA">Casa</option>
+                    <option value="VIVIENDA_COMPLETA">Vivienda completa</option>
                     <option value="HABITACION">Habitación</option>
+                    <option value="APARTAMENTO">Apartamento</option>
                     <option value="ESTUDIO">Estudio</option>
                 </select>
 
@@ -140,11 +137,11 @@ const PropiedadForm = () => {
                 />
 
                 <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>Dirección completa</label>
-                <input 
-                    type="text" 
-                    placeholder="Dirección completa" 
+                <input
+                    type="text"
+                    placeholder="Dirección completa"
                     value={direccion}
-                    onChange={(e) => setDireccion(e.target.value)} 
+                    onChange={(e) => setDireccion(e.target.value)}
                 />
 
                 <div style={{ margin: "10px 0", display: "flex", alignItems: "center", gap: "10px" }}>
@@ -158,16 +155,16 @@ const PropiedadForm = () => {
                 </div>
 
                 <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>Descripción</label>
-                <textarea 
-                    placeholder="Descripción de la propiedad" 
-                    style={{ 
-                        width: "100%", padding: "10px", borderRadius: "5px", 
+                <textarea
+                    placeholder="Descripción de la propiedad"
+                    style={{
+                        width: "100%", padding: "10px", borderRadius: "5px",
                         marginBottom: "10px", border: "1px solid black",
                         boxSizing: "border-box", fontFamily: "inherit"
                     }}
                     rows="4"
                     value={descripcion}
-                    onChange={(e) => setDescripcion(e.target.value)} 
+                    onChange={(e) => setDescripcion(e.target.value)}
                 />
 
                 {message && (

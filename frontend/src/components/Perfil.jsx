@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, Outlet, useLocation, useOutletContext } from "react-router-dom";
 import { Menu, User, Home, X, LogOut, Sofa } from "lucide-react";
 
-// Componente de reservas del inquilino
-const ReservasInquilino = ({ userId }) => {
+// Componente de reservas (válido para inquilino y propietario)
+const MisReservas = ({ userId }) => {
     const [reservas, setReservas] = useState([]);
     const [cargando, setCargando] = useState(true);
 
@@ -39,6 +39,11 @@ const ReservasInquilino = ({ userId }) => {
                             {reserva.activa ? "✅ Confirmada" : "⏳ Pendiente"}
                         </span>
                     </div>
+                    {reserva.inmueble && (
+                        <div className="info-row">
+                            <span><strong>Inmueble:</strong></span> {reserva.inmueble.ciudad} — {reserva.inmueble.direccion}
+                        </div>
+                    )}
                     <div className="info-row"><span><strong>Entrada:</strong></span> {reserva.fechaInicio}</div>
                     <div className="info-row"><span><strong>Salida:</strong></span> {reserva.fechaFin}</div>
                     <div className="info-row"><span><strong>Pagado:</strong></span> {reserva.pagado ? "Sí" : "No"}</div>
@@ -144,12 +149,20 @@ const Perfil = () => {
                     )}
 
                     {user.rol === "PROPIETARIO" && (
-                        <button
-                            className={isPropiedades ? "active" : ""}
-                            onClick={() => { navigate("/perfil/propiedades"); setIsSidebarOpen(false); }}
-                        >
-                            <Sofa size={18} /> Mis Propiedades
-                        </button>
+                        <>
+                            <button
+                                className={isPropiedades ? "active" : ""}
+                                onClick={() => { navigate("/perfil/propiedades"); setIsSidebarOpen(false); }}
+                            >
+                                <Sofa size={18} /> Mis Propiedades
+                            </button>
+                            <button
+                                className={section === "reservas" ? "active" : ""}
+                                onClick={() => { setSection("reservas"); setIsSidebarOpen(false); }}
+                            >
+                                <Sofa size={18} /> Mis Reservas
+                            </button>
+                        </>
                     )}
 
                     <button onClick={() => { sessionStorage.clear(); navigate("/"); }}>
@@ -176,7 +189,7 @@ const Perfil = () => {
 
                 <section className="dashboard-content">
                     {section === "reservas" ? (
-                        <ReservasInquilino userId={user.id} />
+                        <MisReservas userId={user.id} />
                     ) : (
                         <Outlet context={{ user, toggleRol }} />
                     )}
@@ -280,8 +293,8 @@ export const MisPropiedades = () => {
                                     </div>
                                 </div>
                                 <div className="card-actions">
-                                    <button className="btn-edit" onClick={() => navigate(`/inmueble/${prop.idInmueble}`)}>
-                                        Detalles
+                                    <button className="btn-edit" onClick={() => navigate(`/propiedadform/${prop.idInmueble}`)}>
+                                        Editar
                                     </button>
                                     <button className="btn-delete" onClick={() => handleDelete(prop.idInmueble)}>
                                         Eliminar

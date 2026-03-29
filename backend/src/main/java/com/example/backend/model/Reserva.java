@@ -33,7 +33,6 @@ public class Reserva {
     @JoinColumn(name = "idDisponibilidad", nullable = false)
     private Disponibilidad disponibilidad;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "inmueble_id", nullable = false)
     private Inmueble inmueble;

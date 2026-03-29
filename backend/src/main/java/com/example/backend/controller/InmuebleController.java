@@ -63,11 +63,10 @@ public class InmuebleController {
         return ResponseEntity.ok(inmuebleService.obtenerPorPropietario(propietarioId));
     }
 
-    // Dar de alta un inmueble con disponibilidad (solo propietarios)
+    // Dar de alta un inmueble con disponibilidad
     @PostMapping("/alta")
     public ResponseEntity<?> darDeAlta(@RequestBody Map<String, Object> body) {
         try {
-            // --- 1. Verificación de Campos Obligatorios ---
             String[] camposObligatorios = {"propietarioId", "direccion", "ciudad", "precioNoche", "tipo", "fechaInicio", "fechaFin"};
             for (String campo : camposObligatorios) {
                 if (body.get(campo) == null || body.get(campo).toString().isBlank()) {
@@ -75,55 +74,86 @@ public class InmuebleController {
                 }
             }
 
-            // --- 2. Procesamiento del Propietario ---
             Long propietarioId = Long.valueOf(body.get("propietarioId").toString());
             Optional<Usuario> propietarioOpt = usuarioService.findById(propietarioId);
 
-            if (propietarioOpt.isEmpty()) {
+            if (propietarioOpt.isEmpty())
                 return ResponseEntity.badRequest().body(Map.of("message", "Propietario no encontrado"));
-            }
 
             Usuario propietario = propietarioOpt.get();
-            if (propietario.getRol() != Usuario.Rol.PROPIETARIO) {
+            if (propietario.getRol() != Usuario.Rol.PROPIETARIO)
                 return ResponseEntity.status(403).body(Map.of("message", "Solo los propietarios pueden dar de alta inmuebles"));
-            }
 
-            // --- 3. Crear el Inmueble de forma segura ---
             Inmueble inmueble = new Inmueble();
             inmueble.setDireccion(body.get("direccion").toString());
             inmueble.setCiudad(body.get("ciudad").toString());
             inmueble.setPrecioNoche(Double.parseDouble(body.get("precioNoche").toString()));
             inmueble.setDescripcion(body.getOrDefault("descripcion", "").toString());
-            
-            // Manejo de Enum más robusto (ignora mayúsculas/minúsculas del front)
             String tipoStr = body.get("tipo").toString().toUpperCase().trim();
             inmueble.setTipo(Inmueble.Tipo.valueOf(tipoStr));
-            
             inmueble.setPropietario(propietario);
 
-            // Guardar inmueble
             Inmueble guardado = inmuebleService.crearInmueble(inmueble);
 
-            // --- 4. Crear la Disponibilidad ---
             Disponibilidad disp = new Disponibilidad();
             disp.setFechaInicio(LocalDate.parse(body.get("fechaInicio").toString()));
             disp.setFechaFin(LocalDate.parse(body.get("fechaFin").toString()));
             disp.setPrecio(inmueble.getPrecioNoche());
-            disp.setDirecta(Boolean.parseBoolean(body.getOrDefault("directa", "true").toString()));
+            Object directaVal = body.getOrDefault("reservaDirecta", body.getOrDefault("directa", "false"));
+            disp.setDirecta(Boolean.parseBoolean(directaVal.toString()));
             disp.setInmueble(guardado);
 
             disponibilidadService.crearDisponibilidad(disp);
 
             return ResponseEntity.ok(Map.of(
-                "message", "Inmueble creado correctamente", 
+                "message", "Inmueble creado correctamente",
                 "idInmueble", guardado.getIdInmueble()
             ));
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("message", "Valor de tipo de inmueble no válido"));
         } catch (Exception e) {
-            // Imprimimos el error en consola para que tú como dev sepas qué pasó exactamente
-            e.printStackTrace(); 
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("message", "Error interno: " + e.getMessage()));
+        }
+    }
+
+    // Editar un inmueble existente
+    @PutMapping("/alta/{id}")
+    public ResponseEntity<?> editarInmueble(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+        try {
+            Optional<Inmueble> inmuebleOpt = inmuebleService.obtenerPorId(id);
+            if (inmuebleOpt.isEmpty())
+                return ResponseEntity.notFound().build();
+
+            Inmueble inmueble = inmuebleOpt.get();
+            inmueble.setDireccion(body.get("direccion").toString());
+            inmueble.setCiudad(body.get("ciudad").toString());
+            inmueble.setPrecioNoche(Double.parseDouble(body.get("precioNoche").toString()));
+            inmueble.setDescripcion(body.getOrDefault("descripcion", "").toString());
+            String tipoStr = body.get("tipo").toString().toUpperCase().trim();
+            inmueble.setTipo(Inmueble.Tipo.valueOf(tipoStr));
+
+            Inmueble guardado = inmuebleService.crearInmueble(inmueble);
+
+            // Actualizar disponibilidad si existe
+            if (guardado.getDisponibilidades() != null && !guardado.getDisponibilidades().isEmpty()) {
+                Disponibilidad disp = guardado.getDisponibilidades().get(0);
+                Object directaVal = body.getOrDefault("reservaDirecta", body.getOrDefault("directa", "false"));
+                disp.setDirecta(Boolean.parseBoolean(directaVal.toString()));
+                disp.setPrecio(guardado.getPrecioNoche());
+                disponibilidadService.crearDisponibilidad(disp);
+            }
+
+            return ResponseEntity.ok(Map.of(
+                "message", "Propiedad actualizada correctamente",
+                "idInmueble", guardado.getIdInmueble()
+            ));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Valor de tipo de inmueble no válido"));
+        } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of("message", "Error interno: " + e.getMessage()));
         }
     }

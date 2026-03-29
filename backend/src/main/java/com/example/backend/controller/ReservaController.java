@@ -39,20 +39,18 @@ public class ReservaController {
     @PostMapping("/reservar")
     public ResponseEntity<?> reservar(@RequestBody Map<String, Object> body) {
         try {
-            Long inquilinoId = Long.valueOf(body.get("inquilinoId").toString());
+            Long usuarioId = Long.valueOf(body.get("inquilinoId").toString());
             Long inmuebleId = Long.valueOf(body.get("inmuebleId").toString());
             LocalDate fechaInicio = LocalDate.parse(body.get("fechaInicio").toString());
             LocalDate fechaFin = LocalDate.parse(body.get("fechaFin").toString());
             String metodoPago = body.get("metodoPago").toString();
 
-            // Validar inquilino
-            Optional<Usuario> inquilinoOpt = usuarioRepository.findById(inquilinoId);
+            // Validar usuario
+            Optional<Usuario> inquilinoOpt = usuarioRepository.findById(usuarioId);
             if (inquilinoOpt.isEmpty())
-                return ResponseEntity.badRequest().body(Map.of("message", "Inquilino no encontrado"));
+                return ResponseEntity.badRequest().body(Map.of("message", "Usuario no encontrado"));
 
             Usuario inquilino = inquilinoOpt.get();
-            if (inquilino.getRol() != Usuario.Rol.INQUILINO)
-                return ResponseEntity.status(403).body(Map.of("message", "Solo los inquilinos pueden hacer reservas"));
 
             // Validar inmueble
             Optional<Inmueble> inmuebleOpt = inmuebleRepository.findById(inmuebleId);
@@ -60,6 +58,10 @@ public class ReservaController {
                 return ResponseEntity.badRequest().body(Map.of("message", "Inmueble no encontrado"));
 
             Inmueble inmueble = inmuebleOpt.get();
+
+            // No puede reservar su propio inmueble
+            if (inmueble.getPropietario().getId().equals(usuarioId))
+                return ResponseEntity.status(403).body(Map.of("message", "No puedes reservar tu propio inmueble"));
 
             // Buscar disponibilidad válida para esas fechas
             Optional<Disponibilidad> dispOpt = inmueble.getDisponibilidades().stream()
@@ -101,7 +103,6 @@ public class ReservaController {
                 reserva.setDisponibilidad(disponibilidad);
 
                 Reserva guardada = reservaService.crearReserva(reserva);
-
                 Pago pago = new Pago(metodoPago, importe, guardada);
                 pagoRepository.save(pago);
 
@@ -134,7 +135,6 @@ public class ReservaController {
                 reserva.setSolicitudReserva(solicitudGuardada);
 
                 Reserva reservaGuardada = reservaService.crearReserva(reserva);
-
                 Pago pago = new Pago(metodoPago, importe, reservaGuardada);
                 pagoRepository.save(pago);
 

@@ -19,7 +19,7 @@ const Reservar = () => {
     const rol = sessionStorage.getItem("rol");
 
     useEffect(() => {
-        if (!inquilinoId || rol !== "INQUILINO") {
+        if (!inquilinoId) {
             navigate("/auth");
             return;
         }

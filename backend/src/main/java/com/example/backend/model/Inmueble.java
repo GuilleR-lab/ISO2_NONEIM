@@ -2,6 +2,7 @@ package com.example.backend.model;
 
 import jakarta.persistence.*;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Inmueble {
@@ -34,9 +35,11 @@ public class Inmueble {
     @JoinColumn(name = "propietario_id")
     private Usuario propietario;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "inmueble", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Disponibilidad> disponibilidades;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "inmueble", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reserva> reservas;
 
