@@ -1,9 +1,18 @@
 
 package com.example.backend.model;
 
-import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Disponibilidad {
@@ -25,9 +34,9 @@ public class Disponibilidad {
     private boolean directa; // true = reserva inmediata
 
     // Relación con Inmueble
-    @JsonIgnore
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inmueble_id")
+    @JsonIgnoreProperties({"disponibilidades", "propietario", "hibernateLazyInitializer", "handler"}) // Ignora las listas hijas para no entrar en bucle
     private Inmueble inmueble;
 
     public Disponibilidad() {}
