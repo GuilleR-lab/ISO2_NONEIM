@@ -7,18 +7,47 @@ import { Menu, User, Home, X, LogOut, Sofa } from "lucide-react";
 const MisReservas = ({ userId }) => {
     const [reservas, setReservas] = useState([]);
     const [cargando, setCargando] = useState(true);
+    const [errorReservas, setErrorReservas] = useState("");
 
     useEffect(() => {
         fetch(`http://localhost:8090/api/reservas/inquilino/${userId}`)
-            .then(res => res.json())
+            .then(async res => {
+                const data = await res.json();
+
+                if (!res.ok) {
+                    const backendMsg = data?.message || data?.error || `Error ${res.status}`;
+                    throw new Error(backendMsg);
+                }
+
+                return data;
+            })
             .then(data => {
-                setReservas(data);
+                if (Array.isArray(data)) {
+                    setReservas(data);
+                    setErrorReservas("");
+                } else {
+                    setReservas([]);
+                    setErrorReservas("La respuesta del servidor no tiene el formato esperado.");
+                }
                 setCargando(false);
             })
-            .catch(() => setCargando(false));
+            .catch((error) => {
+                setReservas([]);
+                setErrorReservas(error.message || "No se pudieron cargar las reservas.");
+                setCargando(false);
+            });
     }, [userId]);
 
     if (cargando) return <p>Cargando reservas...</p>;
+
+    if (errorReservas) return (
+        <div className="dash-card">
+            <div className="empty-state">
+                <h3>No se pudieron cargar las reservas</h3>
+                <p>{errorReservas}</p>
+            </div>
+        </div>
+    );
 
     if (reservas.length === 0) return (
         <div className="dash-card">

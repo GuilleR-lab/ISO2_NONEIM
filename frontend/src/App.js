@@ -7,6 +7,7 @@ import Resultados from './components/Resultados';
 import DetalleInmueble from './components/DetalleInmueble';
 import PropiedadForm from './components/PropiedadForm';
 import Reservar from './components/Reservar';
+import SolicitudesReservas from './components/SolicitudesReservas';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/solicitudes" element={<SolicitudesReservas />} />
         <Route path="/perfil" element={<Perfil />}>
           <Route path="area-personal" element={<AreaPersonal />} />
           <Route path="propiedades" element={<MisPropiedades />} />

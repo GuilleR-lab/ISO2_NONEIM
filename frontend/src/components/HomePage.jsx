@@ -2,23 +2,49 @@ import "../App.css";
 import { FaUserCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { BsBell } from "react-icons/bs";
 
 const HomePage = () => {
     const [username, setUsername] = useState(null);
+    const [usuarioId, setUsuarioId] = useState(null);
+    const [esPropietario, setEsPropietario] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [ciudad, setCiudad] = useState("");
     const [fechaInicio, setFechaInicio] = useState("");
     const [fechaFin, setFechaFin] = useState("");
     const [tipo, setTipo] = useState("");
     const [soloDirecta, setSoloDirecta] = useState(false);
+    const [solicitudesPendientes, setSolicitudesPendientes] = useState(0);
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const storedUser = sessionStorage.getItem("username");
+        const storedId = sessionStorage.getItem("userId");
+        const storedRol = sessionStorage.getItem("rol");
+
         if (storedUser) setUsername(storedUser);
+        if (storedId) setUsuarioId(storedId);
+        if (storedRol === "PROPIETARIO") setEsPropietario(true);
     }, []);
 
+    useEffect(() => {
+        const fetchSolicitudes = async () => {
+            // Solo hacemos el fetch si hay un usuario logueado Y es propietario
+            if (!usuarioId || !esPropietario) return;
+
+            try {
+                const res = await fetch(`http://localhost:8090/api/solicitudes/propietario/${usuarioId}/pendientes/count`);
+                const data = await res.json(); // ¡IMPORTANTE: res.json(), no formData!
+                
+                setSolicitudesPendientes(data.count); 
+            } catch (error) {
+                console.error("Error al cargar solicitudes:", error);
+            }
+        }; 
+        fetchSolicitudes();
+    }, [usuarioId, esPropietario]); 
+    
     const toggleMenu = () => {
         if (!username) navigate("/auth");
         else setMenuOpen(!menuOpen);
@@ -46,19 +72,37 @@ const HomePage = () => {
             <h1>🏠 NONEIM</h1>
             <p>Tu portal de alquileres y viviendas.</p>
 
-            {/* Icono usuario */}
-            <div className="login-icon">
-                <FaUserCircle size={60} color={username ? "#28a745" : "#007bff"} onClick={toggleMenu} />
-                <p onClick={toggleMenu}>{username ? username : "Iniciar sesión"}</p>
-                {menuOpen && (
-                    <div className="user-menu">
-                        <p className="menu-username">{username}</p>
-                        <hr />
-                        <button onClick={() => navigate("/perfil")}>Mi perfil</button>
-                        <button onClick={handleLogout}>Cerrar sesión</button>
-                    </div>
-                )}
+            {/*Contenedor de iconos del header*/}
+            <div className="header-icons">
+                {/* Icono solicitudes */}
+                <div className="solicitud-icon" onClick={() => navigate("/solicitudes")}>
+                    <BsBell size={30} color="#007bff" />
+
+                    {/*Numero de solicitudes pendientes*/}
+                   {solicitudesPendientes > 0 && (
+                        <span className="solicitud-badge">
+                            {solicitudesPendientes > 9 ? "9+" : solicitudesPendientes}
+                        </span>
+                    )}
+                </div>
+
+
+                {/* Icono usuario */}
+                <div className="login-icon">
+                    <FaUserCircle size={60} color={username ? "#28a745" : "#007bff"} onClick={toggleMenu} />
+                    <p onClick={toggleMenu}>{username ? username : "Iniciar sesión"}</p>
+                    {menuOpen && (
+                        <div className="user-menu">
+                            <p className="menu-username">{username}</p>
+                            <hr />
+                            <button onClick={() => navigate("/perfil")}>Mi perfil</button>
+                            <button onClick={handleLogout}>Cerrar sesión</button>
+                        </div>
+                    )}
+                </div>
             </div>
+
+           
 
             {/* Buscador */}
             <div className="buscador-container">
