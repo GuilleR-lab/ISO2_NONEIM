@@ -47,6 +47,13 @@ public class SolicitudReservaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    //Obtener todas las solicitudes de un inquilino
+    @GetMapping("/inquilino/usuario/{inquilinoId}")
+    public ResponseEntity<List<SolicitudReserva>> obtenerPorInquilinoId(@PathVariable Long inquilinoId) {
+        List<SolicitudReserva> solicitudes = solicitudReservaService.findByUsuarioId(inquilinoId);
+        return ResponseEntity.ok(solicitudes);
+    }
+
     // Actualizar solicitud
     @PutMapping("/inquilino/{id}")
     public ResponseEntity<SolicitudReserva> actualizarSolicitud(@PathVariable Long id, @RequestBody SolicitudReserva solicitud) {

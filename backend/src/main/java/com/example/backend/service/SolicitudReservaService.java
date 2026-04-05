@@ -53,6 +53,11 @@ public class SolicitudReservaService {
         solicitudReservaRepository.deleteById(idSolicitud);
     }
 
+    /* Perspectiva de inquilino */
+    public List<SolicitudReserva> findByUsuarioId(Long usuarioId) {
+        return solicitudReservaRepository.findByUsuarioId(usuarioId);
+    }
+
     /* Perspectiva de propietario */
     public List<SolicitudReserva> obtenerPendientesPropietario(Long propietarioId){
         return solicitudReservaRepository.obtenerConDisponibilidadInmueblePropietarioIdAndEstado(propietarioId, "PENDIENTE");
