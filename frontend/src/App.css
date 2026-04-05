@@ -810,7 +810,23 @@ a {
 
 .badge-pendiente {
     background: #fde8e8;
-    color: #c0392b;
+    color: #d46b1b;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 20px;
+}
+
+.badge-aceptada {
+    background: #d4edda;
+    color: #28a745;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 20px;
+}
+
+.badge-rechazada {
+    background: #f8d7da;
+    color: #721c24;
     font-size: 12px;
     padding: 3px 8px;
     border-radius: 20px;
@@ -838,4 +854,56 @@ a {
     text-align: center;  /* Centra el texto */
     margin: 0;           /* Quita márgenes por defecto que descuadran */
     font-size: 1.8rem;
+}
+
+.btn-aceptar {
+  background-color: #28a745;
+  color: white;
+  border: "none";
+  border-color: #28a745;
+  padding: "8px 15px";
+  border-radius: "5px";
+  cursor: "pointer";
+}
+
+.btn-rechazar {
+  background-color: #dc3545;
+  color: white;
+  border: "none";
+  border-color: #dc3545;
+  padding: "8px 15px";
+  border-radius: "5px";
+  cursor: "pointer";
+}
+
+.btn-tab-gestion {
+  background-color: #a1eafb;
+  padding: 10px 20px;
+  border: none;
+  
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-tab-gestion.active {
+  background-color: #39bab6; /* Verde, por ejemplo */
+  color: white;
+  border-bottom: 3px solid #39bab6;
+}
+
+/* Clase base */
+.btn-tab-reservas {
+  background-color: #a1eafb;
+  padding: 10px 20px;
+  border: none;
+  
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Clase cuando está activo */
+.btn-tab-reservas.active {
+  background-color: #2e7d32; /* Verde, por ejemplo */
+  color: white;
+  border-bottom: 3px solid #1b5e20;
 }
