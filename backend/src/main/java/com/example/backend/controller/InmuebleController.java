@@ -6,19 +6,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.backend.model.Disponibilidad;
 import com.example.backend.model.Inmueble;
 import com.example.backend.model.Usuario;
+import com.example.backend.repository.PoliticaCancelacionRepository;
 import com.example.backend.service.DisponibilidadService;
 import com.example.backend.service.InmuebleService;
 import com.example.backend.service.UsuarioService;
@@ -30,14 +23,17 @@ public class InmuebleController {
     private final InmuebleService inmuebleService;
     private final UsuarioService usuarioService;
     private final DisponibilidadService disponibilidadService;
+    private final PoliticaCancelacionRepository politicaCancelacionRepository;
 
-    public InmuebleController(InmuebleService inmuebleService, UsuarioService usuarioService, DisponibilidadService disponibilidadService) {
+    public InmuebleController(InmuebleService inmuebleService, UsuarioService usuarioService,
+                               DisponibilidadService disponibilidadService,
+                               PoliticaCancelacionRepository politicaCancelacionRepository) {
         this.inmuebleService = inmuebleService;
         this.usuarioService = usuarioService;
         this.disponibilidadService = disponibilidadService;
+        this.politicaCancelacionRepository = politicaCancelacionRepository;
     }
 
-    // Búsqueda pública con filtros opcionales
     @GetMapping("/buscar")
     public ResponseEntity<List<Inmueble>> buscar(
             @RequestParam(required = false) String ciudad,
@@ -57,13 +53,11 @@ public class InmuebleController {
         return ResponseEntity.ok(inmuebleService.buscarConFiltros(ciudad, tipoEnum, soloDirecta, inicio, fin));
     }
 
-    // Obtener inmuebles de un propietario
     @GetMapping("/propietario/{propietarioId}")
     public ResponseEntity<List<Inmueble>> obtenerPorPropietario(@PathVariable Long propietarioId) {
         return ResponseEntity.ok(inmuebleService.obtenerPorPropietario(propietarioId));
     }
 
-    // Dar de alta un inmueble con disponibilidad
     @PostMapping("/alta")
     public ResponseEntity<?> darDeAlta(@RequestBody Map<String, Object> body) {
         try {
@@ -93,6 +87,13 @@ public class InmuebleController {
             inmueble.setTipo(Inmueble.Tipo.valueOf(tipoStr));
             inmueble.setPropietario(propietario);
 
+            // Asignar política de cancelación
+            if (body.get("idPolitica") != null && !body.get("idPolitica").toString().isBlank()) {
+                Long idPolitica = Long.valueOf(body.get("idPolitica").toString());
+                politicaCancelacionRepository.findById(idPolitica)
+                    .ifPresent(inmueble::setPoliticaCancelacion);
+            }
+
             Inmueble guardado = inmuebleService.crearInmueble(inmueble);
 
             Disponibilidad disp = new Disponibilidad();
@@ -118,7 +119,6 @@ public class InmuebleController {
         }
     }
 
-    // Editar un inmueble existente
     @PutMapping("/alta/{id}")
     public ResponseEntity<?> editarInmueble(@PathVariable Long id, @RequestBody Map<String, Object> body) {
         try {
@@ -134,9 +134,18 @@ public class InmuebleController {
             String tipoStr = body.get("tipo").toString().toUpperCase().trim();
             inmueble.setTipo(Inmueble.Tipo.valueOf(tipoStr));
 
-            Inmueble guardado = inmuebleService.crearInmueble(inmueble);
+            // Actualizar política de cancelación
+            if (body.get("idPolitica") != null && !body.get("idPolitica").toString().isBlank()) {
+                Long idPolitica = Long.valueOf(body.get("idPolitica").toString());
+                politicaCancelacionRepository.findById(idPolitica)
+                    .ifPresent(inmueble::setPoliticaCancelacion);
+            } else {
+                inmueble.setPoliticaCancelacion(null);
+            }
 
-            // Actualizar disponibilidad si existe
+            Inmueble guardado = inmuebleService.actualizarInmueble(id, inmueble);
+
+            // Actualizar disponibilidad
             if (guardado.getDisponibilidades() != null && !guardado.getDisponibilidades().isEmpty()) {
                 Disponibilidad disp = guardado.getDisponibilidades().get(0);
                 Object directaVal = body.getOrDefault("reservaDirecta", body.getOrDefault("directa", "false"));
@@ -158,7 +167,6 @@ public class InmuebleController {
         }
     }
 
-    // CRUD básico
     @GetMapping
     public List<Inmueble> listar() {
         return inmuebleService.obtenerTodos();

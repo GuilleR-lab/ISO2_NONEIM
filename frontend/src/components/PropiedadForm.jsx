@@ -14,6 +14,7 @@ const PropiedadForm = () => {
     const [direccion, setDireccion] = useState("");
     const [descripcion, setDescripcion] = useState("");
     const [reservaDirecta, setReservaDirecta] = useState(false);
+    const [idPolitica, setIdPolitica] = useState("2"); // por defecto reembolso completo
 
     const [message, setMessage] = useState("");
     const [messageColor, setMessageColor] = useState("red");
@@ -34,6 +35,9 @@ const PropiedadForm = () => {
                     setDescripcion(data.descripcion);
                     const disp = data.disponibilidades?.[0];
                     setReservaDirecta(disp?.directa || false);
+                    if (data.politicaCancelacion?.idPolitica) {
+                        setIdPolitica(data.politicaCancelacion.idPolitica.toString());
+                    }
                 })
                 .catch(error => console.error("Error al cargar:", error));
         }
@@ -64,7 +68,8 @@ const PropiedadForm = () => {
             propietarioId: propietarioId,
             fechaInicio: fechaInicio,
             fechaFin: fechaFin,
-            reservaDirecta: reservaDirecta
+            reservaDirecta: reservaDirecta,
+            idPolitica: idPolitica
         };
 
         const url = isEditing
@@ -153,6 +158,17 @@ const PropiedadForm = () => {
                     />
                     <label htmlFor="reservaCheck">Permitir reserva directa</label>
                 </div>
+
+                <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>Política de cancelación</label>
+                <select
+                    value={idPolitica}
+                    onChange={(e) => setIdPolitica(e.target.value)}
+                    style={{ padding: "10px", borderRadius: "5px", border: "1px solid black", width: "100%", marginBottom: "10px" }}
+                >
+                    <option value="2">Reembolso completo (0% penalización)</option>
+                    <option value="3">Reembolso del 50% (50% penalización)</option>
+                    <option value="1">No reembolsable (100% penalización)</option>
+                </select>
 
                 <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>Descripción</label>
                 <textarea

@@ -45,25 +45,21 @@ public class ReservaController {
             LocalDate fechaFin = LocalDate.parse(body.get("fechaFin").toString());
             String metodoPago = body.get("metodoPago").toString();
 
-            // Validar usuario
             Optional<Usuario> inquilinoOpt = usuarioRepository.findById(usuarioId);
             if (inquilinoOpt.isEmpty())
                 return ResponseEntity.badRequest().body(Map.of("message", "Usuario no encontrado"));
 
             Usuario inquilino = inquilinoOpt.get();
 
-            // Validar inmueble
             Optional<Inmueble> inmuebleOpt = inmuebleRepository.findById(inmuebleId);
             if (inmuebleOpt.isEmpty())
                 return ResponseEntity.badRequest().body(Map.of("message", "Inmueble no encontrado"));
 
             Inmueble inmueble = inmuebleOpt.get();
 
-            // No puede reservar su propio inmueble
             if (inmueble.getPropietario().getId().equals(usuarioId))
                 return ResponseEntity.status(403).body(Map.of("message", "No puedes reservar tu propio inmueble"));
 
-            // Buscar disponibilidad válida para esas fechas
             Optional<Disponibilidad> dispOpt = inmueble.getDisponibilidades().stream()
                 .filter(d -> !d.getFechaInicio().isAfter(fechaInicio) && !d.getFechaFin().isBefore(fechaFin))
                 .findFirst();
@@ -73,14 +69,12 @@ public class ReservaController {
 
             Disponibilidad disponibilidad = dispOpt.get();
 
-            // Calcular importe
             long dias = fechaInicio.until(fechaFin).getDays();
             if (dias <= 0)
                 return ResponseEntity.badRequest().body(Map.of("message", "Las fechas no son válidas"));
 
             double importe = dias * inmueble.getPrecioNoche();
 
-            // Validar que no hay reservas solapadas
             List<Reserva> reservasExistentes = reservaRepository.findByInmuebleId(inmuebleId);
             boolean hayConflicto = reservasExistentes.stream()
                 .anyMatch(r ->
@@ -91,7 +85,6 @@ public class ReservaController {
             if (hayConflicto)
                 return ResponseEntity.badRequest().body(Map.of("message", "Ya existe una reserva para esas fechas"));
 
-            // RESERVA DIRECTA
             if (disponibilidad.isDirecta()) {
                 Reserva reserva = new Reserva();
                 reserva.setFechaInicio(fechaInicio);
@@ -113,7 +106,6 @@ public class ReservaController {
                     "importe", importe
                 ));
 
-            // SOLICITUD DE RESERVA
             } else {
                 SolicitudReserva solicitud = new SolicitudReserva();
                 solicitud.setEstado("PENDIENTE");
@@ -151,13 +143,58 @@ public class ReservaController {
         }
     }
 
-    // Obtener reservas de un inquilino
+    @PostMapping("/{id}/cancelar")
+    public ResponseEntity<?> cancelarReserva(@PathVariable Long id) {
+        try {
+            Optional<Reserva> reservaOpt = reservaService.obtenerPorId(id);
+            if (reservaOpt.isEmpty())
+                return ResponseEntity.notFound().build();
+
+            Reserva reserva = reservaOpt.get();
+
+            if (!reserva.isActiva() && reserva.getSolicitudReserva() == null)
+                return ResponseEntity.badRequest().body(Map.of("message", "La reserva ya está cancelada"));
+
+            // Calcular reembolso según política del inmueble
+            double importeOriginal = reserva.getPago() != null ? reserva.getPago().getImporte() : 0;
+            double reembolso = importeOriginal;
+            String descripcionPolitica = "Reembolso completo";
+
+            PoliticaCancelacion politica = reserva.getInmueble().getPoliticaCancelacion();
+            if (politica != null) {
+                double penalizacion = politica.getPenalizacion();
+                reembolso = importeOriginal * (1 - penalizacion / 100);
+                descripcionPolitica = politica.getDescripcion();
+            }
+
+            // Cancelar la reserva
+            reserva.setActiva(false);
+            reserva.setPagado(false);
+            reservaService.crearReserva(reserva);
+
+            // Si tiene solicitud asociada, cancelarla también
+            if (reserva.getSolicitudReserva() != null) {
+                reserva.getSolicitudReserva().setEstado("CANCELADA");
+                solicitudReservaRepository.save(reserva.getSolicitudReserva());
+            }
+
+            return ResponseEntity.ok(Map.of(
+                "message", "Reserva cancelada correctamente",
+                "politica", descripcionPolitica,
+                "importeOriginal", importeOriginal,
+                "reembolso", reembolso
+            ));
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Error: " + e.getMessage()));
+        }
+    }
+
     @GetMapping("/inquilino/{inquilinoId}")
     public ResponseEntity<List<Reserva>> obtenerPorInquilino(@PathVariable Long inquilinoId) {
         return ResponseEntity.ok(reservaService.obtenerPorInquilino(inquilinoId));
     }
 
-    // CRUD básico
     @GetMapping
     public ResponseEntity<List<Reserva>> obtenerTodas() {
         return ResponseEntity.ok(reservaService.obtenerTodas());

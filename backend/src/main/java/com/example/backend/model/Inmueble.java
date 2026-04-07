@@ -1,14 +1,14 @@
 package com.example.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Inmueble {
 
     public enum Tipo {
-        VIVIENDA_COMPLETA, HABITACION, ESTUDIO, APARTAMENTO
+        VIVIENDA_COMPLETA, HABITACION, APARTAMENTO, ESTUDIO
     }
 
     @Id
@@ -34,6 +34,10 @@ public class Inmueble {
     @ManyToOne(optional = false)
     @JoinColumn(name = "propietario_id")
     private Usuario propietario;
+
+    @ManyToOne
+    @JoinColumn(name = "idPolitica")
+    private PoliticaCancelacion politicaCancelacion;
 
     @JsonIgnore
     @OneToMany(mappedBy = "inmueble", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -68,6 +72,8 @@ public class Inmueble {
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
     public Usuario getPropietario() { return propietario; }
     public void setPropietario(Usuario propietario) { this.propietario = propietario; }
+    public PoliticaCancelacion getPoliticaCancelacion() { return politicaCancelacion; }
+    public void setPoliticaCancelacion(PoliticaCancelacion politicaCancelacion) { this.politicaCancelacion = politicaCancelacion; }
     public List<Disponibilidad> getDisponibilidades() { return disponibilidades; }
     public void setDisponibilidades(List<Disponibilidad> disponibilidades) { this.disponibilidades = disponibilidades; }
     public List<Reserva> getReservas() { return reservas; }

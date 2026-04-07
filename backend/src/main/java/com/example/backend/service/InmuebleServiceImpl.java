@@ -35,16 +35,17 @@ public class InmuebleServiceImpl implements InmuebleService {
     @Override
     public Inmueble actualizarInmueble(Long id, Inmueble nuevoInmueble) {
         return inmuebleRepository.findById(id)
-                .map(inmueble -> {
-                    inmueble.setDireccion(nuevoInmueble.getDireccion());
-                    inmueble.setCiudad(nuevoInmueble.getCiudad());
-                    inmueble.setPrecioNoche(nuevoInmueble.getPrecioNoche());
-                    inmueble.setTipo(nuevoInmueble.getTipo());
-                    inmueble.setDescripcion(nuevoInmueble.getDescripcion());
-                    inmueble.setPropietario(nuevoInmueble.getPropietario());
-                    return inmuebleRepository.save(inmueble);
-                })
-                .orElseThrow(() -> new RuntimeException("Inmueble no encontrado"));
+            .map(inmueble -> {
+                inmueble.setDireccion(nuevoInmueble.getDireccion());
+                inmueble.setCiudad(nuevoInmueble.getCiudad());
+                inmueble.setPrecioNoche(nuevoInmueble.getPrecioNoche());
+                inmueble.setTipo(nuevoInmueble.getTipo());
+                inmueble.setDescripcion(nuevoInmueble.getDescripcion());
+                inmueble.setPropietario(nuevoInmueble.getPropietario());
+                inmueble.setPoliticaCancelacion(nuevoInmueble.getPoliticaCancelacion());
+                return inmuebleRepository.save(inmueble);
+            })
+            .orElseThrow(() -> new RuntimeException("Inmueble no encontrado"));
     }
 
     @Override

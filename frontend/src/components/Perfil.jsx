@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useNavigate, Outlet, useLocation, useOutletContext } from "react-router-dom";
 import { Menu, User, Home, X, LogOut, Sofa } from "lucide-react";
 
-// Componente de reservas (válido para inquilino y propietario)
 const MisReservas = ({ userId }) => {
     const [reservas, setReservas] = useState([]);
     const [cargando, setCargando] = useState(true);
@@ -17,6 +16,29 @@ const MisReservas = ({ userId }) => {
             })
             .catch(() => setCargando(false));
     }, [userId]);
+
+    const handleCancelar = async (idReserva) => {
+        const confirmar = window.confirm("¿Estás seguro de que quieres cancelar esta reserva?");
+        if (!confirmar) return;
+
+        try {
+            const response = await fetch(`http://localhost:8090/api/reservas/${idReserva}/cancelar`, {
+                method: "POST"
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(`${data.message}\nPolítica: ${data.politica}\nImporte original: ${data.importeOriginal}€\nReembolso: ${data.reembolso}€`);
+                setReservas(prev => prev.map(r =>
+                    r.idReserva === idReserva ? { ...r, activa: false, pagado: false } : r
+                ));
+            } else {
+                alert(data.message || "Error al cancelar");
+            }
+        } catch (error) {
+            alert("Error al conectar con el servidor");
+        }
+    };
 
     if (cargando) return <p>Cargando reservas...</p>;
 
@@ -36,12 +58,17 @@ const MisReservas = ({ userId }) => {
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <h3>Reserva #{reserva.idReserva}</h3>
                         <span className={reserva.activa ? "badge-directa" : "badge-pendiente"}>
-                            {reserva.activa ? "✅ Confirmada" : "⏳ Pendiente"}
+                            {reserva.activa ? "✅ Confirmada" : "❌ Cancelada"}
                         </span>
                     </div>
                     {reserva.inmueble && (
                         <div className="info-row">
                             <span><strong>Inmueble:</strong></span> {reserva.inmueble.ciudad} — {reserva.inmueble.direccion}
+                        </div>
+                    )}
+                    {reserva.inmueble?.politicaCancelacion && (
+                        <div className="info-row">
+                            <span><strong>Política cancelación:</strong></span> {reserva.inmueble.politicaCancelacion.descripcion}
                         </div>
                     )}
                     <div className="info-row"><span><strong>Entrada:</strong></span> {reserva.fechaInicio}</div>
@@ -51,6 +78,15 @@ const MisReservas = ({ userId }) => {
                         <div className="info-row">
                             <span><strong>Método de pago:</strong></span> {reserva.pago.metodoPago}
                         </div>
+                    )}
+                    {reserva.activa && (
+                        <button
+                            className="btn-delete"
+                            style={{ marginTop: 10 }}
+                            onClick={() => handleCancelar(reserva.idReserva)}
+                        >
+                            Cancelar reserva
+                        </button>
                     )}
                 </div>
             ))}
@@ -68,6 +104,12 @@ const Perfil = () => {
 
     const isAreaPersonal = location.pathname.includes("area-personal");
     const isPropiedades = location.pathname.includes("propiedades");
+
+    useEffect(() => {
+        if (isAreaPersonal || isPropiedades) {
+            setSection("area-personal");
+        }
+    }, [location.pathname, isAreaPersonal, isPropiedades]);
 
     useEffect(() => {
         const userId = sessionStorage.getItem("userId");
