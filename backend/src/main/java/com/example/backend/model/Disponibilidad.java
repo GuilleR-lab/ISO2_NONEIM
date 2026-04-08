@@ -3,6 +3,8 @@ package com.example.backend.model;
 
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.time.LocalDate;
 
 @Entity
@@ -25,7 +27,7 @@ public class Disponibilidad {
     private boolean directa; // true = reserva inmediata
 
     // Relación con Inmueble
-    @JsonIgnore
+    @JsonIgnoreProperties("disponibilidades")
     @ManyToOne(optional = false)
     @JoinColumn(name = "inmueble_id")
     private Inmueble inmueble;

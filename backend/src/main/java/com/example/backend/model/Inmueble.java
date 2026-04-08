@@ -39,9 +39,10 @@ public class Inmueble {
     @JoinColumn(name = "idPolitica")
     private PoliticaCancelacion politicaCancelacion;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "inmueble", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties("inmueble")
     private List<Disponibilidad> disponibilidades;
+
 
     @JsonIgnore
     @OneToMany(mappedBy = "inmueble", cascade = CascadeType.ALL, orphanRemoval = true)
