@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import Auth from './components/Auth';
 import HomePage from './components/HomePage';
-import Perfil, { AreaPersonal, MisPropiedades } from './components/Perfil';
+import Perfil, { AreaPersonal, MisPropiedades, MisReservas } from './components/Perfil';
 import Resultados from './components/Resultados';
 import DetalleInmueble from './components/DetalleInmueble';
 import PropiedadForm from './components/PropiedadForm';
@@ -20,6 +20,7 @@ function App() {
         <Route path="/perfil" element={<Perfil />}>
           <Route path="area-personal" element={<AreaPersonal />} />
           <Route path="propiedades" element={<MisPropiedades />} />
+          <Route path="reservas" element={<MisReservas />} />
         </Route>
         <Route path="/resultados" element={<Resultados />} />
         <Route path="/inmueble/:id" element={<DetalleInmueble />} />

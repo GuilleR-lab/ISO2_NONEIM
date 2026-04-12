@@ -825,11 +825,11 @@ a {
 }
 
 .badge-rechazada {
-    background: #f8d7da;
-    color: #721c24;
-    font-size: 12px;
-    padding: 3px 8px;
-    border-radius: 20px;
+    background-color: #f8d7da; /* Rojo claro */
+    color: #721c24;            /* Rojo oscuro */
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-weight: bold;
 }
 
 /* ===== Solicitudes de reserva ===== */

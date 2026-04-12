@@ -4,39 +4,42 @@ import { useNavigate, Outlet, useLocation, useOutletContext } from "react-router
 import { Menu, User, Home, X, LogOut, Sofa } from "lucide-react";
 
 // Componente de reservas (válido para inquilino y propietario)
-const MisReservas = ({ userId }) => {
+export const MisReservas = () => {
     const [reservas, setReservas] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [errorReservas, setErrorReservas] = useState("");
+    const { user } = useOutletContext();
 
     useEffect(() => {
-        fetch(`http://localhost:8090/api/reservas/inquilino/${userId}`)
-            .then(async res => {
-                const data = await res.json();
+        
+        if (user?.id) {
+            fetch(`http://localhost:8090/api/reservas/inquilino/${user.id}`)
+                .then(async res => {
+                    const data = await res.json();
 
-                if (!res.ok) {
-                    const backendMsg = data?.message || data?.error || `Error ${res.status}`;
-                    throw new Error(backendMsg);
-                }
-
-                return data;
-            })
-            .then(data => {
-                if (Array.isArray(data)) {
-                    setReservas(data);
-                    setErrorReservas("");
-                } else {
+                    if (!res.ok) {
+                        const backendMsg = data?.message || data?.error || `Error ${res.status}`;
+                        throw new Error(backendMsg);
+                    }
+                    return data;
+                })
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        setReservas(data);
+                        setErrorReservas("");
+                    } else {
+                        setReservas([]);
+                        setErrorReservas("La respuesta del servidor no tiene el formato esperado.");
+                    }
+                    setCargando(false);
+                })
+                .catch((error) => {
                     setReservas([]);
-                    setErrorReservas("La respuesta del servidor no tiene el formato esperado.");
-                }
-                setCargando(false);
-            })
-            .catch((error) => {
-                setReservas([]);
-                setErrorReservas(error.message || "No se pudieron cargar las reservas.");
-                setCargando(false);
-            });
-    }, [userId]);
+                    setErrorReservas(error.message || "No se pudieron cargar las reservas.");
+                    setCargando(false);
+                });
+        }
+    }, [user?.id]); 
 
     if (cargando) return <p>Cargando reservas...</p>;
 
@@ -49,46 +52,48 @@ const MisReservas = ({ userId }) => {
         </div>
     );
 
-    if (reservas.length === 0) return (
-        <div className="dash-card">
-            <div className="empty-state">
-                <h3>No tienes reservas todavía</h3>
-                <p>Busca alojamiento y haz tu primera reserva.</p>
-            </div>
-        </div>
-    );
-
     return (
-        <div className="grid-dashboard">
-            {reservas.map(reserva => (
-                <div key={reserva.idReserva} className="dash-card">
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <h3>Reserva #{reserva.idReserva}</h3>
-                        <span className={reserva.activa ? "badge-directa" : "badge-pendiente"}>
-                            {reserva.activa ? "✅ Confirmada" : "⏳ Pendiente"}
-                        </span>
-                    </div>
-                    {reserva.inmueble && (
-                        <div className="info-row">
-                            <span><strong>Inmueble:</strong></span> {reserva.inmueble.ciudad} — {reserva.inmueble.direccion}
+        <div className="seccion-reservas-wrapper">
+            {reservas.length > 0 ? (
+                <div className="grid-dashboard">
+                    {reservas.map(reserva => (
+                        <div key={reserva.idReserva} className="dash-card">
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <h3>Reserva #{reserva.idReserva}</h3>
+                                <span className={reserva.activa ? "badge-directa" : "badge-pendiente"}>
+                                    {reserva.activa ? "✅ Confirmada" : "⏳ Pendiente"}
+                                </span>
+                            </div>
+                            {reserva.inmueble && (
+                                <div className="info-row">
+                                    <span><strong>Inmueble:</strong></span> {reserva.inmueble.ciudad} — {reserva.inmueble.direccion}
+                                </div>
+                            )}
+                            <div className="info-row"><span><strong>Entrada:</strong></span> {reserva.fechaInicio}</div>
+                            <div className="info-row"><span><strong>Salida:</strong></span> {reserva.fechaFin}</div>
+                            <div className="info-row"><span><strong>Pagado:</strong></span> {reserva.pagado ? "Sí" : "No"}</div>
+                            {reserva.pago && (
+                                <div className="info-row">
+                                    <span><strong>Método de pago:</strong></span> {reserva.pago.metodoPago}
+                                </div>
+                            )}
                         </div>
-                    )}
-                    <div className="info-row"><span><strong>Entrada:</strong></span> {reserva.fechaInicio}</div>
-                    <div className="info-row"><span><strong>Salida:</strong></span> {reserva.fechaFin}</div>
-                    <div className="info-row"><span><strong>Pagado:</strong></span> {reserva.pagado ? "Sí" : "No"}</div>
-                    {reserva.pago && (
-                        <div className="info-row">
-                            <span><strong>Método de pago:</strong></span> {reserva.pago.metodoPago}
-                        </div>
-                    )}
+                    ))}
                 </div>
-            ))}
+            ) : (
+                <div className="dash-card">
+                    <div className="empty-state">
+                        <h3>No tienes reservas todavía</h3>
+                        <p>Busca alojamiento y haz tu primera reserva.</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
 const Perfil = () => {
-    const [section, setSection] = useState("area-personal");
+    
     const [user, setUser] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -97,6 +102,7 @@ const Perfil = () => {
 
     const isAreaPersonal = location.pathname.includes("area-personal");
     const isPropiedades = location.pathname.includes("propiedades");
+    const isReservas = location.pathname.includes("reservas");
 
     useEffect(() => {
         const userId = sessionStorage.getItem("userId");
@@ -161,37 +167,30 @@ const Perfil = () => {
                 </div>
 
                 <nav className="sidebar-nav">
+                    {/* BOTÓN ÁREA PERSONAL */}
                     <button
-                        className={isAreaPersonal || location.pathname === "/perfil" ? "active" : ""}
+                        className={isAreaPersonal ? "active" : ""}
                         onClick={() => { navigate("/perfil/area-personal"); setIsSidebarOpen(false); }}
                     >
                         <User size={18} /> Área Personal
                     </button>
 
-                    {user.rol === "INQUILINO" && (
-                        <button
-                            className={section === "reservas" ? "active" : ""}
-                            onClick={() => { setSection("reservas"); setIsSidebarOpen(false); }}
-                        >
-                            <Sofa size={18} /> Mis Reservas
-                        </button>
-                    )}
+                    {/* BOTÓN MIS RESERVAS (Cambiado a navigate) */}
+                    <button
+                        className={isReservas ? "active" : ""}
+                        onClick={() => { navigate("/perfil/reservas"); setIsSidebarOpen(false); }}
+                    >
+                        <Sofa size={18} /> Mis Reservas
+                    </button>
 
+                    {/* BOTÓN MIS PROPIEDADES */}
                     {user.rol === "PROPIETARIO" && (
-                        <>
-                            <button
-                                className={isPropiedades ? "active" : ""}
-                                onClick={() => { navigate("/perfil/propiedades"); setIsSidebarOpen(false); }}
-                            >
-                                <Sofa size={18} /> Mis Propiedades
-                            </button>
-                            <button
-                                className={section === "reservas" ? "active" : ""}
-                                onClick={() => { setSection("reservas"); setIsSidebarOpen(false); }}
-                            >
-                                <Sofa size={18} /> Mis Reservas
-                            </button>
-                        </>
+                        <button
+                            className={isPropiedades ? "active" : ""}
+                            onClick={() => { navigate("/perfil/propiedades"); setIsSidebarOpen(false); }}
+                        >
+                            <Sofa size={18} /> Mis Propiedades
+                        </button>
                     )}
 
                     <button onClick={() => { sessionStorage.clear(); navigate("/"); }}>
@@ -200,28 +199,21 @@ const Perfil = () => {
                 </nav>
             </aside>
 
-            {isSidebarOpen && (
-                <div className="dashboard-overlay" onClick={() => setIsSidebarOpen(false)} />
-            )}
-
             <main className="dashboard-main">
                 <header className="main-header">
                     <h1>
                         {isAreaPersonal && "Mi Área Personal"}
                         {isPropiedades && "Mis Propiedades"}
-                        {section === "reservas" && "Mis Reservas"}
+                        {isReservas && "Mis Reservas"} 
                         {location.pathname === "/perfil" && "Mi Perfil"}
                     </h1>
                 </header>
 
-                <h3>Bienvenido de nuevo, {user.name} 😎👍</h3>
+                <h3>Bienvenid@ de nuevo, {user.name} 😎👍</h3>
 
                 <section className="dashboard-content">
-                    {section === "reservas" ? (
-                        <MisReservas userId={user.id} />
-                    ) : (
-                        <Outlet context={{ user, toggleRol }} />
-                    )}
+                    {/* 3. Ahora TODO se renderiza a través del Outlet */}
+                    <Outlet context={{ user, toggleRol }} />
                 </section>
             </main>
         </div>
