@@ -156,6 +156,57 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioOpt.get());
     }
 
+    @PatchMapping("/{id}/password")
+    public ResponseEntity<?> cambiarPassword(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String passwordActual = body.get("passwordActual");
+        String passwordNueva = body.get("passwordNueva");
+
+        if (passwordActual == null || passwordActual.isBlank() ||
+            passwordNueva == null || passwordNueva.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Faltan campos obligatorios"));
+        }
+
+        Optional<Usuario> usuarioOpt = usuarioService.findById(id);
+        if (usuarioOpt.isEmpty()) {
+            return ResponseEntity.status(404).body(Map.of("message", "Usuario no encontrado"));
+        }
+
+        Usuario user = usuarioOpt.get();
+
+        if (!user.getPassword().equals(passwordActual)) {
+            return ResponseEntity.status(401).body(Map.of("message", "La contraseña actual no es correcta"));
+        }
+
+        user.setPassword(passwordNueva);
+        usuarioService.updateUsuario(user, id);
+        return ResponseEntity.ok(Map.of("message", "Contraseña actualizada correctamente"));
+    }
+
+    @PatchMapping("/{id}/direccion")
+    public ResponseEntity<?> editarDireccion(@PathVariable Long id, @RequestBody Direccion nuevaDireccion) {
+        if (nuevaDireccion == null ||
+            nuevaDireccion.getPais() == null || nuevaDireccion.getPais().isBlank() ||
+            nuevaDireccion.getCiudad() == null || nuevaDireccion.getCiudad().isBlank() ||
+            nuevaDireccion.getCodigoPostal() == null || nuevaDireccion.getCodigoPostal().isBlank() ||
+            nuevaDireccion.getCalle() == null || nuevaDireccion.getCalle().isBlank() ||
+            nuevaDireccion.getEdificio() == null || nuevaDireccion.getEdificio().isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Faltan campos obligatorios de la dirección"));
+        }
+
+        Optional<Usuario> usuarioOpt = usuarioService.findById(id);
+        if (usuarioOpt.isEmpty()) {
+            return ResponseEntity.status(404).body(Map.of("message", "Usuario no encontrado"));
+        }
+
+        Usuario user = usuarioOpt.get();
+        if (nuevaDireccion.getPiso() == null || nuevaDireccion.getPiso().isBlank()) {
+            nuevaDireccion.setPiso(null);
+        }
+        user.setAddress(nuevaDireccion);
+        usuarioService.updateUsuario(user, id);
+        return ResponseEntity.ok(Map.of("message", "Dirección actualizada correctamente"));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUsuario(@PathVariable Long id) {
         usuarioService.deleteUsuario(id);
