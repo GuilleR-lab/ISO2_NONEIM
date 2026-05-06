@@ -29,19 +29,19 @@ class DisponibilidadTest {
 
     @Test
     void testConstructorYGetters() {
-        assertEquals(LocalDate.of(2025, 6, 1), disponibilidad.getFechaInicio());
-        assertEquals(LocalDate.of(2025, 6, 30), disponibilidad.getFechaFin());
-        assertEquals(75.0, disponibilidad.getPrecio());
-        assertTrue(disponibilidad.isDirecta());
-        assertEquals(inmueble, disponibilidad.getInmueble());
+        assertEquals(LocalDate.of(2025, 6, 1), disponibilidad.getFechaInicio(), "La fecha de inicio debe ser 2025-06-01");
+        assertEquals(LocalDate.of(2025, 6, 30), disponibilidad.getFechaFin(), "La fecha de fin debe ser 2025-06-30");
+        assertEquals(75.0, disponibilidad.getPrecio(), "El precio debe ser 75.0");
+        assertTrue(disponibilidad.isDirecta(), "La disponibilidad debe ser directa");
+        assertEquals(inmueble, disponibilidad.getInmueble(), "El inmueble debe coincidir");
     }
 
     @Test
     void testConstructorVacio() {
         Disponibilidad d = new Disponibilidad();
-        assertNull(d.getFechaInicio());
-        assertNull(d.getFechaFin());
-        assertFalse(d.isDirecta());
+        assertNull(d.getFechaInicio(), "La fecha de inicio debe ser nula en constructor vacío");
+        assertNull(d.getFechaFin(), "La fecha de fin debe ser nula en constructor vacío");
+        assertFalse(d.isDirecta(), "La disponibilidad no debe ser directa por defecto");
     }
 
     @Test
@@ -51,22 +51,22 @@ class DisponibilidadTest {
         disponibilidad.setPrecio(95.0);
         disponibilidad.setDirecta(false);
 
-        assertEquals(LocalDate.of(2025, 7, 1), disponibilidad.getFechaInicio());
-        assertEquals(LocalDate.of(2025, 7, 31), disponibilidad.getFechaFin());
-        assertEquals(95.0, disponibilidad.getPrecio());
-        assertFalse(disponibilidad.isDirecta());
+        assertEquals(LocalDate.of(2025, 7, 1), disponibilidad.getFechaInicio(), "La fecha de inicio debe haberse actualizado");
+        assertEquals(LocalDate.of(2025, 7, 31), disponibilidad.getFechaFin(), "La fecha de fin debe haberse actualizado");
+        assertEquals(95.0, disponibilidad.getPrecio(), "El precio debe haberse actualizado a 95.0");
+        assertFalse(disponibilidad.isDirecta(), "La disponibilidad debe haber cambiado a no directa");
     }
 
     @Test
     void testSetId() {
         disponibilidad.setIdDisponibilidad(10L);
-        assertEquals(10L, disponibilidad.getIdDisponibilidad());
+        assertEquals(10L, disponibilidad.getIdDisponibilidad(), "El id de disponibilidad debe ser 10");
     }
 
     @Test
     void testSetInmueble() {
         Disponibilidad d = new Disponibilidad();
         d.setInmueble(inmueble);
-        assertEquals(inmueble, d.getInmueble());
+        assertEquals(inmueble, d.getInmueble(), "El inmueble asignado debe coincidir");
     }
 }

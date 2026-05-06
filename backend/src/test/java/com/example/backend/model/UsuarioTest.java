@@ -18,13 +18,13 @@ class UsuarioTest {
 
     @Test
     void testConstructorYGetters() {
-        assertEquals("juanito", usuario.getUsername());
-        assertEquals("Juan", usuario.getName());
-        assertEquals("García", usuario.getSurname());
-        assertEquals("juan@example.com", usuario.getEmail());
-        assertEquals("pass123", usuario.getPassword());
-        assertEquals(Usuario.Rol.INQUILINO, usuario.getRol());
-        assertNotNull(usuario.getAddress());
+        assertEquals("juanito", usuario.getUsername(), "El username debe ser juanito");
+        assertEquals("Juan", usuario.getName(), "El nombre debe ser Juan");
+        assertEquals("García", usuario.getSurname(), "El apellido debe ser García");
+        assertEquals("juan@example.com", usuario.getEmail(), "El email debe ser juan@example.com");
+        assertEquals("pass123", usuario.getPassword(), "La contraseña debe ser pass123");
+        assertEquals(Usuario.Rol.INQUILINO, usuario.getRol(), "El rol debe ser INQUILINO");
+        assertNotNull(usuario.getAddress(), "La dirección no debe ser nula");
     }
 
     @Test
@@ -36,39 +36,38 @@ class UsuarioTest {
         usuario.setPassword("newpass");
         usuario.setRol(Usuario.Rol.PROPIETARIO);
 
-        assertEquals("nuevo_user", usuario.getUsername());
-        assertEquals("Pedro", usuario.getName());
-        assertEquals("López", usuario.getSurname());
-        assertEquals("pedro@example.com", usuario.getEmail());
-        assertEquals("newpass", usuario.getPassword());
-        assertEquals(Usuario.Rol.PROPIETARIO, usuario.getRol());
+        assertEquals("nuevo_user", usuario.getUsername(), "El username debe haberse actualizado");
+        assertEquals("Pedro", usuario.getName(), "El nombre debe haberse actualizado");
+        assertEquals("López", usuario.getSurname(), "El apellido debe haberse actualizado");
+        assertEquals("pedro@example.com", usuario.getEmail(), "El email debe haberse actualizado");
+        assertEquals("newpass", usuario.getPassword(), "La contraseña debe haberse actualizado");
+        assertEquals(Usuario.Rol.PROPIETARIO, usuario.getRol(), "El rol debe haberse actualizado a PROPIETARIO");
     }
 
     @Test
-    void testRolPorDefecto() {
+    void testConstructorVacio() {
         Usuario u = new Usuario();
-        // El rol por defecto es INQUILINO (según el modelo)
-        assertNull(u.getUsername());
-        assertNull(u.getEmail());
+        assertNull(u.getUsername(), "El username debe ser nulo en constructor vacío");
+        assertNull(u.getEmail(), "El email debe ser nulo en constructor vacío");
     }
 
     @Test
     void testSetAddress() {
         Direccion nuevaDireccion = new Direccion("Francia", "París", "75001", "Champs-Élysées", "10", "3B");
         usuario.setAddress(nuevaDireccion);
-        assertEquals("Francia", usuario.getAddress().getPais());
+        assertEquals("Francia", usuario.getAddress().getPais(), "El país de la nueva dirección debe ser Francia");
     }
 
     @Test
     void testRolValues() {
-        assertEquals(2, Usuario.Rol.values().length);
-        assertEquals(Usuario.Rol.INQUILINO, Usuario.Rol.valueOf("INQUILINO"));
-        assertEquals(Usuario.Rol.PROPIETARIO, Usuario.Rol.valueOf("PROPIETARIO"));
+        assertEquals(2, Usuario.Rol.values().length, "Debe haber exactamente 2 roles");
+        assertEquals(Usuario.Rol.INQUILINO, Usuario.Rol.valueOf("INQUILINO"), "Debe existir el rol INQUILINO");
+        assertEquals(Usuario.Rol.PROPIETARIO, Usuario.Rol.valueOf("PROPIETARIO"), "Debe existir el rol PROPIETARIO");
     }
 
     @Test
     void testSetId() {
         usuario.setId(42L);
-        assertEquals(42L, usuario.getId());
+        assertEquals(42L, usuario.getId(), "El id debe ser 42");
     }
 }

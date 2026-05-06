@@ -24,9 +24,8 @@ class SolicitudReservaTest {
     @Test
     void testConstructorVacioYFechaSolicitudPorDefecto() {
         SolicitudReserva s = new SolicitudReserva();
-        // La fecha de solicitud se inicializa a LocalDate.now() en el modelo
-        assertNotNull(s.getFechaSolicitud());
-        assertNull(s.getEstado());
+        assertNotNull(s.getFechaSolicitud(), "La fecha de solicitud debe inicializarse automáticamente");
+        assertNull(s.getEstado(), "El estado debe ser nulo en constructor vacío");
     }
 
     @Test
@@ -39,25 +38,25 @@ class SolicitudReservaTest {
         s.setUsuario(usuario);
         s.setDisponibilidad(disponibilidad);
 
-        assertEquals(1L, s.getIdSolicitud());
-        assertEquals("PENDIENTE", s.getEstado());
-        assertEquals(LocalDate.of(2025, 9, 5), s.getFechaInicio());
-        assertEquals(LocalDate.of(2025, 9, 10), s.getFechaFin());
-        assertEquals(usuario, s.getUsuario());
-        assertEquals(disponibilidad, s.getDisponibilidad());
+        assertEquals(1L, s.getIdSolicitud(), "El id de la solicitud debe ser 1");
+        assertEquals("PENDIENTE", s.getEstado(), "El estado debe ser PENDIENTE");
+        assertEquals(LocalDate.of(2025, 9, 5), s.getFechaInicio(), "La fecha de inicio debe ser 2025-09-05");
+        assertEquals(LocalDate.of(2025, 9, 10), s.getFechaFin(), "La fecha de fin debe ser 2025-09-10");
+        assertEquals(usuario, s.getUsuario(), "El usuario debe coincidir");
+        assertEquals(disponibilidad, s.getDisponibilidad(), "La disponibilidad debe coincidir");
     }
 
     @Test
     void testCambioDeEstado() {
         SolicitudReserva s = new SolicitudReserva();
         s.setEstado("PENDIENTE");
-        assertEquals("PENDIENTE", s.getEstado());
+        assertEquals("PENDIENTE", s.getEstado(), "El estado debe ser PENDIENTE");
 
         s.setEstado("ACEPTADA");
-        assertEquals("ACEPTADA", s.getEstado());
+        assertEquals("ACEPTADA", s.getEstado(), "El estado debe haberse actualizado a ACEPTADA");
 
         s.setEstado("RECHAZADA");
-        assertEquals("RECHAZADA", s.getEstado());
+        assertEquals("RECHAZADA", s.getEstado(), "El estado debe haberse actualizado a RECHAZADA");
     }
 
     @Test
@@ -65,6 +64,6 @@ class SolicitudReservaTest {
         SolicitudReserva s = new SolicitudReserva();
         Reserva reserva = new Reserva();
         s.setReserva(reserva);
-        assertEquals(reserva, s.getReserva());
+        assertEquals(reserva, s.getReserva(), "La reserva asignada debe coincidir");
     }
 }

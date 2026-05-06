@@ -19,19 +19,19 @@ class InmuebleTest {
 
     @Test
     void testConstructorYGetters() {
-        assertEquals("Calle Falsa 123", inmueble.getDireccion());
-        assertEquals("Madrid", inmueble.getCiudad());
-        assertEquals(85.0, inmueble.getPrecioNoche());
-        assertEquals(Inmueble.Tipo.APARTAMENTO, inmueble.getTipo());
-        assertEquals("Piso céntrico", inmueble.getDescripcion());
-        assertEquals(propietario, inmueble.getPropietario());
+        assertEquals("Calle Falsa 123", inmueble.getDireccion(), "La dirección debe ser Calle Falsa 123");
+        assertEquals("Madrid", inmueble.getCiudad(), "La ciudad debe ser Madrid");
+        assertEquals(85.0, inmueble.getPrecioNoche(), "El precio por noche debe ser 85.0");
+        assertEquals(Inmueble.Tipo.APARTAMENTO, inmueble.getTipo(), "El tipo debe ser APARTAMENTO");
+        assertEquals("Piso céntrico", inmueble.getDescripcion(), "La descripción debe ser Piso céntrico");
+        assertEquals(propietario, inmueble.getPropietario(), "El propietario debe coincidir");
     }
 
     @Test
     void testConstructorVacio() {
         Inmueble i = new Inmueble();
-        assertNull(i.getDireccion());
-        assertNull(i.getCiudad());
+        assertNull(i.getDireccion(), "La dirección debe ser nula en constructor vacío");
+        assertNull(i.getCiudad(), "La ciudad debe ser nula en constructor vacío");
     }
 
     @Test
@@ -42,20 +42,20 @@ class InmuebleTest {
         inmueble.setTipo(Inmueble.Tipo.HABITACION);
         inmueble.setDescripcion("Habitación luminosa");
 
-        assertEquals("Av. España 10", inmueble.getDireccion());
-        assertEquals("Zaragoza", inmueble.getCiudad());
-        assertEquals(120.0, inmueble.getPrecioNoche());
-        assertEquals(Inmueble.Tipo.HABITACION, inmueble.getTipo());
-        assertEquals("Habitación luminosa", inmueble.getDescripcion());
+        assertEquals("Av. España 10", inmueble.getDireccion(), "La dirección debe haberse actualizado");
+        assertEquals("Zaragoza", inmueble.getCiudad(), "La ciudad debe haberse actualizado a Zaragoza");
+        assertEquals(120.0, inmueble.getPrecioNoche(), "El precio debe haberse actualizado a 120.0");
+        assertEquals(Inmueble.Tipo.HABITACION, inmueble.getTipo(), "El tipo debe haberse actualizado a HABITACION");
+        assertEquals("Habitación luminosa", inmueble.getDescripcion(), "La descripción debe haberse actualizado");
     }
 
     @Test
     void testTipoValues() {
-        assertEquals(4, Inmueble.Tipo.values().length);
-        assertNotNull(Inmueble.Tipo.valueOf("VIVIENDA_COMPLETA"));
-        assertNotNull(Inmueble.Tipo.valueOf("HABITACION"));
-        assertNotNull(Inmueble.Tipo.valueOf("ESTUDIO"));
-        assertNotNull(Inmueble.Tipo.valueOf("APARTAMENTO"));
+        assertEquals(4, Inmueble.Tipo.values().length, "Debe haber exactamente 4 tipos de inmueble");
+        assertNotNull(Inmueble.Tipo.valueOf("VIVIENDA_COMPLETA"), "Debe existir el tipo VIVIENDA_COMPLETA");
+        assertNotNull(Inmueble.Tipo.valueOf("HABITACION"), "Debe existir el tipo HABITACION");
+        assertNotNull(Inmueble.Tipo.valueOf("ESTUDIO"), "Debe existir el tipo ESTUDIO");
+        assertNotNull(Inmueble.Tipo.valueOf("APARTAMENTO"), "Debe existir el tipo APARTAMENTO");
     }
 
     @Test
@@ -63,12 +63,12 @@ class InmuebleTest {
         Direccion dir2 = new Direccion("España", "Málaga", "29001", "Calle Larios", "3", "1A");
         Usuario otroProp = new Usuario("prop2", "Luis", "Ruiz", "luis@example.com", "1234", dir2, Usuario.Rol.PROPIETARIO);
         inmueble.setPropietario(otroProp);
-        assertEquals("Luis", inmueble.getPropietario().getName());
+        assertEquals("Luis", inmueble.getPropietario().getName(), "El nombre del nuevo propietario debe ser Luis");
     }
 
     @Test
     void testSetId() {
         inmueble.setIdInmueble(99L);
-        assertEquals(99L, inmueble.getIdInmueble());
+        assertEquals(99L, inmueble.getIdInmueble(), "El id del inmueble debe ser 99");
     }
 }

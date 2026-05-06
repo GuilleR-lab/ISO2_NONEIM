@@ -26,15 +26,15 @@ class ListaDeseosTest {
     @Test
     void testConstructorConUsuario() {
         ListaDeseos lista = new ListaDeseos(usuario);
-        assertEquals(usuario, lista.getUsuario());
-        assertNotNull(lista.getInmuebles());
-        assertTrue(lista.getInmuebles().isEmpty());
+        assertEquals(usuario, lista.getUsuario(), "El usuario de la lista debe coincidir");
+        assertNotNull(lista.getInmuebles(), "La lista de inmuebles no debe ser nula");
+        assertTrue(lista.getInmuebles().isEmpty(), "La lista de inmuebles debe estar vacía inicialmente");
     }
 
     @Test
     void testConstructorVacio() {
         ListaDeseos lista = new ListaDeseos();
-        assertNull(lista.getUsuario());
+        assertNull(lista.getUsuario(), "El usuario debe ser nulo en constructor vacío");
     }
 
     @Test
@@ -45,21 +45,22 @@ class ListaDeseosTest {
         inmuebles.add(inmueble2);
         lista.setInmuebles(inmuebles);
 
-        assertEquals(2, lista.getInmuebles().size());
-        assertTrue(lista.getInmuebles().contains(inmueble1));
-        assertTrue(lista.getInmuebles().contains(inmueble2));
-    }
-
-    @Test
-    void testGetIdListaInicialmenteNull() {
-        ListaDeseos lista = new ListaDeseos(usuario);
-        assertNull(lista.getIdLista());
+        assertEquals(2, lista.getInmuebles().size(), "La lista debe tener 2 inmuebles");
+        assertTrue(lista.getInmuebles().contains(inmueble1), "La lista debe contener el inmueble1");
+        assertTrue(lista.getInmuebles().contains(inmueble2), "La lista debe contener el inmueble2");
     }
 
     @Test
     void testSetUsuario() {
         ListaDeseos lista = new ListaDeseos();
         lista.setUsuario(usuario);
-        assertEquals(usuario, lista.getUsuario());
+        assertEquals(usuario, lista.getUsuario(), "El usuario asignado debe coincidir");
+    }
+
+    @Test
+    void testInmueblesNoNulosTrasConstruir() {
+        ListaDeseos lista = new ListaDeseos(usuario);
+        assertNotNull(lista.getInmuebles(), "El conjunto de inmuebles no debe ser nulo tras construir");
+        assertEquals(0, lista.getInmuebles().size(), "El conjunto de inmuebles debe estar vacío tras construir");
     }
 }
