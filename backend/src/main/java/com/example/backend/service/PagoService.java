@@ -1,12 +1,13 @@
 
 package com.example.backend.service;
 
-import com.example.backend.model.Pago;
-import com.example.backend.repository.PagoRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+import com.example.backend.model.Pago;
+import com.example.backend.repository.PagoRepository;
 
 @Service
 public class PagoService {
@@ -37,6 +38,7 @@ public class PagoService {
         return pagoRepository.findById(referencia)
                 .map(pago -> {
                     pago.setMetodoPago(nuevoPago.getMetodoPago());
+                    pago.setImporte(nuevoPago.getImporte()); 
                     pago.setReserva(nuevoPago.getReserva());
                     return pagoRepository.save(pago);
                 })
@@ -45,6 +47,9 @@ public class PagoService {
 
     // Eliminar un pago
     public void eliminarPago(Long referencia) {
+        if (!pagoRepository.existsById(referencia)) {
+            throw new RuntimeException("No se puede eliminar: Pago no encontrado");
+        }
         pagoRepository.deleteById(referencia);
     }
 }
