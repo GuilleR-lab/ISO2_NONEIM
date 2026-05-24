@@ -50,6 +50,9 @@ public class SolicitudReservaService {
 
     // Eliminar solicitud
     public void eliminarSolicitud(Long idSolicitud) {
+        if(!solicitudReservaRepository.existsById(idSolicitud)){
+            throw new RuntimeException("Solicitud no encontrada");
+        }
         solicitudReservaRepository.deleteById(idSolicitud);
     }
 

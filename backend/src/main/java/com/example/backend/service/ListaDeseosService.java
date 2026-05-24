@@ -1,12 +1,13 @@
 package com.example.backend.service;
 
-import com.example.backend.model.ListaDeseos;
-import com.example.backend.model.Inmueble;
-import com.example.backend.repository.ListaDeseosRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+import com.example.backend.model.Inmueble;
+import com.example.backend.model.ListaDeseos;
+import com.example.backend.repository.ListaDeseosRepository;
 
 @Service
 public class ListaDeseosService {
@@ -50,6 +51,9 @@ public class ListaDeseosService {
 
     // Eliminar lista
     public void eliminarLista(Long idLista) {
+        if (!listaDeseosRepository.existsById(idLista)) {
+            throw new RuntimeException("No se puede eliminar: Lista no encontrada");
+        }
         listaDeseosRepository.deleteById(idLista);
     }
 }
