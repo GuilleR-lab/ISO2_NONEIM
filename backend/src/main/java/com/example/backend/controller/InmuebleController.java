@@ -165,14 +165,14 @@ public class InmuebleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Inmueble> obtener(@PathVariable Long id) {
+    public ResponseEntity<Inmueble> obtenerInmueble(@PathVariable Long id) {
         return inmuebleService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Inmueble> actualizar(@PathVariable Long id, @RequestBody Inmueble nuevoInmueble) {
+    public ResponseEntity<Inmueble> actualizarInmueble(@PathVariable Long id, @RequestBody Inmueble nuevoInmueble) {
         try {
             return ResponseEntity.ok(inmuebleService.actualizarInmueble(id, nuevoInmueble));
         } catch (RuntimeException e) {
@@ -181,7 +181,7 @@ public class InmuebleController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarInmueble(@PathVariable Long id) {
         try {
             inmuebleService.eliminarInmueble(id);
             return ResponseEntity.noContent().build();
