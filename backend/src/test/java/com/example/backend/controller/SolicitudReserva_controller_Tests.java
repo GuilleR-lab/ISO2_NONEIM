@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.backend.model.SolicitudReserva;
 import com.example.backend.service.SolicitudReservaService;
 
+@WebMvcTest(SolicitudReservaController.class)
 @AutoConfigureMockMvc(addFilters = false)
 public class SolicitudReserva_controller_Tests {
     

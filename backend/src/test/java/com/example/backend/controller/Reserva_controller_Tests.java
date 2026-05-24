@@ -49,6 +49,9 @@ public class Reserva_controller_Tests {
     @MockBean
     private InmuebleRepository inmuebleRepository;
 
+    @MockBean
+    private PagoRepository pagoRepository;
+
 
     @MockBean
     private SolicitudReservaRepository solicitudReservaRepository;

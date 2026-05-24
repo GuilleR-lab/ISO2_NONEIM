@@ -42,6 +42,9 @@ public class Inmueble_controller_Tests {
     @MockBean
     private UsuarioService usuarioService;
 
+    @MockBean
+    private DisponibilidadService disponibilidadService;
+
     @Autowired
     private MockMvc mockMvc;
 
