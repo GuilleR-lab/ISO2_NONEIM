@@ -19,10 +19,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.backend.model.PoliticaCancelacion;
 import com.example.backend.repository.PoliticaCancelacionRepository;
-import com.example.backend.service.PoliticaCancelacionService;
 
 @ExtendWith(MockitoExtension.class)
-public class PoliticaCancelacion_service_Tests {
+public class PoliticaCancelacionServiceTests {
     
     @Mock
     private PoliticaCancelacionRepository politicaCancelacionRepository;
@@ -31,7 +30,7 @@ public class PoliticaCancelacion_service_Tests {
     private PoliticaCancelacionService politicaCancelacionService;
 
     @Test
-    void crearPolitica_GuardadoExitoso_Test(){
+    void testCrearPolitica_GuardadoExitoso(){
         //Arrange
         PoliticaCancelacion politica = new PoliticaCancelacion();
 
@@ -39,12 +38,12 @@ public class PoliticaCancelacion_service_Tests {
         //Act
         PoliticaCancelacion politicaGuardada = politicaCancelacionService.crearPolitica(politica);
         //Assert
-        assertNotNull(politicaGuardada);
-        assertEquals(politica, politicaGuardada);
+        assertNotNull(politicaGuardada, "verificacion");
+        assertEquals(politica, politicaGuardada, "verificacion");
     }
 
     @Test
-    void obtenerTodas_ExistenPoliticas_Test(){
+    void testObtenerTodas_ExistenPoliticas(){
         //Arrange
         PoliticaCancelacion politica1 = new PoliticaCancelacion();
         PoliticaCancelacion politica2 = new PoliticaCancelacion();
@@ -55,28 +54,28 @@ public class PoliticaCancelacion_service_Tests {
         //Act 
         List <PoliticaCancelacion> politicasObtenidas = politicaCancelacionService.obtenerTodas();
         //Assert
-        assertNotNull(politicasObtenidas);
-        assertEquals(politicas.size(), politicasObtenidas.size());
-        assertEquals(politicas.get(0), politicasObtenidas.get(0));
+        assertNotNull(politicasObtenidas, "verificacion");
+        assertEquals(politicas.size(), politicasObtenidas.size(), "verificacion");
+        assertEquals(politicas.get(0), politicasObtenidas.get(0), "verificacion");
 
         verify(politicaCancelacionRepository).findAll();
     }
 
     @Test
-    void obtenerTodas_NoExistenPoliticas_Test(){
+    void testObtenerTodas_NoExistenPoliticas(){
         //Arrange
         when(politicaCancelacionRepository.findAll()).thenReturn(List.of());
         //Act
         List <PoliticaCancelacion> politicasObtenidas = politicaCancelacionService.obtenerTodas();
         //Assert
-        assertNotNull(politicasObtenidas);
-        assertTrue(politicasObtenidas.isEmpty());
+        assertNotNull(politicasObtenidas, "verificacion");
+        assertTrue(politicasObtenidas.isEmpty(), "verificacion");
 
         verify(politicaCancelacionRepository).findAll();
     }
 
     @Test
-    void obtenerPorId_ExistePolitica_Test(){
+    void testObtenerPorId_ExistePolitica(){
         //Arrange
         Long id = 1L;
         PoliticaCancelacion politica = new PoliticaCancelacion("Descripcion", 10.0);
@@ -87,14 +86,14 @@ public class PoliticaCancelacion_service_Tests {
         Optional <PoliticaCancelacion> politicaObtenida = politicaCancelacionService.obtenerPorId(id);
 
         //Assert
-        assertNotNull(politicaObtenida);
-        assertEquals(politica.getDescripcion(), politicaObtenida.get().getDescripcion());
+        assertNotNull(politicaObtenida, "verificacion");
+        assertEquals(politica.getDescripcion(), politicaObtenida.get().getDescripcion(), "verificacion");
 
         verify(politicaCancelacionRepository).findById(id);
     }
 
     @Test
-    void obtenerPorId_NoExistePolitica_Test(){
+    void testObtenerPorId_NoExistePolitica(){
         //Arrange
         Long id = 1L;
 
@@ -103,14 +102,14 @@ public class PoliticaCancelacion_service_Tests {
         Optional <PoliticaCancelacion> politicaObtenida = politicaCancelacionService.obtenerPorId(id);
 
         //Assert
-        assertNotNull(politicaObtenida);
-        assertTrue(politicaObtenida.isEmpty());
+        assertNotNull(politicaObtenida, "verificacion");
+        assertTrue(politicaObtenida.isEmpty(), "verificacion");
 
         verify(politicaCancelacionRepository).findById(id);
     }
 
     @Test
-    void actualizarPolitica_ExistePolitica_Test(){
+    void testActualizarPolitica_ExistePolitica(){
         //Arrange
         Long id = 1L;
         String descripcion = "Descripcion";
@@ -124,9 +123,9 @@ public class PoliticaCancelacion_service_Tests {
         PoliticaCancelacion politicaActualizada = politicaCancelacionService.actualizarPolitica(id, new PoliticaCancelacion(descripcion, nuevaPenalizacion));
 
         //Assert
-        assertNotNull(politicaActualizada);
-        assertEquals(nuevaPenalizacion, politicaActualizada.getPenalizacion());
-        assertEquals(politicaOriginal.getDescripcion(), politicaActualizada.getDescripcion());
+        assertNotNull(politicaActualizada, "verificacion");
+        assertEquals(nuevaPenalizacion, politicaActualizada.getPenalizacion(), "verificacion");
+        assertEquals(politicaOriginal.getDescripcion(), politicaActualizada.getDescripcion(), "verificacion");
 
         verify(politicaCancelacionRepository).findById(id);
         verify(politicaCancelacionRepository).save(any(PoliticaCancelacion.class));
@@ -134,7 +133,7 @@ public class PoliticaCancelacion_service_Tests {
     }
 
     @Test
-    void actualizarPolitica_NoExistePolitica_Test(){
+    void testActualizarPolitica_NoExistePolitica(){
         //Arrange
         Long id = 1L;
 
@@ -146,13 +145,13 @@ public class PoliticaCancelacion_service_Tests {
             politicaCancelacionService.actualizarPolitica(id, nuevaPolitica);
         });
 
-        assertEquals("Política no encontrada", exception.getMessage());
+        assertEquals("Política no encontrada", exception.getMessage(), "verificacion");
 
         verify(politicaCancelacionRepository, never()).save(any(PoliticaCancelacion.class));
     }
 
     @Test
-    void eliminarPolitica_ExistePolitica_Test(){
+    void testEliminarPolitica_ExistePolitica(){
         //Arrange
         Long id = 1L;
         
@@ -165,7 +164,7 @@ public class PoliticaCancelacion_service_Tests {
     }
 
     @Test
-    void eliminarPolitica_noExistePolitica_Test(){
+    void testEliminarPolitica_noExistePolitica(){
         //Arrange
         Long id = 1L;
 
@@ -175,7 +174,7 @@ public class PoliticaCancelacion_service_Tests {
             politicaCancelacionService.eliminarPolitica(id);
         });
 
-        assertEquals("Política no encontrada", exception.getMessage());
+        assertEquals("Política no encontrada", exception.getMessage(), "verificacion");
 
         verify(politicaCancelacionRepository).existsById(id);
         verify(politicaCancelacionRepository, never()).deleteById(id);

@@ -21,10 +21,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.backend.model.Pago;
 import com.example.backend.model.Reserva;
 import com.example.backend.repository.PagoRepository;
-import com.example.backend.service.PagoService;
 
 @ExtendWith(MockitoExtension.class)
-public class Pago_Service_Tests {
+public class PagoServiceTests {
     
     @Mock
     private PagoRepository pagoRepository;
@@ -33,7 +32,7 @@ public class Pago_Service_Tests {
     private PagoService pagoService;
 
     @Test
-    void crearPago_GuardadoExitoso_Test(){
+    void testCrearPago_GuardadoExitoso(){
         //Arrange
         Pago pago = new Pago();
         pago.setReferencia(1L);
@@ -43,14 +42,14 @@ public class Pago_Service_Tests {
         Pago pagoGuardado = pagoService.crearPago(pago);
 
         //Assert
-        assertNotNull(pagoGuardado);
-        assertEquals(pago, pagoGuardado);
+        assertNotNull(pagoGuardado, "verificacion");
+        assertEquals(pago, pagoGuardado, "verificacion");
 
         verify(pagoRepository).save(pago);
     }
 
     @Test
-    void obtenerTodos_ExistenPagos_Test(){
+    void testObtenerTodos_ExistenPagos(){
         //Arrange
         Pago pago1 = new Pago();
         Pago pago2 = new Pago();
@@ -63,16 +62,16 @@ public class Pago_Service_Tests {
         List<Pago> pagosObtenidos = pagoService.obtenerTodos();
 
         //Assert
-        assertNotNull(pagosObtenidos);
-        assertEquals(pagos.size(), pagosObtenidos.size());
-        assertEquals(pago1.getReferencia(), pagosObtenidos.get(0).getReferencia());
+        assertNotNull(pagosObtenidos, "verificacion");
+        assertEquals(pagos.size(), pagosObtenidos.size(), "verificacion");
+        assertEquals(pago1.getReferencia(), pagosObtenidos.get(0).getReferencia(), "verificacion");
 
         verify(pagoRepository).findAll();
 
     }
 
     @Test
-    void obtenerPorReferencia_PagoExiste_Test(){
+    void testObtenerPorReferencia_PagoExiste(){
         //Arrange
         Pago pago = new Pago();
         Long ref_pago = 1L;
@@ -83,15 +82,15 @@ public class Pago_Service_Tests {
         Optional<Pago> pagoObtenido = pagoService.obtenerPorReferencia(ref_pago);
 
         //Assert
-        assertNotNull(pagoObtenido);
-        assertEquals(ref_pago, pagoObtenido.get().getReferencia());
+        assertNotNull(pagoObtenido, "verificacion");
+        assertEquals(ref_pago, pagoObtenido.get().getReferencia(), "verificacion");
 
         verify(pagoRepository).findById(ref_pago);
 
     }
 
     @Test
-    void obtenerPorReferencia_NoExistePago_Test(){
+    void testObtenerPorReferencia_NoExistePago(){
         //Arrange
         Long ref_pago = 1L;
 
@@ -100,15 +99,15 @@ public class Pago_Service_Tests {
         Optional<Pago> pagoObtenido = pagoService.obtenerPorReferencia(ref_pago);
 
         //Assert
-        assertNotNull(pagoObtenido);
-        assertTrue(pagoObtenido.isEmpty());
+        assertNotNull(pagoObtenido, "verificacion");
+        assertTrue(pagoObtenido.isEmpty(), "verificacion");
 
         verify(pagoRepository).findById(ref_pago);
 
     }
 
     @Test
-    void actualizarPago_PagoExiste_Test(){
+    void testActualizarPago_PagoExiste(){
         //Arrange
         Long ref_pago = 1L;
         Reserva reserva = new Reserva();
@@ -123,9 +122,9 @@ public class Pago_Service_Tests {
         //Act
         Pago resultado = pagoService.actualizarPago(ref_pago, pagoNuevo);
         //Assert
-        assertNotNull(resultado);
-        assertEquals(pagoNuevo.getImporte(), resultado.getImporte());
-        assertEquals(pagoOriginal.getReserva(), resultado.getReserva());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(pagoNuevo.getImporte(), resultado.getImporte(), "verificacion");
+        assertEquals(pagoOriginal.getReserva(), resultado.getReserva(), "verificacion");
 
         verify(pagoRepository).findById(ref_pago);
         verify(pagoRepository).save(any(Pago.class));
@@ -133,7 +132,7 @@ public class Pago_Service_Tests {
     }
 
     @Test
-    void actualizarPago_NoExistePago_Test(){
+    void testActualizarPago_NoExistePago(){
         //Arrange
         Long ref_pago = 1L;
         Pago pagoNuevo = new Pago("TARJETA_CREDITO", 200.0, new Reserva());
@@ -146,12 +145,12 @@ public class Pago_Service_Tests {
             pagoService.actualizarPago(ref_pago, pagoNuevo);
         });
 
-        assertEquals("Pago no encontrado", exception.getMessage());
+        assertEquals("Pago no encontrado", exception.getMessage(), "verificacion");
         verify(pagoRepository, never()).save(any(Pago.class));
     }
 
     @Test
-    void eliminarPago_ExistePago_Test(){
+    void testEliminarPago_ExistePago(){
         //Arrange
         Long ref_pago = 1L;
 
@@ -167,7 +166,7 @@ public class Pago_Service_Tests {
     }
 
     @Test
-    void eliminarPago_NoExistePago_Test(){
+    void testEliminarPago_NoExistePago(){
         //Arrange
         Long ref_pago = 1L;
 
@@ -177,7 +176,7 @@ public class Pago_Service_Tests {
             pagoService.eliminarPago(ref_pago);
         });
 
-        assertEquals("No se puede eliminar: Pago no encontrado", exception.getMessage());
+        assertEquals("No se puede eliminar: Pago no encontrado", exception.getMessage(), "verificacion");
         verify(pagoRepository).existsById(ref_pago);
         verify(pagoRepository, never()).deleteById(ref_pago);
     }

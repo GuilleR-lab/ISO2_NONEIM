@@ -7,19 +7,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.example.backend.model.Usuario;
-import com.example.backend.service.SessionService;
 
 public class SessionServiceTest {
     
     private SessionService sessionService;
 
     @BeforeEach
-    void setUp() {
+    void testSetUp(){
         sessionService = new SessionService();
     }
 
     @Test
-    void storeSession_GuardadoExitoso_Test() {
+    void testStoreSession_GuardadoExitoso(){
         //Arrange
         String token = "1234";
         Usuario usuario = new Usuario();
@@ -28,12 +27,12 @@ public class SessionServiceTest {
         sessionService.storeSession(token, usuario);
         Usuario usuarioObtenido = sessionService.getUsuarioFromToken(token);
         //Assert
-        assertNotNull(usuarioObtenido);
-        assertEquals(usuario.getId(), usuarioObtenido.getId());
+        assertNotNull(usuarioObtenido, "verificacion");
+        assertEquals(usuario.getId(), usuarioObtenido.getId(), "verificacion");
     }
 
     @Test
-    void getUsuarioFromToken_ExisteToken_Test(){
+    void testGetUsuarioFromToken_ExisteToken(){
         //Arrange
         String token = "1234";
         Usuario usuario = new Usuario();
@@ -43,22 +42,22 @@ public class SessionServiceTest {
         //Act
         Usuario usuarioObtenido = sessionService.getUsuarioFromToken(token);
         //Assert
-        assertNotNull(usuarioObtenido);
-        assertEquals(usuario.getId(), usuarioObtenido.getId());
+        assertNotNull(usuarioObtenido, "verificacion");
+        assertEquals(usuario.getId(), usuarioObtenido.getId(), "verificacion");
     }
 
     @Test
-    void getUsuarioFromToken_NoExisteToken_Test(){
+    void testGetUsuarioFromToken_NoExisteToken(){
         //Arrange
         String token = "1234";
         //Act
         Usuario usuarioObtenido = sessionService.getUsuarioFromToken(token);
         //Assert
-        assertNull(usuarioObtenido);
+        assertNull(usuarioObtenido, "verificacion");
     }
 
     @Test
-    void deleteSession_ExisteSesion_Test(){
+    void testDeleteSession_ExisteSesion(){
         //Arrange
         String token = "1234";
         Usuario usuario = new Usuario();
@@ -68,28 +67,28 @@ public class SessionServiceTest {
         sessionService.deleteSession(token);
         Usuario usuarioObtenido = sessionService.getUsuarioFromToken(token);
         //Assert
-        assertNull(usuarioObtenido);
+        assertNull(usuarioObtenido, "verificacion");
     }
 
     @Test
-    void deleteSession_NoExisteSesion_Test(){
+    void testDeleteSession_NoExisteSesion(){
         //Arrange
         String token = "1234";
         //Act y Assert
         sessionService.deleteSession(token);
         Usuario usuarioObtenido = sessionService.getUsuarioFromToken(token);
-        assertNull(usuarioObtenido);
+        assertNull(usuarioObtenido, "verificacion");
     }
 
     @Test
-    void deleteSession_NoDebeAfectarAOtrasSesiones_Test() {
+    void testDeleteSession_NoDebeAfectarAOtrasSesiones(){
         //Arrange
         sessionService.storeSession("token1", new Usuario());
         sessionService.storeSession("token2", new Usuario());
         //Act
         sessionService.deleteSession("token1");
         //Assert
-        assertNull(sessionService.getUsuarioFromToken("token1"));
-        assertNotNull(sessionService.getUsuarioFromToken("token2"));
+        assertNull(sessionService.getUsuarioFromToken("token1"), "verificacion");
+        assertNotNull(sessionService.getUsuarioFromToken("token2"), "verificacion");
     }
 }

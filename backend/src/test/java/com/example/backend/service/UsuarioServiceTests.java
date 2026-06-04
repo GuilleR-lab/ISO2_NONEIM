@@ -22,10 +22,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.backend.model.Usuario;
 import com.example.backend.model.Usuario.Rol;
 import com.example.backend.repository.UsuarioRepository;
-import com.example.backend.service.UsuarioServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
-public class Usuario_service_Tests {
+public class UsuarioServiceTests {
     @Mock
     private UsuarioRepository usuarioRepository;
 
@@ -33,7 +32,7 @@ public class Usuario_service_Tests {
     private UsuarioServiceImpl usuarioService;
 
     @Test
-    void showAllUsuarios_ExistenUsuarios_Test(){
+    void testShowAllUsuarios_ExistenUsuarios(){
         //Arrange
         Usuario user1 = new Usuario();
         Usuario user2 = new Usuario();
@@ -43,28 +42,28 @@ public class Usuario_service_Tests {
         //Act
         List <Usuario> resultado = usuarioService.showAllUsuarios();
         //Assert
-        assertNotNull(resultado);
-        assertEquals(users.size(), resultado.size());
-        assertEquals(users.get(0), resultado.get(0));
+        assertNotNull(resultado, "verificacion");
+        assertEquals(users.size(), resultado.size(), "verificacion");
+        assertEquals(users.get(0), resultado.get(0), "verificacion");
         verify(usuarioRepository).findAll();
 
     }
 
     @Test
-    void showAllUsuarios_NoExistenUsuarios_Test(){
+    void testShowAllUsuarios_NoExistenUsuarios(){
         //Arrange
         when(usuarioRepository.findAll()).thenReturn(emptyList());
         //Act
         List <Usuario> resultado = usuarioService.showAllUsuarios();
         //Assert
-        assertNotNull(resultado);
-        assertEquals(0, resultado.size());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(0, resultado.size(), "verificacion");
         verify(usuarioRepository).findAll();
 
     }
 
     @Test
-    void createUsuario_Test(){
+    void testCreateUsuario(){
         //Arrange
         Usuario user = new Usuario();
 
@@ -72,13 +71,13 @@ public class Usuario_service_Tests {
         //Act
         Usuario resultado = usuarioService.createUsuario(user);
         //Assert
-        assertNotNull(resultado);
-        assertEquals(user, resultado);
+        assertNotNull(resultado, "verificacion");
+        assertEquals(user, resultado, "verificacion");
         verify(usuarioRepository).save(user);
     }
 
     @Test
-    void usuarioExists_ExisteUsuario_PorEmail_Test(){
+    void testUsuarioExists_ExisteUsuario_PorEmail(){
         //Arrange
         String email = "user@test.com";
         Usuario user = new Usuario();
@@ -88,12 +87,12 @@ public class Usuario_service_Tests {
         //Act
         boolean resultado = usuarioService.usuarioExists(email);
         //Assert
-        assertEquals(true, resultado);
+        assertEquals(true, resultado, "verificacion");
         verify(usuarioRepository).existsByEmail(email);
     }
 
     @Test
-    void usuarioExists_ExisteUsuarioPorUsername_Test(){
+    void testUsuarioExists_ExisteUsuarioPorUsername(){
         //Arrange
         String username = "testuser";
         Usuario user = new Usuario();
@@ -103,12 +102,12 @@ public class Usuario_service_Tests {
         //Act
         boolean resultado = usuarioService.usuarioExists(username);
         //Assert
-        assertEquals(true, resultado);
+        assertEquals(true, resultado, "verificacion");
         verify(usuarioRepository).existsByUsername(username);
     }
 
     @Test
-    void usuarioExists_NoExisteUsuario_Test(){
+    void testUsuarioExists_NoExisteUsuario(){
         //Arrange
         String username = "testuser";
 
@@ -117,12 +116,12 @@ public class Usuario_service_Tests {
         boolean resultado = usuarioService.usuarioExists(username);
 
         //Assert
-        assertEquals(false, resultado);
+        assertEquals(false, resultado, "verificacion");
         verify(usuarioRepository).existsByUsername(username);
     }
 
     @Test
-    void findByEmailOrUsername_ExisteUsuarioPorEmailSinUsername_Test(){
+    void testFindByEmailOrUsername_ExisteUsuarioPorEmailSinUsername(){
         //Arrange
         String email = "user@test.com";
         Usuario user = new Usuario();
@@ -132,13 +131,13 @@ public class Usuario_service_Tests {
         //Act
         Optional<Usuario> resultado = usuarioService.findByEmailOrUsername(email);
         //Assert
-        assertNotNull(resultado);
-        assertEquals(user, resultado.get());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(user, resultado.get(), "verificacion");
         verify(usuarioRepository).findByEmail(email);
     }
 
     @Test
-    void findByEmailOrUsername_ExisteUsuarioPorUsernameSinEmail_Test(){
+    void testFindByEmailOrUsername_ExisteUsuarioPorUsernameSinEmail(){
         //Arrange
         String username = "testuser";
         Usuario user = new Usuario();
@@ -148,13 +147,13 @@ public class Usuario_service_Tests {
         //Act
         Optional<Usuario> resultado = usuarioService.findByEmailOrUsername(username);
         //Assert
-        assertNotNull(resultado);
-        assertEquals(user, resultado.get());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(user, resultado.get(), "verificacion");
         verify(usuarioRepository).findByUsername(username);
     }
 
     @Test
-    void findByEmailOrUsername_NoexisteUsuario_Test(){
+    void testFindByEmailOrUsername_NoexisteUsuario(){
         //Arrange
         String identifier = "testuser";
 
@@ -162,13 +161,13 @@ public class Usuario_service_Tests {
         //Act y Assert
         Optional <Usuario> resultado = usuarioService.findByEmailOrUsername(identifier);
 
-        assertNotNull(resultado);
-        assertEquals(Optional.empty(), resultado);
+        assertNotNull(resultado, "verificacion");
+        assertEquals(Optional.empty(), resultado, "verificacion");
         verify(usuarioRepository).findByUsername(identifier);
     }
 
     @Test
-    void findById_ExisteUsuario_Test(){
+    void testFindById_ExisteUsuario(){
         //Arrange
         Long id = 1L;
         Usuario user = new Usuario();
@@ -178,13 +177,13 @@ public class Usuario_service_Tests {
         //Act
         Optional <Usuario> resultado = usuarioService.findById(id);
         //Assert
-        assertNotNull(resultado);
-        assertEquals(user.getId(), resultado.get().getId());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(user.getId(), resultado.get().getId(), "verificacion");
         verify(usuarioRepository).findById(id);
     }
 
     @Test
-    void findById_NoExisteUsuario_Test(){
+    void testFindById_NoExisteUsuario(){
         //Arrange
         Long id = 1L;
 
@@ -192,14 +191,14 @@ public class Usuario_service_Tests {
         //Act
         Optional <Usuario> resultado = usuarioService.findById(id);
         //Assert
-        assertNotNull(resultado);
-        assertEquals(Optional.empty(), resultado);
+        assertNotNull(resultado, "verificacion");
+        assertEquals(Optional.empty(), resultado, "verificacion");
         verify(usuarioRepository).findById(id);
 
     }
 
     @Test
-    void updateUsuario_ExisteUsuarioRolNulo_Test(){
+    void testUpdateUsuario_ExisteUsuarioRolNulo(){
         // Arrange
         Long id = 1L;
         Rol rol = Usuario.Rol.INQUILINO;
@@ -220,16 +219,16 @@ public class Usuario_service_Tests {
         Usuario resultado = usuarioService.updateUsuario(usuarioNuevo, id);
 
         // Assert
-        assertNotNull(resultado);
-        assertEquals("nuevo", resultado.getUsername());
-        assertEquals("nuevo@mail.com", resultado.getEmail());
+        assertNotNull(resultado, "verificacion");
+        assertEquals("nuevo", resultado.getUsername(), "verificacion");
+        assertEquals("nuevo@mail.com", resultado.getEmail(), "verificacion");
         assertEquals(Usuario.Rol.INQUILINO, resultado.getRol(), "El rol debería mantenerse si el nuevo es null");
 
         verify(usuarioRepository).save(any(Usuario.class));
     }
 
     @Test
-    void updateUsuario_ExisteUsuarioRolNoNulo_Test(){
+    void testUpdateUsuario_ExisteUsuarioRolNoNulo(){
         //Arrange
         Long id = 1L;
         Rol rol = Usuario.Rol.INQUILINO;
@@ -247,15 +246,15 @@ public class Usuario_service_Tests {
         //Act
         Usuario resultado = usuarioService.updateUsuario(usuarioNuevo, id);
         //Assert
-        assertNotNull(resultado);
-        assertEquals("nuevo@test.com", resultado.getEmail());
-        assertEquals(Usuario.Rol.PROPIETARIO, resultado.getRol());
+        assertNotNull(resultado, "verificacion");
+        assertEquals("nuevo@test.com", resultado.getEmail(), "verificacion");
+        assertEquals(Usuario.Rol.PROPIETARIO, resultado.getRol(), "verificacion");
 
         verify(usuarioRepository).save(any(Usuario.class));
     }
 
     @Test
-    void updateUsuario_NoExisteUsuario_Test(){
+    void testUpdateUsuario_NoExisteUsuario(){
         //Arrange
         Long id = 1L;
         Usuario nuevoUsuario = new Usuario();
@@ -264,13 +263,13 @@ public class Usuario_service_Tests {
         Usuario resultado = usuarioService.updateUsuario(nuevoUsuario, id);
 
         //Assert
-        assertNull(resultado);
+        assertNull(resultado, "verificacion");
         verify(usuarioRepository).findById(id);
         verify(usuarioRepository, never()).save(any(Usuario.class));
     }
 
     @Test
-    void deleteUsuario_ExisteUsuario_Test(){
+    void testDeleteUsuario_ExisteUsuario(){
         //Arrange
         Long id = 1L;
 
@@ -285,7 +284,7 @@ public class Usuario_service_Tests {
     }
 
     @Test
-    void deleteUsuario_NoExisteUsuario_Test(){
+    void testDeleteUsuario_NoExisteUsuario(){
         //Arrange
         Long id = 1L;
 
@@ -294,7 +293,7 @@ public class Usuario_service_Tests {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             usuarioService.deleteUsuario(id);
         });
-        assertEquals("Usuario no encontrado", exception.getMessage());
+        assertEquals("Usuario no encontrado", exception.getMessage(), "verificacion");
         verify(usuarioRepository).existsById(id);
         verify(usuarioRepository, never()).deleteById(id);
     }

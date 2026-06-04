@@ -23,10 +23,9 @@ import com.example.backend.model.Inmueble;
 import com.example.backend.model.ListaDeseos;
 import com.example.backend.model.Usuario;
 import com.example.backend.repository.ListaDeseosRepository;
-import com.example.backend.service.ListaDeseosService;
 
 @ExtendWith(MockitoExtension.class)
-public class ListaDeseos_Service_Tests {
+public class ListaDeseosServiceTests {
 
     @Mock
     private ListaDeseosRepository listaDeseosRepository;
@@ -35,7 +34,7 @@ public class ListaDeseos_Service_Tests {
     private ListaDeseosService listaDeseosService;
 
     @Test
-    void crearLista_GuardadoExitoso_Test(){
+    void testCrearLista_GuardadoExitoso(){
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -47,14 +46,14 @@ public class ListaDeseos_Service_Tests {
         ListaDeseos resultado = listaDeseosService.crearLista(lista);
 
         //Assert
-        assertNotNull(resultado);
-        assertEquals(user.getId(), resultado.getUsuario().getId());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(user.getId(), resultado.getUsuario().getId(), "verificacion");
 
         verify(listaDeseosRepository).save(lista);
     }
 
     @Test
-    void obtenerTodas_ExistenListas_Test(){
+    void testObtenerTodas_ExistenListas(){
         //Arrange
         Usuario user1 = new Usuario();
         Usuario user2 = new Usuario();
@@ -68,27 +67,27 @@ public class ListaDeseos_Service_Tests {
         //Act
         List <ListaDeseos> resultado = listaDeseosService.obtenerTodas();
         //Assert
-        assertNotNull(resultado);
-        assertEquals(metalista.size(), resultado.size());
-        assertEquals(user1.getId(), resultado.get(0).getUsuario().getId());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(metalista.size(), resultado.size(), "verificacion");
+        assertEquals(user1.getId(), resultado.get(0).getUsuario().getId(), "verificacion");
 
         verify(listaDeseosRepository).findAll();
     }
 
     @Test
-    void obtenerTodas_NoExisteLista_Test(){
+    void testObtenerTodas_NoExisteLista(){
         //Arrange
         when(listaDeseosRepository.findAll()).thenReturn(emptyList());
         //Act y Assert
         List <ListaDeseos> resultado = listaDeseosService.obtenerTodas();
-        assertNotNull(resultado);
-        assertEquals(0, resultado.size());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(0, resultado.size(), "verificacion");
 
         verify(listaDeseosRepository).findAll();
     }
 
     @Test
-    void obtenerPorId_ExisteLista_Test(){
+    void testObtenerPorId_ExisteLista(){
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -101,16 +100,16 @@ public class ListaDeseos_Service_Tests {
         Optional <ListaDeseos> resultado = listaDeseosService.obtenerPorId(idLista);
 
         //Assert
-        assertNotNull(resultado);
-        assertEquals(idLista, resultado.get().getIdLista());
-        assertEquals(user.getId(), resultado.get().getUsuario().getId());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(idLista, resultado.get().getIdLista(), "verificacion");
+        assertEquals(user.getId(), resultado.get().getUsuario().getId(), "verificacion");
 
         verify(listaDeseosRepository).findById(idLista);
 
     }
 
     @Test
-    void obtenerPorId_NoExisteLista_Test(){
+    void testObtenerPorId_NoExisteLista(){
         //Arrange
         Long idLista = 1L;
 
@@ -118,14 +117,14 @@ public class ListaDeseos_Service_Tests {
         //Act y Assert
         Optional <ListaDeseos> resultado = listaDeseosService.obtenerPorId(idLista);
 
-        assertNotNull(resultado);
-        assertEquals(Optional.empty(), resultado);
+        assertNotNull(resultado, "verificacion");
+        assertEquals(Optional.empty(), resultado, "verificacion");
 
         verify(listaDeseosRepository).findById(idLista);
     }
 
     @Test
-    void agregarInmueble_ListaExiste_Test(){
+    void testAgregarInmueble_ListaExiste(){
         //Arrange
         Usuario user = new Usuario();
         Inmueble inmueble = new Inmueble();
@@ -144,8 +143,8 @@ public class ListaDeseos_Service_Tests {
         ListaDeseos resultado = listaDeseosService.agregarInmueble(idLista, inmueble);
 
         //Assert
-        assertNotNull(resultado);
-        assertEquals(inmueble.getIdInmueble(), resultado.getInmuebles().iterator().next().getIdInmueble());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(inmueble.getIdInmueble(), resultado.getInmuebles().iterator().next().getIdInmueble(), "verificacion");
 
         verify(listaDeseosRepository).findById(idLista);
         verify(listaDeseosRepository).save(lista);
@@ -153,7 +152,7 @@ public class ListaDeseos_Service_Tests {
     }
 
     @Test
-    void agregarInmueble_NoExisteLista_Test(){
+    void testAgregarInmueble_NoExisteLista(){
         //Arrange
         Inmueble inmueble = new Inmueble();
         Long idLista = 2L;
@@ -164,13 +163,13 @@ public class ListaDeseos_Service_Tests {
             listaDeseosService.agregarInmueble(idLista, inmueble);
         });
             
-        assertEquals("Lista no encontrada", exception.getMessage());
+        assertEquals("Lista no encontrada", exception.getMessage(), "verificacion");
 
         verify(listaDeseosRepository, never()).save(any(ListaDeseos.class));
     }
 
     @Test
-    void eliminarInmueble_ListaExiste_Test(){
+    void testEliminarInmueble_ListaExiste(){
         //Arrange
         Inmueble inmueble = new Inmueble();
         Usuario user = new Usuario();
@@ -188,15 +187,15 @@ public class ListaDeseos_Service_Tests {
         ListaDeseos resultado = listaDeseosService.eliminarInmueble(idLista, inmueble);
 
         //Assert
-        assertNotNull(resultado);
-        assertEquals(0, resultado.getInmuebles().size());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(0, resultado.getInmuebles().size(), "verificacion");
 
         verify(listaDeseosRepository).findById(idLista);
         verify(listaDeseosRepository).save(lista);
     }
 
     @Test
-    void eliminarInmueble_NoExisteLista_Test(){
+    void testEliminarInmueble_NoExisteLista(){
         //Arrange
         Inmueble inmueble = new Inmueble();
         Long idLista = 1L;
@@ -208,14 +207,14 @@ public class ListaDeseos_Service_Tests {
             listaDeseosService.eliminarInmueble(idLista, inmueble);
         });
 
-        assertEquals("Lista no encontrada", exception.getMessage());
+        assertEquals("Lista no encontrada", exception.getMessage(), "verificacion");
 
         verify(listaDeseosRepository, never()).save(any(ListaDeseos.class));
 
     }
 
     @Test
-    void eliminarLista_ExisteLista_Test(){
+    void testEliminarLista_ExisteLista(){
         //Arrange
 
         Long idLista = 1L;
@@ -232,7 +231,7 @@ public class ListaDeseos_Service_Tests {
     }
 
     @Test
-    void eliminarLista_NoExisteLista_Test(){
+    void testEliminarLista_NoExisteLista(){
         //Arrange
         Long idLista = 1L;
 
@@ -242,7 +241,7 @@ public class ListaDeseos_Service_Tests {
             listaDeseosService.eliminarLista(idLista);
         });
 
-        assertEquals("No se puede eliminar: Lista no encontrada", exception.getMessage());
+        assertEquals("No se puede eliminar: Lista no encontrada", exception.getMessage(), "verificacion");
         verify(listaDeseosRepository, never()).deleteById(idLista);
     }
 

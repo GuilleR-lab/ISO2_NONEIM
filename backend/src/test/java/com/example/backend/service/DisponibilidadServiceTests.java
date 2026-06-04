@@ -23,10 +23,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.backend.model.Disponibilidad;
 import com.example.backend.model.Inmueble;
 import com.example.backend.repository.DisponibilidadRepository;
-import com.example.backend.service.DisponibilidadService;
 
 @ExtendWith(MockitoExtension.class)
-public class Disponibilidad_service_Tests {
+public class DisponibilidadServiceTests {
 
     @Mock
     private DisponibilidadRepository disponibilidadRepository;
@@ -36,7 +35,7 @@ public class Disponibilidad_service_Tests {
 
     
     @Test
-    void crearDisponibilidad_GuardadoExitoso_Test(){
+    void testCrearDisponibilidad_GuardadoExitoso(){
         // Arrange
         Inmueble inmueble = new Inmueble();
         inmueble.setIdInmueble(1L);
@@ -56,16 +55,16 @@ public class Disponibilidad_service_Tests {
         Disponibilidad resultado = disponibilidadService.crearDisponibilidad(disponibilidad);
         
         // Assert
-        assertNotNull(resultado);
-        assertEquals(1L, resultado.getIdDisponibilidad());
-        assertEquals(150.0, resultado.getPrecio());
-        assertEquals(inmueble, resultado.getInmueble());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(1L, resultado.getIdDisponibilidad(), "verificacion");
+        assertEquals(150.0, resultado.getPrecio(), "verificacion");
+        assertEquals(inmueble, resultado.getInmueble(), "verificacion");
         
         verify(disponibilidadRepository, times(1)).save(disponibilidad);
     }
 
     @Test
-    void obtenerListaDisponibilidades_ListaVacia_Test(){
+    void testObtenerListaDisponibilidades_ListaVacia(){
         // Arrange
         when(disponibilidadRepository.findAll()).thenReturn(emptyList());
         
@@ -73,14 +72,14 @@ public class Disponibilidad_service_Tests {
         List<Disponibilidad> resultado = disponibilidadService.obtenerTodas();
         
         // Assert
-        assertNotNull(resultado);
-        assertTrue(resultado.isEmpty());
+        assertNotNull(resultado, "verificacion");
+        assertTrue(resultado.isEmpty(), "verificacion");
         
         verify(disponibilidadRepository, times(1)).findAll();
     }
 
     @Test 
-    void obtenerListaDisponibilidades_ListaConElementos_Test(){
+    void testObtenerListaDisponibilidades_ListaConElementos(){
         // Arrange
         
         Inmueble inmueble1 = new Inmueble();
@@ -107,14 +106,14 @@ public class Disponibilidad_service_Tests {
         java.util.List<Disponibilidad> resultado = disponibilidadService.obtenerTodas();
         
         // Assert
-        assertNotNull(resultado);
-        assertEquals(2, resultado.size());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(2, resultado.size(), "verificacion");
         
         verify(disponibilidadRepository, times(1)).findAll();
     }
 
     @Test
-    void obtenerPorId_DisponibilidadExistente_Test(){
+    void testObtenerPorId_DisponibilidadExistente(){
         //Arrange
         Long id = 1L;
         Inmueble inmueble = new Inmueble();
@@ -131,15 +130,15 @@ public class Disponibilidad_service_Tests {
         Optional<Disponibilidad> resultado = disponibilidadService.obtenerPorId(id);
 
         //Assert
-        assertTrue(resultado.isPresent());
-        assertEquals(id, resultado.get().getIdDisponibilidad());
-        assertEquals(150.0, resultado.get().getPrecio());
+        assertTrue(resultado.isPresent(), "verificacion");
+        assertEquals(id, resultado.get().getIdDisponibilidad(), "verificacion");
+        assertEquals(150.0, resultado.get().getPrecio(), "verificacion");
 
         verify(disponibilidadRepository).findById(id);
     }
 
     @Test
-    void obtenerPorId_DisponibilidadNoExiste_Test(){
+    void testObtenerPorId_DisponibilidadNoExiste(){
         //Arrange
         Long id = 1L;
 
@@ -149,11 +148,11 @@ public class Disponibilidad_service_Tests {
         Optional<Disponibilidad> resultado = disponibilidadService.obtenerPorId(id);
 
         //Assert
-        assertTrue(resultado.isEmpty());
+        assertTrue(resultado.isEmpty(), "verificacion");
     }
 
     @Test 
-    void actualizarDisponibilidad_ExisteDisponibilidad_Test(){
+    void testActualizarDisponibilidad_ExisteDisponibilidad(){
         //Arrange
         Long id = 1L;
 
@@ -176,9 +175,9 @@ public class Disponibilidad_service_Tests {
         Disponibilidad resultado = disponibilidadService.actualizarDisponibilidad(id, dispoNueva);
 
         //Assert
-        assertNotNull(resultado);
-        assertEquals(200.0, resultado.getPrecio());
-        assertEquals(dispoNueva.getFechaInicio(), resultado.getFechaInicio());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(200.0, resultado.getPrecio(), "verificacion");
+        assertEquals(dispoNueva.getFechaInicio(), resultado.getFechaInicio(), "verificacion");
 
         verify(disponibilidadRepository).findById(id);
         verify(disponibilidadRepository).save(any(Disponibilidad.class));
@@ -186,7 +185,7 @@ public class Disponibilidad_service_Tests {
     }
 
     @Test
-    void actualizarDisponibilidad_NoExisteDisponibilidad_Test(){
+    void testActualizarDisponibilidad_NoExisteDisponibilidad(){
 
         //Arrange
         long id = 1L;
@@ -201,14 +200,14 @@ public class Disponibilidad_service_Tests {
             disponibilidadService.actualizarDisponibilidad(id, dispoNueva);
         });
 
-        assertEquals("Disponibilidad no encontrada", exception.getMessage());
+        assertEquals("Disponibilidad no encontrada", exception.getMessage(), "verificacion");
 
         verify(disponibilidadRepository, never()).save(any(Disponibilidad.class));
         
     }
 
     @Test
-    void eliminarDisponibilidad_ExisteDisponibilidad_Test(){
+    void testEliminarDisponibilidad_ExisteDisponibilidad(){
         //Arrange
         Long id = 1L;
 
@@ -225,7 +224,7 @@ public class Disponibilidad_service_Tests {
     }
 
     @Test
-    void eliminarDisponibilidad_NoExisteDisponibilidad_Test(){
+    void testEliminarDisponibilidad_NoExisteDisponibilidad(){
         //Arrange
         Long id = 1L;
 
@@ -236,7 +235,7 @@ public class Disponibilidad_service_Tests {
             disponibilidadService.eliminarDisponibilidad(id);
         });
 
-        assertEquals("Disponibilidad no encontrada", exception.getMessage());
+        assertEquals("Disponibilidad no encontrada", exception.getMessage(), "verificacion");
 
         verify(disponibilidadRepository, never()).deleteById(id);
     }

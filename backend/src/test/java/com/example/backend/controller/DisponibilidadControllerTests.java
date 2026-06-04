@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -24,19 +24,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(DisponibilidadController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class Disponibilidad_controller_Tests {
+public class DisponibilidadControllerTests {
 
     @Autowired
     private ObjectMapper objectMapper;
     
-    @MockBean 
+    @MockitoBean
     private DisponibilidadService dispoService;
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void obtenerTodasLasDisponibilidades_Test() throws Exception{
+    public void testObtenerTodasLasDisponibilidades() throws Exception{
         //Arrange
         Inmueble inmueble1 = new Inmueble();
         Inmueble inmueble2 = new Inmueble();
@@ -51,11 +51,10 @@ public class Disponibilidad_controller_Tests {
         // Act & Assert
         mockMvc.perform(get("/api/disponibilidades")).andExpect(status().isOk())
             .andExpect(jsonPath("$.length()").value(2));
-
     }
 
     @Test
-    public void obtenerTodasLasDisponibilidades_Vacia_Test() throws Exception{
+    public void testObtenerTodasLasDisponibilidadesVacia() throws Exception{
         //Arrange
         when(dispoService.obtenerTodas()).thenReturn(List.of());
 
@@ -65,7 +64,7 @@ public class Disponibilidad_controller_Tests {
     }
 
     @Test
-    public void obtenerPorId_Test() throws Exception{
+    public void testObtenerPorId() throws Exception{
         //Arrange
         Long id = 1L;
         Inmueble inmueble = new Inmueble();
@@ -81,8 +80,7 @@ public class Disponibilidad_controller_Tests {
     }
 
     @Test
-    public void obtenerDisponibilidadPorId_NoExiste_Test() throws Exception {
-
+    public void testObtenerDisponibilidadPorIdNoExiste() throws Exception {
         when(dispoService.obtenerPorId(1L))
                 .thenReturn(Optional.empty());
 
@@ -91,7 +89,7 @@ public class Disponibilidad_controller_Tests {
     }
 
     @Test
-    public void crearNuevaDisponibilidad_Test() throws Exception{
+    public void testCrearNuevaDisponibilidad() throws Exception{
         //Arrange
         Inmueble inmueble = new Inmueble();
         inmueble.setIdInmueble(1L);
@@ -105,11 +103,10 @@ public class Disponibilidad_controller_Tests {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(dispoNueva)))
             .andExpect(status().isOk());
-            
     }  
     
     @Test
-    public void actualizarDisponibilidad_Test() throws Exception{
+    public void testActualizarDisponibilidad() throws Exception{
         //Arrange
         Long id = 1L;
         Inmueble inmueble = new Inmueble();
@@ -131,8 +128,7 @@ public class Disponibilidad_controller_Tests {
     }
 
     @Test
-    void actualizarDisponibilidad_NotFound_Test() throws Exception {
-
+    public void testActualizarDisponibilidadNotFound() throws Exception {
         // Arrange
         Inmueble inmueble = new Inmueble();
         inmueble.setIdInmueble(1L);
@@ -156,19 +152,17 @@ public class Disponibilidad_controller_Tests {
     }
 
     @Test
-    public void eliminarDisponibilidad_Test() throws Exception{
+    public void testEliminarDisponibilidad() throws Exception{
         // Arrange
         doNothing().when(dispoService).eliminarDisponibilidad(1L);
 
         // Act + Assert
         mockMvc.perform(delete("/api/disponibilidades/1"))
                 .andExpect(status().isNoContent());
-
     }
 
     @Test
-    void eliminarDisponibilidad_NotFound_Test() throws Exception {
-
+    public void testEliminarDisponibilidadNotFound() throws Exception {
         // Arrange
         doThrow(new RuntimeException())
                 .when(dispoService).eliminarDisponibilidad(1L);

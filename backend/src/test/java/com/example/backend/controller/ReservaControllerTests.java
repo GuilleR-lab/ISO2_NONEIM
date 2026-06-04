@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -35,35 +35,34 @@ import com.example.backend.repository.SolicitudReservaRepository;
 
 @WebMvcTest(ReservaController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class Reserva_controller_Tests {
+public class ReservaControllerTests {
     
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private ReservaService reservaService;
 
-    @MockBean
+    @MockitoBean
     private UsuarioRepository usuarioRepository;
 
-    @MockBean
+    @MockitoBean
     private InmuebleRepository inmuebleRepository;
 
-    @MockBean
-    private PagoRepository pagoRepository;
+    @MockitoBean
+    private PagoRepository pagoRepository; // Restaurado para evitar el fallo de carga del contexto de Spring
 
-
-    @MockBean
+    @MockitoBean
     private SolicitudReservaRepository solicitudReservaRepository;
 
-    @MockBean
+    @MockitoBean
     private ReservaRepository reservaRepository;
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void reservar_NoExisteUsuario_Test() throws Exception{
+    public void testReservarNoExisteUsuario() throws Exception{
         //Arrange
         Map<String, Object> request = Map.of(
             "inquilinoId", 1L,
@@ -80,11 +79,10 @@ public class Reserva_controller_Tests {
             .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message").value("Usuario no encontrado"));
-
     }
 
     @Test
-    public void reservar_NoExisteInmueble_Test() throws Exception{
+    public void testReservarNoExisteInmueble() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -108,7 +106,7 @@ public class Reserva_controller_Tests {
     }
 
     @Test
-    public void reservar_PropioInmueble_Test() throws Exception{
+    public void testReservarPropioInmueble() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -136,7 +134,7 @@ public class Reserva_controller_Tests {
     }
 
     @Test
-    public void reservar_SinDisponibilidad_Test() throws Exception{
+    public void testReservarSinDisponibilidad() throws Exception{
         //Arrange
         Usuario usuario = new Usuario();
         usuario.setId(1L);
@@ -165,11 +163,10 @@ public class Reserva_controller_Tests {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message")
             .value("No hay disponibilidad para esas fechas"));
-
     }
 
     @Test
-    public void reservar_CeroDias_Test() throws Exception{
+    public void testReservarCeroDias() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -183,7 +180,7 @@ public class Reserva_controller_Tests {
         inmueble.setIdInmueble(1L);
         inmueble.setPropietario(new Usuario() {{ setId(99L); }});
         inmueble.setDisponibilidades(List.of(disponibilidad));
-        inmueble.setPrecioNoche(100);
+        inmueble.setPrecioNoche(100); // Devuelto a Integer por si acaso
 
         Map<String, Object> request = Map.of(
             "inquilinoId", 1L,
@@ -204,7 +201,7 @@ public class Reserva_controller_Tests {
     }
 
     @Test
-    public void reservar_ReservasSolapadas_Test() throws Exception{
+    public void testReservarReservasSolapadas() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -244,7 +241,7 @@ public class Reserva_controller_Tests {
     }
 
     @Test
-    public void reservar_ReservaDirecta_Test() throws Exception{
+    public void testReservarReservaDirecta() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -292,7 +289,7 @@ public class Reserva_controller_Tests {
     }
 
     @Test
-    public void reservar_SolicitudReserva_Test() throws Exception{
+    public void testReservarSolicitudReserva() throws Exception{
         //ARRANGE
         Usuario user = new Usuario();
         user.setId(1L);
@@ -341,16 +338,12 @@ public class Reserva_controller_Tests {
                 .value("Solicitud enviada al propietario, pendiente de confirmación"))
             .andExpect(jsonPath("$.tipo").value("SOLICITUD"))
             .andExpect(jsonPath("$.idSolicitud").value(10L))
-            .andExpect(jsonPath("$.importe").value(900.0));//9 noches *100€/noche
-
+            .andExpect(jsonPath("$.importe").value(900.0));
     }
 
     @Test
-    public void obtenerPorInquilino_Test() throws Exception {
+    public void testObtenerPorInquilino() throws Exception {
         //ARRANGE
-        Usuario inquilino = new Usuario();
-        inquilino.setId(1L);
-
         Inmueble inmueble = new Inmueble();
         inmueble.setIdInmueble(10L);
         inmueble.setCiudad("Madrid");
@@ -385,7 +378,7 @@ public class Reserva_controller_Tests {
     }
 
     @Test
-    public void obtenerTodas_Test() throws Exception{
+    public void testObtenerTodas() throws Exception{
         //Arrange
         Reserva reserva1 = new Reserva();
         Reserva reserva2 = new Reserva();
@@ -400,7 +393,7 @@ public class Reserva_controller_Tests {
     }
 
     @Test
-    public void obtenerPorId_Test() throws Exception{
+    public void testObtenerPorId() throws Exception{
         //Arrange
         Reserva reserva = new Reserva();
         reserva.setIdReserva(1L);
@@ -412,7 +405,7 @@ public class Reserva_controller_Tests {
     }
 
     @Test
-    public void obtenerPorId_NotFound_Test() throws Exception{
+    public void testObtenerPorIdNotFound() throws Exception{
         //Arrange
         when(reservaService.obtenerPorId(1L)).thenReturn(Optional.empty());
 
@@ -421,7 +414,7 @@ public class Reserva_controller_Tests {
     }
 
     @Test
-    public void eliminarReserva_Test() throws Exception {
+    public void testEliminarReserva() throws Exception {
         //Arrange
         doNothing().when(reservaService).eliminarReserva(1L);
 

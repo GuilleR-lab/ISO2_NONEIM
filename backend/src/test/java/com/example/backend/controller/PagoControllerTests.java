@@ -7,12 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.mockito.Mockito.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -21,19 +23,19 @@ import com.example.backend.service.PagoService;
 
 @WebMvcTest(PagoController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class Pago_controller_Tests {
+public class PagoControllerTests {
     
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private PagoService pagoService;
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void crearPago_Test() throws Exception {
+    public void testCrearPago() throws Exception {
         //Arrange
         Pago pago = new Pago();
         pago.setReferencia(1L);
@@ -50,7 +52,7 @@ public class Pago_controller_Tests {
     }
 
     @Test
-    public void obtenerTodos_Test() throws Exception{
+    public void testObtenerTodos() throws Exception{
         //Arrange
         Pago pago1 = new Pago();
         Pago pago2 = new Pago();
@@ -63,11 +65,10 @@ public class Pago_controller_Tests {
         mockMvc.perform(get("/api/pagos"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()").value(2));
-
     }
 
     @Test
-    public void obtenerPorReferencia_Test() throws Exception{
+    public void testObtenerPorReferencia() throws Exception{
         //Arrange
         Pago pago = new Pago();
         pago.setReferencia(1L);
@@ -80,7 +81,7 @@ public class Pago_controller_Tests {
     }
 
     @Test
-    public void obtenerPorReferencia_NotFound_Test() throws Exception{
+    public void testObtenerPorReferenciaNotFound() throws Exception{
         //Arrange
         when(pagoService.obtenerPorReferencia(1L)).thenReturn(Optional.empty());
         //Act & Assert
@@ -89,7 +90,7 @@ public class Pago_controller_Tests {
     }
 
     @Test
-    public void actualizarPago_Test() throws Exception{
+    public void testActualizarPago() throws Exception{
         //Arrange
         Pago pagoActualizado = new Pago();
         pagoActualizado.setReferencia(1L);
@@ -105,7 +106,7 @@ public class Pago_controller_Tests {
     }
 
     @Test
-    public void actualizarPago_NotFound_Test() throws Exception{
+    public void testActualizarPagoNotFound() throws Exception{
         Pago pagoActualizado = new Pago();
         pagoActualizado.setImporte(150.0);
 
@@ -118,15 +119,11 @@ public class Pago_controller_Tests {
     }
 
     @Test
-    public void eliminarPago_Test() throws Exception{
+    public void testEliminarPago() throws Exception{
         //Arrange
-        Pago pago = new Pago();
-        pago.setReferencia(1L);
-
         doNothing().when(pagoService).eliminarPago(1L);
         //Act & Assert
         mockMvc.perform(delete("/api/pagos/{referencia}", 1L))
             .andExpect(status().isNoContent());
     }
-
 }
