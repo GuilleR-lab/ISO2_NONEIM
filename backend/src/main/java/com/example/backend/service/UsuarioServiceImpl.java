@@ -7,94 +7,100 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.backend.model.Usuario;
 import com.example.backend.repository.UsuarioRepository;
+import com.example.backend.dto.response.UsuarioDTO;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.example.backend.dto.request.RegisterRequest;
+import com.example.backend.model.Usuario.Rol;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
     
     private final PasswordEncoder passwordEncoder;
+    private final UsuarioRepository usuarioRepository;
     
     //Dependence inyect
-    public UsuarioServiceImpl(PasswordEncoder passwordEncoder) {
+    public UsuarioServiceImpl(PasswordEncoder passwordEncoder, UsuarioRepository usuarioRepository) {
         this.passwordEncoder = passwordEncoder;
-    }
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-    
-    //aqui que no hay logica de negocio, lo puedo obtener directamente desde el repository??
-    @Override
-    public List<Usuario> showAllUsuarios() {
-        return usuarioRepository.findAll();
+        this.usuarioRepository = usuarioRepository;
     }
     
-    //esta funcion tiene sentido
-    @Override
-    public Usuario authenticate(String data, String password) {
-        Usuario usuario = usuarioRepository.existsByEmail(data) || usuarioRepository.existsByUsername(data)
-        .orElseThrow( () -> new BadCredentialsException("Credenciales invalidas"));
-
-        
-        if (!passwordEncoder.matches(password, usuario.getPassword())){
-            throw new BadCredentialsException("Credenciales invalidas");
-        }
-
-        return usuario;
-    }
-
-    //TODO: Buena practica crear aqui funcion de registro????
-    
-    //esta funcion tiene sentido
-    @Override
-    public Usuario createUsuario(Usuario usuario) {
-        //hashing password
-        String hash = passwordEncoder.encode(usuario.getPassword());
-        usuario.setPassword(hash);
-
-        return usuarioRepository.save(usuario);
-    }
-
-    //@Override
-    //public boolean usuarioExists(String data) {
-    //    return usuarioRepository.existsByEmail(data) || usuarioRepository.existsByUsername(data);
-    //}
-
-    //Revisar, creo que esta funcion no tiene mucho sentido.
-    @Override
-    public Optional<Usuario> findByEmailOrUsername(String identifier) {
-        if (identifier.contains("@")) {
-            return Optional.ofNullable(usuarioRepository.findByEmail(identifier));
-        } else {
-            return Optional.ofNullable(usuarioRepository.findByUsername(identifier));
-        }
-    }
-    
-    //aqui que no hay logica de negocio, lo puedo obtener directamente desde el repository??
+    //TODO: Changue to return UsuarioDTO and Changue controllerInmueble
     @Override
     public Optional<Usuario> findById(Long id) {
         return usuarioRepository.findById(id);
     }
+
+    //@Override
+    //public List<UsuarioDTO> showAllUsuarios() {
+    //    return usuarioRepository.findAll();
+    //}
     
-    //esta funcion tiene sentido
     @Override
-    public Usuario updateUsuario(Usuario newUsuario, Long usuarioId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
-        if (usuario == null) return null;
+    public UsuarioDTO authenticate(String data, String password) {
+        
+        Usuario usuario;
+        
+        //verify usuario exists
+        if(usuarioRepository.findByUsername(data) == null && usuarioRepository.findByEmail(data) == null) {
+            throw new BadCredentialsException("Credenciales invalidas");
+        }
+        
+        //found usuario
+        usuario = usuarioRepository.findByEmail(data); 
+        if (usuario == null) usuario = usuarioRepository.findByUsername(data);
 
-        usuario.setUsername(newUsuario.getUsername());
-        usuario.setSurname(newUsuario.getSurname());
-        usuario.setAddress(newUsuario.getAddress());
-        usuario.setEmail(newUsuario.getEmail());
-        usuario.setPassword(passwordEncoder.encode(newUsuario.getPassword())); //hashing new password
-
-        if (newUsuario.getRol() != null) {
-            usuario.setRol(newUsuario.getRol());
+        //verify hashing password 
+        if (!passwordEncoder.matches(password, usuario.getPassword())){
+            throw new BadCredentialsException("Credenciales invalidas");
         }
 
-        return usuarioRepository.save(usuario);
+        return new UsuarioDTO(usuario.getId(), usuario.getUsername(), usuario.getEmail(), usuario.getRol());
+    }
+
+    @Override
+    public void createUsuario(RegisterRequest dto) {
+        //usuario already exists 
+        if (usuarioRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalStateException("Este usuario ya existe");
+        }
+
+        //hashing password
+        String hash = passwordEncoder.encode(dto.getPassword());
+        dto.setPassword(hash);
+        
+        //dto.setRol(Rol.INQUILINO);
+        
+        //create Usuario object
+        Usuario nuevo = new Usuario(
+            dto.getUsername(),
+            dto.getName(),
+            dto.getSurname(),
+            dto.getEmail(),
+            dto.getPassword(),
+            dto.getAddress(), 
+            dto.getRol()
+        );
+
+        usuarioRepository.save(nuevo);
     }
     
-    //esta funcion tiene sentido
+    @Override
+    public void updateUsuario(Usuario newUsuario, Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
+        if (usuario == null) return;
+
+        //Username, Email and Rol are always in DTO.
+        if (newUsuario.getUsername() != usuario.getUsername()) usuario.setUsername(newUsuario.getUsername());
+        if (newUsuario.getEmail() != usuario.getEmail()) usuario.setEmail(newUsuario.getEmail());
+        if (newUsuario.getSurname() != null) usuario.setSurname(newUsuario.getSurname());
+        if (newUsuario.getAddress() != null) usuario.setAddress(newUsuario.getAddress());
+        if (newUsuario.getPassword() != null) usuario.setPassword(passwordEncoder.encode(newUsuario.getPassword())); //hashing new password 
+        if (newUsuario.getRol() != usuario.getRol()) usuario.setRol(newUsuario.getRol());
+
+        usuarioRepository.save(usuario);
+    }
+    
     @Override
     public void deleteUsuario(Long usuarioId) {
         usuarioRepository.deleteById(usuarioId);
