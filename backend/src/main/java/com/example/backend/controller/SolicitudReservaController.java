@@ -27,19 +27,16 @@ public class SolicitudReservaController {
         this.solicitudReservaService = solicitudReservaService;
     }
 
-    // Crear solicitud
     @PostMapping
     public ResponseEntity<SolicitudReserva> crearSolicitud(@RequestBody SolicitudReserva solicitud) {
         return ResponseEntity.ok(solicitudReservaService.crearSolicitud(solicitud));
     }
 
-    // Obtener todas las solicitudes
     @GetMapping
     public ResponseEntity<List<SolicitudReserva>> obtenerTodas() {
         return ResponseEntity.ok(solicitudReservaService.obtenerTodas());
     }
 
-    // Obtener solicitud por ID
     @GetMapping("/inquilino/{id}")
     public ResponseEntity<SolicitudReserva> obtenerPorId(@PathVariable Long id) {
         return solicitudReservaService.obtenerPorId(id)
@@ -47,14 +44,11 @@ public class SolicitudReservaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    //Obtener todas las solicitudes de un inquilino
     @GetMapping("/inquilino/usuario/{inquilinoId}")
     public ResponseEntity<List<SolicitudReserva>> obtenerPorInquilinoId(@PathVariable Long inquilinoId) {
-        List<SolicitudReserva> solicitudes = solicitudReservaService.findByUsuarioId(inquilinoId);
-        return ResponseEntity.ok(solicitudes);
+        return ResponseEntity.ok(solicitudReservaService.findByUsuarioId(inquilinoId));
     }
 
-    // Actualizar solicitud
     @PutMapping("/inquilino/{id}")
     public ResponseEntity<SolicitudReserva> actualizarSolicitud(@PathVariable Long id, @RequestBody SolicitudReserva solicitud) {
         try {
@@ -64,43 +58,38 @@ public class SolicitudReservaController {
         }
     }
 
-    // Eliminar solicitud
     @DeleteMapping("/inquilino/{id}")
     public ResponseEntity<Void> eliminarSolicitud(@PathVariable Long id) {
         solicitudReservaService.eliminarSolicitud(id);
         return ResponseEntity.noContent().build();
     }
 
-    /* Perspectiva del propietario */
-   @GetMapping("/propietario/{propietarioId}/pendientes")
+    @GetMapping("/propietario/{propietarioId}/pendientes")
     public ResponseEntity<List<SolicitudReserva>> obtenerPendientes(@PathVariable Long propietarioId) {
-        List<SolicitudReserva> lista = solicitudReservaService.obtenerPendientesPropietario(propietarioId);
-        return ResponseEntity.ok(lista);
+        return ResponseEntity.ok(solicitudReservaService.obtenerPendientesPropietario(propietarioId));
     }
 
     @GetMapping("/propietario/{propietarioId}/pendientes/count")
     public ResponseEntity<Map<String, Long>> contarPendientes(@PathVariable Long propietarioId) {
-        long count = solicitudReservaService.contarPendientesPropietario(propietarioId);
-        return ResponseEntity.ok(Map.of("count", count));
+        return ResponseEntity.ok(Map.of("count", solicitudReservaService.contarPendientesPropietario(propietarioId)));
     }
 
     @PatchMapping("/{id}/estado")
-    public ResponseEntity<?> actualizarEstado(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        try{
-            String nuevoEstado = body.get("estado");
+    public ResponseEntity<Object> actualizarEstado(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String nuevoEstado = body.get("estado");
+        if (!nuevoEstado.equals("ACEPTADA") && !nuevoEstado.equals("RECHAZADA")) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Estado inválido"));
+        }
+        return ejecutarCambioEstado(id, nuevoEstado);
+    }
 
-            if(!nuevoEstado.equals("ACEPTADA") && !nuevoEstado.equals("RECHAZADA")){
-                return ResponseEntity.badRequest().body(Map.of("message", "Estado inválido"));
-            }
-
-            SolicitudReserva solicitudActualizada = solicitudReservaService.cambiarEstadoSolicitud(id, nuevoEstado);
-            return ResponseEntity.ok(solicitudActualizada);
-        }catch(RuntimeException e){
+    private ResponseEntity<Object> ejecutarCambioEstado(Long id, String nuevoEstado) {
+        try {
+            return ResponseEntity.ok(solicitudReservaService.cambiarEstadoSolicitud(id, nuevoEstado));
+        } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error interno del servidor");
         }
-        
-
     }
 }

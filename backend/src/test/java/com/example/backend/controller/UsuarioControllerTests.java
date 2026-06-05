@@ -71,8 +71,7 @@ public class UsuarioControllerTests {
     }
 
     @Test
-    public void testLoginContraseñaIncorrecta() throws Exception {
-        //Arrange
+    public void testLoginContrasenaIncorrecta() throws Exception {        //Arrange
         Usuario user = new Usuario();
         user.setPassword("claveGuardada");
 
@@ -252,8 +251,7 @@ public class UsuarioControllerTests {
     }
 
     @Test
-    public void testCambiarPasswordContraseñaVacia() throws Exception{
-        //Arrange
+    public void testCambiarPasswordContrasenaVacia() throws Exception{        //Arrange
         Map<String, String> body = Map.of(
             "passwordActual", "",
             "passwordNueva", "newPassword"
@@ -286,8 +284,7 @@ public class UsuarioControllerTests {
     }
 
     @Test
-    public void testCambiarPasswordContraseñaActualIncorrecta() throws Exception{
-        //Arrange
+    public void testCambiarPasswordContrasenaActualIncorrecta() throws Exception{        //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
         user.setPassword("oldPassword");

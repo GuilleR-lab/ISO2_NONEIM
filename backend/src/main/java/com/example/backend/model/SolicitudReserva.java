@@ -47,7 +47,9 @@ public class SolicitudReserva {
     @OneToOne(mappedBy = "solicitudReserva", cascade = CascadeType.ALL)
     private Reserva reserva;
 
-    
+    public SolicitudReserva() {
+        this.estado = "PENDIENTE";
+    }
 
     public Long getIdSolicitud() { return idSolicitud; }
     public void setIdSolicitud(Long idSolicitud) { this.idSolicitud = idSolicitud; }

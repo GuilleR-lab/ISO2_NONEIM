@@ -18,8 +18,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    void testStoreSession_GuardadoExitoso(){
-        //Arrange
+    void testStoreSessionGuardadoExitoso(){        //Arrange
         String token = "1234";
         Usuario usuario = new Usuario();
         usuario.setId(1L);   
@@ -32,8 +31,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    void testGetUsuarioFromToken_ExisteToken(){
-        //Arrange
+    void testGetUsuarioFromTokenExisteToken(){        //Arrange
         String token = "1234";
         Usuario usuario = new Usuario();
         usuario.setId(1L);
@@ -47,8 +45,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    void testGetUsuarioFromToken_NoExisteToken(){
-        //Arrange
+    void testGetUsuarioFromTokenNoExisteToken(){        //Arrange
         String token = "1234";
         //Act
         Usuario usuarioObtenido = sessionService.getUsuarioFromToken(token);
@@ -57,8 +54,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    void testDeleteSession_ExisteSesion(){
-        //Arrange
+    void testDeleteSessionExisteSesion(){        //Arrange
         String token = "1234";
         Usuario usuario = new Usuario();
 
@@ -71,8 +67,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    void testDeleteSession_NoExisteSesion(){
-        //Arrange
+    void testDeleteSessionNoExisteSesion(){        //Arrange
         String token = "1234";
         //Act y Assert
         sessionService.deleteSession(token);
@@ -81,8 +76,7 @@ public class SessionServiceTest {
     }
 
     @Test
-    void testDeleteSession_NoDebeAfectarAOtrasSesiones(){
-        //Arrange
+    void testDeleteSessionNoDebeAfectarAOtrasSesiones(){        //Arrange
         sessionService.storeSession("token1", new Usuario());
         sessionService.storeSession("token2", new Usuario());
         //Act

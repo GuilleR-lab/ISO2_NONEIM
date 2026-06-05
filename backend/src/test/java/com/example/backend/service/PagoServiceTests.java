@@ -32,8 +32,7 @@ public class PagoServiceTests {
     private PagoService pagoService;
 
     @Test
-    void testCrearPago_GuardadoExitoso(){
-        //Arrange
+    void testCrearPagoGuardadoExitoso(){        //Arrange
         Pago pago = new Pago();
         pago.setReferencia(1L);
 
@@ -49,8 +48,7 @@ public class PagoServiceTests {
     }
 
     @Test
-    void testObtenerTodos_ExistenPagos(){
-        //Arrange
+    void testObtenerTodosExistenPagos(){        //Arrange
         Pago pago1 = new Pago();
         Pago pago2 = new Pago();
         pago1.setReferencia(1L);
@@ -71,8 +69,7 @@ public class PagoServiceTests {
     }
 
     @Test
-    void testObtenerPorReferencia_PagoExiste(){
-        //Arrange
+    void testObtenerPorReferenciaPagoExiste(){        //Arrange
         Pago pago = new Pago();
         Long ref_pago = 1L;
         pago.setReferencia(ref_pago);
@@ -90,8 +87,7 @@ public class PagoServiceTests {
     }
 
     @Test
-    void testObtenerPorReferencia_NoExistePago(){
-        //Arrange
+    void testObtenerPorReferenciaNoExistePago(){        //Arrange
         Long ref_pago = 1L;
 
         when(pagoRepository.findById(ref_pago)).thenReturn(Optional.empty());
@@ -107,8 +103,7 @@ public class PagoServiceTests {
     }
 
     @Test
-    void testActualizarPago_PagoExiste(){
-        //Arrange
+    void testActualizarPagoPagoExiste(){        //Arrange
         Long ref_pago = 1L;
         Reserva reserva = new Reserva();
         Pago pagoOriginal = new Pago("TARJETA_CREDITO", 100.0, reserva);
@@ -132,8 +127,7 @@ public class PagoServiceTests {
     }
 
     @Test
-    void testActualizarPago_NoExistePago(){
-        //Arrange
+    void testActualizarPagoNoExistePago(){        //Arrange
         Long ref_pago = 1L;
         Pago pagoNuevo = new Pago("TARJETA_CREDITO", 200.0, new Reserva());
         
@@ -143,15 +137,14 @@ public class PagoServiceTests {
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () ->{
             pagoService.actualizarPago(ref_pago, pagoNuevo);
-        });
+        }, "verificacion");
 
         assertEquals("Pago no encontrado", exception.getMessage(), "verificacion");
         verify(pagoRepository, never()).save(any(Pago.class));
     }
 
     @Test
-    void testEliminarPago_ExistePago(){
-        //Arrange
+    void testEliminarPagoExistePago(){        //Arrange
         Long ref_pago = 1L;
 
         when(pagoRepository.existsById(ref_pago)).thenReturn(true);
@@ -166,15 +159,14 @@ public class PagoServiceTests {
     }
 
     @Test
-    void testEliminarPago_NoExistePago(){
-        //Arrange
+    void testEliminarPagoNoExistePago(){        //Arrange
         Long ref_pago = 1L;
 
         when(pagoRepository.existsById(ref_pago)).thenReturn(false);
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () ->{
             pagoService.eliminarPago(ref_pago);
-        });
+        }, "verificacion");
 
         assertEquals("No se puede eliminar: Pago no encontrado", exception.getMessage(), "verificacion");
         verify(pagoRepository).existsById(ref_pago);

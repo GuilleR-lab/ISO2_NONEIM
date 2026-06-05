@@ -37,7 +37,7 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest dto) {
+    public ResponseEntity<Object> login(@RequestBody LoginRequest dto) {
         String identifier = dto.getEmail() != null ? dto.getEmail() : dto.getUsername();
 
         if (identifier == null || identifier.isBlank() || dto.getPassword() == null || dto.getPassword().isBlank()) {
@@ -45,17 +45,17 @@ public class UsuarioController {
         }
 
         Optional<Usuario> usuarioOpt = usuarioService.findByEmailOrUsername(identifier);
-
         if (usuarioOpt.isEmpty()) {
             return ResponseEntity.status(401).body(Map.of("message", "Usuario no encontrado"));
         }
 
-        Usuario usuario = usuarioOpt.get();
+        return autenticarUsuario(usuarioOpt.get(), dto.getPassword());
+    }
 
-        if (!usuario.getPassword().equals(dto.getPassword())) {
+    private static ResponseEntity<Object> autenticarUsuario(Usuario usuario, String password) {
+        if (!usuario.getPassword().equals(password)) {
             return ResponseEntity.status(401).body(Map.of("message", "Contraseña incorrecta"));
         }
-
         LoginResponse response = new LoginResponse(
             "Inicio de sesion correcto",
             usuario.getId(),
@@ -63,7 +63,6 @@ public class UsuarioController {
             usuario.getEmail(),
             usuario.getRol().name()
         );
-
         return ResponseEntity.ok(response);
     }
 
@@ -71,42 +70,22 @@ public class UsuarioController {
 
     
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest dto) {
+    public ResponseEntity<Object> register(@RequestBody RegisterRequest dto) {
 
-        //Validacion de usuario y email duplicados
         boolean exists = usuarioService.usuarioExists(dto.getUsername())
                       || usuarioService.usuarioExists(dto.getEmail());
-
         if (exists) {
             return ResponseEntity.status(409).body(Map.of("message", "Error usuario ya registrado"));
         }
 
-        Rol rol = Rol.INQUILINO;
-        if ("PROPIETARIO".equalsIgnoreCase(dto.getRol())) {
-            rol = Rol.PROPIETARIO;
+        Direccion address = dto.getAddress();
+        if (!sonCamposRegistroValidos(dto, address)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Faltan campos obligatorios"));
         }
 
-        Direccion address = dto.getAddress();//Obtención del objeto direccion del DTO
+        normalizarPiso(address);
 
-        //Validación de los campos obligatorios
-        if (dto.getUsername() == null || dto.getUsername().isBlank() ||
-            dto.getName() == null || dto.getName().isBlank() ||
-            dto.getSurname() == null || dto.getSurname().isBlank() ||
-            dto.getEmail() == null || dto.getEmail().isBlank() ||
-            dto.getPassword() == null || dto.getPassword().isBlank() ||
-            address == null ||
-            address.getPais() == null || address.getPais().isBlank() ||
-            address.getCiudad() == null || address.getCiudad().isBlank() ||
-            address.getCodigoPostal() == null || address.getCodigoPostal().isBlank() ||
-            address.getCalle() == null || address.getCalle().isBlank() ||
-            address.getEdificio() == null || address.getEdificio().isBlank()) {
-                return ResponseEntity.badRequest().body(Map.of("message", "Faltan campos obligatorios"));
-        }
-
-        //Normalizacion del campos opcionales
-        if(address.getPiso() == null || address.getPiso().isBlank()) {
-            address.setPiso(null);
-        }
+        Rol rol = "PROPIETARIO".equalsIgnoreCase(dto.getRol()) ? Rol.PROPIETARIO : Rol.INQUILINO;
 
         Usuario nuevo = new Usuario(
             dto.getUsername(),
@@ -114,41 +93,62 @@ public class UsuarioController {
             dto.getSurname(),
             dto.getEmail(),
             dto.getPassword(),
-            dto.getAddress(), // el objeto de tipo Direccion 
+            dto.getAddress(),
             rol
         );
 
         usuarioService.createUsuario(nuevo);
-
         return ResponseEntity.ok(Map.of("message", "Usuario registrado correctamente", "rol", rol.name()));
     }
 
-    @PatchMapping("/{id}/rol")
-    public ResponseEntity<?> cambiarRol(@PathVariable Long id, @RequestBody Map<String, String> body){
-        String nuevoRolStr = body.get("rol");
-        Optional<Usuario> usuarioOpt = usuarioService.findById(id);
+    private static boolean sonCamposRegistroValidos(RegisterRequest dto, Direccion address) {
+        return tieneCamposPersonalesValidos(dto) && esDireccionValida(address);
+    }
 
+    private static boolean tieneCamposPersonalesValidos(RegisterRequest dto) {
+        return tieneCredencialesValidas(dto) && tieneDatosPersonalesValidos(dto);
+    }
+
+    private static boolean tieneCredencialesValidas(RegisterRequest dto) {
+        return tieneUsernameValido(dto) && tieneEmailYPasswordValidos(dto);
+    }
+
+    private static boolean tieneUsernameValido(RegisterRequest dto) {
+        return dto.getUsername() != null && !dto.getUsername().isBlank();
+    }
+
+    private static boolean tieneEmailYPasswordValidos(RegisterRequest dto) {
+        return dto.getEmail() != null && !dto.getEmail().isBlank()
+            && dto.getPassword() != null && !dto.getPassword().isBlank();
+    }
+
+    private static boolean tieneDatosPersonalesValidos(RegisterRequest dto) {
+        return dto.getName() != null && !dto.getName().isBlank()
+            && dto.getSurname() != null && !dto.getSurname().isBlank();
+    }
+
+    @PatchMapping("/{id}/rol")
+    public ResponseEntity<Object> cambiarRol(@PathVariable Long id, @RequestBody Map<String, String> body){
+        Optional<Usuario> usuarioOpt = usuarioService.findById(id);
         if (usuarioOpt.isEmpty()){
             return ResponseEntity.status(404).body(Map.of("message", "Usuario no encontrado"));
         }
+        return aplicarCambioRol(usuarioOpt.get(), body.get("rol"), id);
+    }
 
-        Usuario user = usuarioOpt.get();
-        
-        try{
-            Rol nuevoRol = Rol.valueOf(nuevoRolStr.toUpperCase()); 
+    private ResponseEntity<Object> aplicarCambioRol(Usuario user, String nuevoRolStr, Long id) {
+        try {
+            Rol nuevoRol = Rol.valueOf(nuevoRolStr.toUpperCase());
             user.setRol(nuevoRol);
             usuarioService.updateUsuario(user, id);
-            return ResponseEntity.ok(Map.of(
-                "message", "Rol actualizado correctamente",
-                "nuevoRol", nuevoRol.name()
-            ));
+            return ResponseEntity.ok(Map.of("message", "Rol actualizado correctamente", "nuevoRol", nuevoRol.name()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("message", "Rol no válido"));
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id){
+    public ResponseEntity<Object> findById(@PathVariable Long id){
         Optional<Usuario> usuarioOpt = usuarioService.findById(id);
         if (usuarioOpt.isEmpty()){
             return ResponseEntity.status(404).body(Map.of("message", "Usuario no encontrado"));
@@ -157,7 +157,7 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}/password")
-    public ResponseEntity<?> cambiarPassword(@PathVariable Long id, @RequestBody Map<String, String> body) {
+    public ResponseEntity<Object> cambiarPassword(@PathVariable Long id, @RequestBody Map<String, String> body) {
         String passwordActual = body.get("passwordActual");
         String passwordNueva = body.get("passwordNueva");
 
@@ -171,25 +171,22 @@ public class UsuarioController {
             return ResponseEntity.status(404).body(Map.of("message", "Usuario no encontrado"));
         }
 
-        Usuario user = usuarioOpt.get();
+        return aplicarCambioPassword(usuarioOpt.get(), passwordActual, passwordNueva, id);
+    }
 
+    private ResponseEntity<Object> aplicarCambioPassword(
+            Usuario user, String passwordActual, String passwordNueva, Long id) {
         if (!user.getPassword().equals(passwordActual)) {
             return ResponseEntity.status(401).body(Map.of("message", "La contraseña actual no es correcta"));
         }
-
         user.setPassword(passwordNueva);
         usuarioService.updateUsuario(user, id);
         return ResponseEntity.ok(Map.of("message", "Contraseña actualizada correctamente"));
     }
 
     @PatchMapping("/{id}/direccion")
-    public ResponseEntity<?> editarDireccion(@PathVariable Long id, @RequestBody Direccion nuevaDireccion) {
-        if (nuevaDireccion == null ||
-            nuevaDireccion.getPais() == null || nuevaDireccion.getPais().isBlank() ||
-            nuevaDireccion.getCiudad() == null || nuevaDireccion.getCiudad().isBlank() ||
-            nuevaDireccion.getCodigoPostal() == null || nuevaDireccion.getCodigoPostal().isBlank() ||
-            nuevaDireccion.getCalle() == null || nuevaDireccion.getCalle().isBlank() ||
-            nuevaDireccion.getEdificio() == null || nuevaDireccion.getEdificio().isBlank()) {
+    public ResponseEntity<Object> editarDireccion(@PathVariable Long id, @RequestBody Direccion nuevaDireccion) {
+        if (!esDireccionValida(nuevaDireccion)) {
             return ResponseEntity.badRequest().body(Map.of("message", "Faltan campos obligatorios de la dirección"));
         }
 
@@ -199,16 +196,39 @@ public class UsuarioController {
         }
 
         Usuario user = usuarioOpt.get();
-        if (nuevaDireccion.getPiso() == null || nuevaDireccion.getPiso().isBlank()) {
-            nuevaDireccion.setPiso(null);
-        }
+        normalizarPiso(nuevaDireccion);
         user.setAddress(nuevaDireccion);
         usuarioService.updateUsuario(user, id);
         return ResponseEntity.ok(Map.of("message", "Dirección actualizada correctamente"));
     }
 
+    private static boolean esDireccionValida(Direccion d) {
+        if (d == null) return false;
+        return tieneCamposObligatoriosDireccion(d) && tieneCamposUbicacion(d);
+    }
+
+    private static boolean tieneCamposObligatoriosDireccion(Direccion d) {
+        return d.getCalle() != null && !d.getCalle().isBlank()
+            && d.getEdificio() != null && !d.getEdificio().isBlank();
+    }
+
+    private static boolean tieneCamposUbicacion(Direccion d) {
+        return tienePaisYCiudad(d) && d.getCodigoPostal() != null && !d.getCodigoPostal().isBlank();
+    }
+
+    private static boolean tienePaisYCiudad(Direccion d) {
+        return d.getPais() != null && !d.getPais().isBlank()
+            && d.getCiudad() != null && !d.getCiudad().isBlank();
+    }
+
+    private static void normalizarPiso(Direccion d) {
+        if (d.getPiso() == null || d.getPiso().isBlank()) {
+            d.setPiso(null);
+        }
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUsuario(@PathVariable Long id) {
+    public ResponseEntity<Object> deleteUsuario(@PathVariable Long id) {
         usuarioService.deleteUsuario(id);
         return ResponseEntity.ok(Map.of("message", "Usuario eliminado"));
     }

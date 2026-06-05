@@ -34,8 +34,7 @@ public class ListaDeseosServiceTests {
     private ListaDeseosService listaDeseosService;
 
     @Test
-    void testCrearLista_GuardadoExitoso(){
-        //Arrange
+    void testCrearListaGuardadoExitoso(){        //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
         ListaDeseos lista = new ListaDeseos(user);
@@ -53,8 +52,7 @@ public class ListaDeseosServiceTests {
     }
 
     @Test
-    void testObtenerTodas_ExistenListas(){
-        //Arrange
+    void testObtenerTodasExistenListas(){        //Arrange
         Usuario user1 = new Usuario();
         Usuario user2 = new Usuario();
         user1.setId(1L);
@@ -75,8 +73,7 @@ public class ListaDeseosServiceTests {
     }
 
     @Test
-    void testObtenerTodas_NoExisteLista(){
-        //Arrange
+    void testObtenerTodasNoExisteLista(){        //Arrange
         when(listaDeseosRepository.findAll()).thenReturn(emptyList());
         //Act y Assert
         List <ListaDeseos> resultado = listaDeseosService.obtenerTodas();
@@ -87,8 +84,7 @@ public class ListaDeseosServiceTests {
     }
 
     @Test
-    void testObtenerPorId_ExisteLista(){
-        //Arrange
+    void testObtenerPorIdExisteLista(){        //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
         Long idLista = 2L;
@@ -109,8 +105,7 @@ public class ListaDeseosServiceTests {
     }
 
     @Test
-    void testObtenerPorId_NoExisteLista(){
-        //Arrange
+    void testObtenerPorIdNoExisteLista(){        //Arrange
         Long idLista = 1L;
 
         when(listaDeseosRepository.findById(idLista)).thenReturn(Optional.empty());
@@ -124,8 +119,7 @@ public class ListaDeseosServiceTests {
     }
 
     @Test
-    void testAgregarInmueble_ListaExiste(){
-        //Arrange
+    void testAgregarInmuebleListaExiste(){        //Arrange
         Usuario user = new Usuario();
         Inmueble inmueble = new Inmueble();
         user.setId(1L);
@@ -152,8 +146,7 @@ public class ListaDeseosServiceTests {
     }
 
     @Test
-    void testAgregarInmueble_NoExisteLista(){
-        //Arrange
+    void testAgregarInmuebleNoExisteLista(){        //Arrange
         Inmueble inmueble = new Inmueble();
         Long idLista = 2L;
 
@@ -161,7 +154,7 @@ public class ListaDeseosServiceTests {
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () ->{
             listaDeseosService.agregarInmueble(idLista, inmueble);
-        });
+        }, "verificacion");
             
         assertEquals("Lista no encontrada", exception.getMessage(), "verificacion");
 
@@ -169,8 +162,7 @@ public class ListaDeseosServiceTests {
     }
 
     @Test
-    void testEliminarInmueble_ListaExiste(){
-        //Arrange
+    void testEliminarInmuebleListaExiste(){        //Arrange
         Inmueble inmueble = new Inmueble();
         Usuario user = new Usuario();
         ListaDeseos lista = new ListaDeseos();
@@ -195,8 +187,7 @@ public class ListaDeseosServiceTests {
     }
 
     @Test
-    void testEliminarInmueble_NoExisteLista(){
-        //Arrange
+    void testEliminarInmuebleNoExisteLista(){        //Arrange
         Inmueble inmueble = new Inmueble();
         Long idLista = 1L;
 
@@ -205,7 +196,7 @@ public class ListaDeseosServiceTests {
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () ->{
             listaDeseosService.eliminarInmueble(idLista, inmueble);
-        });
+        }, "verificacion");
 
         assertEquals("Lista no encontrada", exception.getMessage(), "verificacion");
 
@@ -214,8 +205,7 @@ public class ListaDeseosServiceTests {
     }
 
     @Test
-    void testEliminarLista_ExisteLista(){
-        //Arrange
+    void testEliminarListaExisteLista(){        //Arrange
 
         Long idLista = 1L;
 
@@ -231,15 +221,14 @@ public class ListaDeseosServiceTests {
     }
 
     @Test
-    void testEliminarLista_NoExisteLista(){
-        //Arrange
+    void testEliminarListaNoExisteLista(){        //Arrange
         Long idLista = 1L;
 
        when(listaDeseosRepository.existsById(idLista)).thenReturn(false);
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             listaDeseosService.eliminarLista(idLista);
-        });
+        }, "verificacion");
 
         assertEquals("No se puede eliminar: Lista no encontrada", exception.getMessage(), "verificacion");
         verify(listaDeseosRepository, never()).deleteById(idLista);

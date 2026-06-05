@@ -35,8 +35,7 @@ public class SolicitudReservaServiceTests {
     private SolicitudReservaService solicitudService;
 
     @Test
-    void testCrearSolicitud_GuardadoExitoso(){
-        //Arrange
+    void testCrearSolicitudGuardadoExitoso(){        //Arrange
         SolicitudReserva solicitud = new SolicitudReserva();
 
         when(solicitudRepository.save(solicitud)).thenReturn(solicitud);
@@ -50,8 +49,7 @@ public class SolicitudReservaServiceTests {
     }
 
     @Test
-    void testObtenerTodas_ExistenSolicitudes(){
-        //Arrange
+    void testObtenerTodasExistenSolicitudes(){        //Arrange
         SolicitudReserva sol1 = new SolicitudReserva();
         SolicitudReserva sol2 = new SolicitudReserva();
 
@@ -71,8 +69,7 @@ public class SolicitudReservaServiceTests {
     }
 
     @Test
-    void testObtenerTodas_NoExistenSolicitudes(){
-        //Arrange
+    void testObtenerTodasNoExistenSolicitudes(){        //Arrange
         when(solicitudRepository.findAll()).thenReturn(emptyList());
         //Act y Assert
         List <SolicitudReserva> resultado = solicitudService.obtenerTodas();
@@ -84,8 +81,7 @@ public class SolicitudReservaServiceTests {
     }
 
     @Test
-    void testObtenerPorId_ExisteSolicitud(){
-        //Arrange
+    void testObtenerPorIdExisteSolicitud(){        //Arrange
         Long id = 1L;
         SolicitudReserva sol = new SolicitudReserva();
         sol.setIdSolicitud(id);
@@ -102,8 +98,7 @@ public class SolicitudReservaServiceTests {
     }
 
     @Test
-    void testObtenerPorId_NoExisteSolicitud(){
-        //Arrange
+    void testObtenerPorIdNoExisteSolicitud(){        //Arrange
         Long id = 1L;
 
         when(solicitudRepository.findById(id)).thenReturn(Optional.empty());
@@ -117,8 +112,7 @@ public class SolicitudReservaServiceTests {
     }
 
     @Test
-    void testActualizarSolicitud_ExisteSolicitud(){
-        //Arrange
+    void testActualizarSolicitudExisteSolicitud(){        //Arrange
         Long id = 1L;
         Reserva res = new Reserva();
         Reserva resActualizada = new Reserva();
@@ -143,15 +137,14 @@ public class SolicitudReservaServiceTests {
     }
 
     @Test
-    void testActualizarSolicitud_NoExisteSolicitud(){
-        //Arrange
+    void testActualizarSolicitudNoExisteSolicitud(){        //Arrange
         Long id = 1L;
         SolicitudReserva nuevaSolicitud = new SolicitudReserva();
         when(solicitudRepository.findById(id)).thenReturn(Optional.empty());
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             solicitudService.actualizarSolicitud(id, nuevaSolicitud);
-        });
+        }, "verificacion");
 
         assertEquals("Solicitud no encontrada", exception.getMessage(), "verificacion");
         verify(solicitudRepository, never()).save(any(SolicitudReserva.class));
@@ -159,8 +152,7 @@ public class SolicitudReservaServiceTests {
     }
 
     @Test
-    void testEliminarSolicitud_ExisteSolicitud(){
-        //Arrange
+    void testEliminarSolicitudExisteSolicitud(){        //Arrange
         Long id = 1L;
 
         when(solicitudRepository.existsById(id)).thenReturn(true);
@@ -176,15 +168,14 @@ public class SolicitudReservaServiceTests {
     }
 
     @Test
-    void testEliminarSolicitud_NoExisteSolicitud(){
-        //Arrange
+    void testEliminarSolicitudNoExisteSolicitud(){        //Arrange
         Long id = 1L;
 
         when(solicitudRepository.existsById(id)).thenReturn(false);
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             solicitudService.eliminarSolicitud(id);
-        });
+        }, "verificacion");
 
         assertEquals("Solicitud no encontrada", exception.getMessage(), "verificacion");
         verify(solicitudRepository).existsById(id);
@@ -193,8 +184,7 @@ public class SolicitudReservaServiceTests {
 
     //tests de la vista inquilino
     @Test
-    void testFindByUsuarioId_ExistenSolicitudes(){
-        //Arrange
+    void testFindByUsuarioIdExistenSolicitudes(){        //Arrange
         Long id = 1L;
         Usuario usuario = new Usuario();
         usuario.setId(id);
@@ -220,8 +210,7 @@ public class SolicitudReservaServiceTests {
     }
 
     @Test
-    void testFindByUsuarioId_NoExistenSolicitudes(){
-        //Arrange
+    void testFindByUsuarioIdNoExistenSolicitudes(){        //Arrange
         Long id = 1L;
 
         when(solicitudRepository.findByUsuarioId(id)).thenReturn(emptyList());
@@ -238,8 +227,7 @@ public class SolicitudReservaServiceTests {
 
     //test de la vista de propietario
     @Test
-    void testObtenerPendientesPropietario_ExistenSolicitudes(){
-        Long idUsuario = 1L;
+    void testObtenerPendientesPropietarioExistenSolicitudes(){        Long idUsuario = 1L;
         String estado = "PENDIENTE";
         SolicitudReserva sol1 = new SolicitudReserva();
         SolicitudReserva sol2 = new SolicitudReserva();
@@ -262,8 +250,7 @@ public class SolicitudReservaServiceTests {
     }
 
     @Test
-    void testObtenerPendientesPropietario_NoExistenSolicitudes(){
-        Long idUsuario = 1L;
+    void testObtenerPendientesPropietarioNoExistenSolicitudes(){        Long idUsuario = 1L;
         String estado = "PENDIENTE";
 
         when(solicitudRepository.obtenerConDisponibilidadInmueblePropietarioIdAndEstado(idUsuario, estado)).thenReturn(emptyList());
@@ -276,8 +263,7 @@ public class SolicitudReservaServiceTests {
     }
 
     @Test
-    void testContarPendientesPropietario_ExistenSolicitudes(){
-        Long idUsuario = 1L;
+    void testContarPendientesPropietarioExistenSolicitudes(){        Long idUsuario = 1L;
         String estado = "PENDIENTE";
 
         SolicitudReserva sol1 = new SolicitudReserva();
@@ -295,8 +281,7 @@ public class SolicitudReservaServiceTests {
     }
 
     @Test
-    void testContarPendientesPropietario_NoExistenSolicitudes(){
-        Long idUsuario = 1L;
+    void testContarPendientesPropietarioNoExistenSolicitudes(){        Long idUsuario = 1L;
         String estado = "PENDIENTE";
 
         when(solicitudRepository.countByDisponibilidadInmueblePropietarioIdAndEstado(idUsuario, estado)).thenReturn(0L);
@@ -311,8 +296,7 @@ public class SolicitudReservaServiceTests {
     }
 
     @Test
-    void testCambiarEstadoSolicitud_ExisteSolicitud(){
-        Long id = 1L;
+    void testCambiarEstadoSolicitudExisteSolicitud(){        Long id = 1L;
         Reserva res = new Reserva();
         res.setActiva(false);
 
@@ -338,8 +322,7 @@ public class SolicitudReservaServiceTests {
     }
 
     @Test
-    void testCambiarEstadoSolicitud_ExisteSolicitudSinReserva(){
-        Long id = 1L;
+    void testCambiarEstadoSolicitudExisteSolicitudSinReserva(){        Long id = 1L;
         String nuevoEstado = "RECHAZADA";
 
         SolicitudReserva sol = new SolicitudReserva();
@@ -359,8 +342,7 @@ public class SolicitudReservaServiceTests {
     }
 
     @Test
-    void testCambiarEstadoSolicitud_noExisteSolicitud(){
-        Long id = 1L;
+    void testCambiarEstadoSolicitudNoExisteSolicitud(){        Long id = 1L;
         String nuevoEstado = "ACEPTADA";
 
         when(solicitudRepository.findById(id)).thenReturn(Optional.empty());
@@ -368,7 +350,7 @@ public class SolicitudReservaServiceTests {
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () ->{
             solicitudService.cambiarEstadoSolicitud(id, nuevoEstado);
-        });
+        }, "verificacion");
 
         assertEquals("Solicitud no encontrada", exception.getMessage(), "verificacion");
         verify(solicitudRepository, never()).save(any(SolicitudReserva.class));

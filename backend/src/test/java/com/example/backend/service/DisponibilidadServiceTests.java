@@ -35,8 +35,7 @@ public class DisponibilidadServiceTests {
 
     
     @Test
-    void testCrearDisponibilidad_GuardadoExitoso(){
-        // Arrange
+    void testCrearDisponibilidadGuardadoExitoso(){        // Arrange
         Inmueble inmueble = new Inmueble();
         inmueble.setIdInmueble(1L);
         
@@ -64,8 +63,7 @@ public class DisponibilidadServiceTests {
     }
 
     @Test
-    void testObtenerListaDisponibilidades_ListaVacia(){
-        // Arrange
+    void testObtenerListaDisponibilidadesListaVacia(){        // Arrange
         when(disponibilidadRepository.findAll()).thenReturn(emptyList());
         
         // Act
@@ -79,8 +77,7 @@ public class DisponibilidadServiceTests {
     }
 
     @Test 
-    void testObtenerListaDisponibilidades_ListaConElementos(){
-        // Arrange
+    void testObtenerListaDisponibilidadesListaConElementos(){        // Arrange
         
         Inmueble inmueble1 = new Inmueble();
         Inmueble inmueble2 = new Inmueble();
@@ -113,8 +110,7 @@ public class DisponibilidadServiceTests {
     }
 
     @Test
-    void testObtenerPorId_DisponibilidadExistente(){
-        //Arrange
+    void testObtenerPorIdDisponibilidadExistente(){        //Arrange
         Long id = 1L;
         Inmueble inmueble = new Inmueble();
         inmueble.setIdInmueble(1L);
@@ -138,8 +134,7 @@ public class DisponibilidadServiceTests {
     }
 
     @Test
-    void testObtenerPorId_DisponibilidadNoExiste(){
-        //Arrange
+    void testObtenerPorIdDisponibilidadNoExiste(){        //Arrange
         Long id = 1L;
 
         when(disponibilidadRepository.findById(id)).thenReturn(Optional.empty());
@@ -152,8 +147,7 @@ public class DisponibilidadServiceTests {
     }
 
     @Test 
-    void testActualizarDisponibilidad_ExisteDisponibilidad(){
-        //Arrange
+    void testActualizarDisponibilidadExisteDisponibilidad(){        //Arrange
         Long id = 1L;
 
         Inmueble inmueble = new Inmueble();
@@ -185,8 +179,7 @@ public class DisponibilidadServiceTests {
     }
 
     @Test
-    void testActualizarDisponibilidad_NoExisteDisponibilidad(){
-
+    void testActualizarDisponibilidadNoExisteDisponibilidad(){
         //Arrange
         long id = 1L;
 
@@ -198,7 +191,7 @@ public class DisponibilidadServiceTests {
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             disponibilidadService.actualizarDisponibilidad(id, dispoNueva);
-        });
+        }, "verificacion");
 
         assertEquals("Disponibilidad no encontrada", exception.getMessage(), "verificacion");
 
@@ -207,8 +200,7 @@ public class DisponibilidadServiceTests {
     }
 
     @Test
-    void testEliminarDisponibilidad_ExisteDisponibilidad(){
-        //Arrange
+    void testEliminarDisponibilidadExisteDisponibilidad(){        //Arrange
         Long id = 1L;
 
         when(disponibilidadRepository.existsById(id)).thenReturn(true);
@@ -224,8 +216,7 @@ public class DisponibilidadServiceTests {
     }
 
     @Test
-    void testEliminarDisponibilidad_NoExisteDisponibilidad(){
-        //Arrange
+    void testEliminarDisponibilidadNoExisteDisponibilidad(){        //Arrange
         Long id = 1L;
 
         when(disponibilidadRepository.existsById(id)).thenReturn(false);
@@ -233,7 +224,7 @@ public class DisponibilidadServiceTests {
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             disponibilidadService.eliminarDisponibilidad(id);
-        });
+        }, "verificacion");
 
         assertEquals("Disponibilidad no encontrada", exception.getMessage(), "verificacion");
 

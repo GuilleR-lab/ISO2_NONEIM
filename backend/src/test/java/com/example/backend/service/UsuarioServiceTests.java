@@ -32,8 +32,7 @@ public class UsuarioServiceTests {
     private UsuarioServiceImpl usuarioService;
 
     @Test
-    void testShowAllUsuarios_ExistenUsuarios(){
-        //Arrange
+    void testShowAllUsuariosExistenUsuarios(){        //Arrange
         Usuario user1 = new Usuario();
         Usuario user2 = new Usuario();
         List <Usuario> users = List.of(user1, user2);
@@ -50,8 +49,7 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    void testShowAllUsuarios_NoExistenUsuarios(){
-        //Arrange
+    void testShowAllUsuariosNoExistenUsuarios(){        //Arrange
         when(usuarioRepository.findAll()).thenReturn(emptyList());
         //Act
         List <Usuario> resultado = usuarioService.showAllUsuarios();
@@ -77,8 +75,7 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    void testUsuarioExists_ExisteUsuario_PorEmail(){
-        //Arrange
+    void testUsuarioExistsExisteUsuarioPorEmail(){        //Arrange
         String email = "user@test.com";
         Usuario user = new Usuario();
         user.setEmail(email);
@@ -92,8 +89,7 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    void testUsuarioExists_ExisteUsuarioPorUsername(){
-        //Arrange
+    void testUsuarioExistsExisteUsuarioPorUsername(){        //Arrange
         String username = "testuser";
         Usuario user = new Usuario();
         user.setUsername(username);
@@ -107,8 +103,7 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    void testUsuarioExists_NoExisteUsuario(){
-        //Arrange
+    void testUsuarioExistsNoExisteUsuario(){        //Arrange
         String username = "testuser";
 
         when(usuarioRepository.existsByUsername(username)).thenReturn(false);
@@ -121,8 +116,7 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    void testFindByEmailOrUsername_ExisteUsuarioPorEmailSinUsername(){
-        //Arrange
+    void testFindByEmailOrUsernameExisteUsuarioPorEmailSinUsername(){        //Arrange
         String email = "user@test.com";
         Usuario user = new Usuario();
         user.setEmail(email);
@@ -137,8 +131,7 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    void testFindByEmailOrUsername_ExisteUsuarioPorUsernameSinEmail(){
-        //Arrange
+    void testFindByEmailOrUsernameExisteUsuarioPorUsernameSinEmail(){        //Arrange
         String username = "testuser";
         Usuario user = new Usuario();
         user.setUsername(username);
@@ -153,8 +146,7 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    void testFindByEmailOrUsername_NoexisteUsuario(){
-        //Arrange
+    void testFindByEmailOrUsernameNoexisteUsuario(){        //Arrange
         String identifier = "testuser";
 
         when(usuarioRepository.findByUsername(identifier)).thenReturn(null);
@@ -167,8 +159,7 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    void testFindById_ExisteUsuario(){
-        //Arrange
+    void testFindByIdExisteUsuario(){        //Arrange
         Long id = 1L;
         Usuario user = new Usuario();
         user.setId(id);
@@ -183,8 +174,7 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    void testFindById_NoExisteUsuario(){
-        //Arrange
+    void testFindByIdNoExisteUsuario(){        //Arrange
         Long id = 1L;
 
         when(usuarioRepository.findById(id)).thenReturn(Optional.empty());
@@ -198,8 +188,7 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    void testUpdateUsuario_ExisteUsuarioRolNulo(){
-        // Arrange
+    void testUpdateUsuarioExisteUsuarioRolNulo(){        // Arrange
         Long id = 1L;
         Rol rol = Usuario.Rol.INQUILINO;
         Usuario usuarioOriginal = new Usuario();
@@ -228,8 +217,7 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    void testUpdateUsuario_ExisteUsuarioRolNoNulo(){
-        //Arrange
+    void testUpdateUsuarioExisteUsuarioRolNoNulo(){        //Arrange
         Long id = 1L;
         Rol rol = Usuario.Rol.INQUILINO;
         Usuario usuarioOriginal = new Usuario();
@@ -254,8 +242,7 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    void testUpdateUsuario_NoExisteUsuario(){
-        //Arrange
+    void testUpdateUsuarioNoExisteUsuario(){        //Arrange
         Long id = 1L;
         Usuario nuevoUsuario = new Usuario();
         when(usuarioRepository.findById(id)).thenReturn(Optional.empty());
@@ -269,8 +256,7 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    void testDeleteUsuario_ExisteUsuario(){
-        //Arrange
+    void testDeleteUsuarioExisteUsuario(){        //Arrange
         Long id = 1L;
 
         when(usuarioRepository.existsById(id)).thenReturn(true);
@@ -284,15 +270,14 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    void testDeleteUsuario_NoExisteUsuario(){
-        //Arrange
+    void testDeleteUsuarioNoExisteUsuario(){        //Arrange
         Long id = 1L;
 
         when(usuarioRepository.existsById(id)).thenReturn(false);
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             usuarioService.deleteUsuario(id);
-        });
+        }, "verificacion");
         assertEquals("Usuario no encontrado", exception.getMessage(), "verificacion");
         verify(usuarioRepository).existsById(id);
         verify(usuarioRepository, never()).deleteById(id);

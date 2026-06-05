@@ -34,8 +34,7 @@ public class InmuebleServiceTests {
     private InmuebleServiceImpl inmuebleService;
 
     @Test
-    void testCrearInmueble_GuaradadoExitoso(){
-        //Arrange
+    void testCrearInmuebleGuaradadoExitoso(){        //Arrange
         Usuario prop = new Usuario();
         prop.setId(1L);
         Inmueble inmuebleGuardado = new Inmueble("Calle Falsa 123", "Madrid",
@@ -57,8 +56,7 @@ public class InmuebleServiceTests {
     }
 
     @Test
-    void testObtenerTodos_ExistenInmuebles(){
-        //Arrange
+    void testObtenerTodosExistenInmuebles(){        //Arrange
         Usuario prop = new Usuario();
         prop.setId(1L);
         Inmueble inmueble = new Inmueble("Calle Falsa 123", "Madrid",
@@ -78,8 +76,7 @@ public class InmuebleServiceTests {
     }
 
     @Test
-    void testObtenerTodos_NoExistenInmuebles(){
-        //Arrange
+    void testObtenerTodosNoExistenInmuebles(){        //Arrange
         when(inmuebleRepository.findAll()).thenReturn(emptyList());
         //Act y Assert
         List <Inmueble> resultado = inmuebleService.obtenerTodos();
@@ -90,8 +87,7 @@ public class InmuebleServiceTests {
     }
 
     @Test
-    void testObtenerPorId_ExisteInmueble(){
-        //Arrange
+    void testObtenerPorIdExisteInmueble(){        //Arrange
         Usuario prop = new Usuario();
         prop.setId(1L);
         Inmueble inmueble = new Inmueble("Calle Falsa 123", "Madrid",
@@ -112,8 +108,7 @@ public class InmuebleServiceTests {
     }
 
     @Test
-    void testObtenerPorId_NoExisteInmueble(){
-        //Arrange
+    void testObtenerPorIdNoExisteInmueble(){        //Arrange
         Long id = 1L;
         when(inmuebleRepository.findById(id)).thenReturn(Optional.empty());
         //Act y Assert
@@ -126,8 +121,7 @@ public class InmuebleServiceTests {
     }
 
     @Test
-    void testActualizarInmueble_ExisteInmueble(){
-        //Arrange
+    void testActualizarInmuebleExisteInmueble(){        //Arrange
         Usuario prop = new Usuario();
         prop.setId(1L);
 
@@ -157,8 +151,7 @@ public class InmuebleServiceTests {
     }
 
     @Test
-    void testActualizarInmueble_NoExisteInmueble(){
-        //Arrange
+    void testActualizarInmuebleNoExisteInmueble(){        //Arrange
         Long id = 1L;
         Inmueble inmuebleNuevo = new Inmueble();
         inmuebleNuevo.setIdInmueble(id);
@@ -167,7 +160,7 @@ public class InmuebleServiceTests {
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             inmuebleService.actualizarInmueble(id, inmuebleNuevo);
-        });
+        }, "verificacion");
 
         assertEquals("Inmueble no encontrado", exception.getMessage(), "verificacion");
 
@@ -175,8 +168,7 @@ public class InmuebleServiceTests {
     }
 
     @Test
-    void testEliminarInmueble_ExisteInmueble(){
-        //Arrange
+    void testEliminarInmuebleExisteInmueble(){        //Arrange
         Long id = 1L;
 
         when(inmuebleRepository.existsById(id)).thenReturn(true);
@@ -190,15 +182,14 @@ public class InmuebleServiceTests {
     }
 
     @Test
-    void testEliminarInmueble_NoExisteInmueble(){
-        //Arrange
+    void testEliminarInmuebleNoExisteInmueble(){        //Arrange
         Long id = 1L;
 
         when(inmuebleRepository.existsById(id)).thenReturn(false);
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             inmuebleService.eliminarInmueble(id);
-        });
+        }, "verificacion");
 
         assertEquals("Inmueble no encontrado", exception.getMessage(), "verificacion");
 
@@ -206,8 +197,7 @@ public class InmuebleServiceTests {
     }
 
     @Test
-    void testBuscarConFiltros_ExistenInmueblesTodosCampos(){
-        //Arrange
+    void testBuscarConFiltrosExistenInmueblesTodosCampos(){        //Arrange
         String ciudad = "Madrid";
         Inmueble.Tipo tipo = Inmueble.Tipo.APARTAMENTO;
         boolean soloDirecta = true;
@@ -229,8 +219,7 @@ public class InmuebleServiceTests {
     }
 
     @Test
-    void testBuscarConFiltros_ExistenInmueblesSoloCiudad(){
-        //Arrange
+    void testBuscarConFiltrosExistenInmueblesSoloCiudad(){        //Arrange
         String ciudad = "Salamanca";
 
         List <Inmueble> listaEsperada = List.of(new Inmueble(), new Inmueble());
@@ -246,8 +235,7 @@ public class InmuebleServiceTests {
     }
 
     @Test
-    void testBuscarConFiltros_NoExistenInmuebles(){
-        //Arrange
+    void testBuscarConFiltrosNoExistenInmuebles(){        //Arrange
         String ciudad = "Sevilla";
         Inmueble.Tipo tipo = Inmueble.Tipo.VIVIENDA_COMPLETA;
         boolean soloDirecta = false;
@@ -267,8 +255,7 @@ public class InmuebleServiceTests {
     }
 
     @Test
-    void testBuscarConFiltros_SinCoincidencias(){
-        //Arrange
+    void testBuscarConFiltrosSinCoincidencias(){        //Arrange
         String ciudad = "Sevilla";
         Inmueble.Tipo tipo = Inmueble.Tipo.VIVIENDA_COMPLETA;
         boolean soloDirecta = false;
@@ -286,8 +273,7 @@ public class InmuebleServiceTests {
     }
 
     @Test
-    void testObtenerPorPropietario_ExisteInmueble(){
-        //Arrange
+    void testObtenerPorPropietarioExisteInmueble(){        //Arrange
         Usuario prop1 = new Usuario(); 
         prop1.setId(1L); 
 
@@ -316,8 +302,7 @@ public class InmuebleServiceTests {
     }
 
     @Test
-    void testObtenerPorPropietario_NoExisteInmueble(){
-        //Arrange
+    void testObtenerPorPropietarioNoExisteInmueble(){        //Arrange
         Long id = 1L;
 
         when(inmuebleRepository.findByPropietarioId(id)).thenReturn(emptyList());

@@ -32,8 +32,7 @@ public class ReservaServiceTests {
     private ReservaService reservaService;
 
     @Test
-    void testCrearReserva_GuardadoExitoso(){
-        //Arrange
+    void testCrearReservaGuardadoExitoso(){        //Arrange
         Reserva reserva = new Reserva();
 
         when(reservaRepository.save(reserva)).thenReturn(reserva);
@@ -49,8 +48,7 @@ public class ReservaServiceTests {
     }
 
     @Test
-    void testObtenerTodas_ExistenReservas(){
-        //Arrange
+    void testObtenerTodasExistenReservas(){        //Arrange
         Reserva reserva1 = new Reserva();
         Reserva reserva2 = new Reserva();
 
@@ -69,8 +67,7 @@ public class ReservaServiceTests {
     }
 
     @Test
-    void testObtenerTodas_NoExistenReservas(){
-        //Arrange
+    void testObtenerTodasNoExistenReservas(){        //Arrange
 
         when(reservaRepository.findAll()).thenReturn(emptyList());
         //Act y Assert
@@ -83,8 +80,7 @@ public class ReservaServiceTests {
     }
 
     @Test
-    void testObtenerPorId_ExisteReserva(){
-        //Arrange
+    void testObtenerPorIdExisteReserva(){        //Arrange
         Long id = 1L;
         Reserva reserva = new Reserva();
         reserva.setIdReserva(id);
@@ -101,8 +97,7 @@ public class ReservaServiceTests {
     }
 
     @Test
-    void testObtenerPorId_NoExisteReserva(){
-        //Arrange
+    void testObtenerPorIdNoExisteReserva(){        //Arrange
         Long id = 1L;
 
         when(reservaRepository.findById(id)).thenReturn(Optional.empty());
@@ -116,8 +111,7 @@ public class ReservaServiceTests {
     }
 
     @Test
-    void testObtenerPorInquilino_ExisteReserva(){
-        //Arrange
+    void testObtenerPorInquilinoExisteReserva(){        //Arrange
 
         Long inquilinoId = 1L;
 
@@ -144,8 +138,7 @@ public class ReservaServiceTests {
     }
 
     @Test
-    void testObtenerPorInquilino_NoExisteReserva(){
-        //Arrange
+    void testObtenerPorInquilinoNoExisteReserva(){        //Arrange
         Long inquilinoId = 1L;
 
         when(reservaRepository.findByInquilinoId(inquilinoId)).thenReturn(emptyList());
@@ -160,8 +153,7 @@ public class ReservaServiceTests {
     }
 
     @Test
-    void testObtenerPorInmueble_ExisteReserva(){
-        //Arrange
+    void testObtenerPorInmuebleExisteReserva(){        //Arrange
         Long inmuebleId = 1L;
 
         Reserva reserva1 = new Reserva();
@@ -186,8 +178,7 @@ public class ReservaServiceTests {
     }
 
     @Test
-    void testObtenerPorInmueble_NoExisteReserva(){
-        //Arrange
+    void testObtenerPorInmuebleNoExisteReserva(){        //Arrange
         Long inmuebleId = 1L;
 
         when(reservaRepository.findByInmuebleId(inmuebleId)).thenReturn(emptyList());
@@ -201,8 +192,7 @@ public class ReservaServiceTests {
     }
 
     @Test
-    void testEliminarReserva_ExisteReserva(){
-        //Arrange
+    void testEliminarReservaExisteReserva(){        //Arrange
         Long idReserva = 1L;
 
         when(reservaRepository.existsById(idReserva)).thenReturn(true);
@@ -215,15 +205,14 @@ public class ReservaServiceTests {
     }
 
     @Test
-    void testEliminarReserva_NoExisteReserva(){
-        //Arrange
+    void testEliminarReservaNoExisteReserva(){        //Arrange
         Long idReserva = 1L;
 
         when(reservaRepository.existsById(idReserva)).thenReturn(false);
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             reservaService.eliminarReserva(idReserva);
-        });
+        }, "verificacion");
 
         assertEquals("Reserva no encontrada", exception.getMessage(), "verificacion");
 

@@ -1,4 +1,3 @@
-
 package com.example.backend.model;
 
 import java.time.LocalDate;
@@ -36,7 +35,8 @@ public class Disponibilidad {
     // Relación con Inmueble
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inmueble_id")
-    @JsonIgnoreProperties({"disponibilidades", "propietario", "hibernateLazyInitializer", "handler"}) // Ignora las listas hijas para no entrar en bucle
+    @JsonIgnoreProperties({"disponibilidades", "propietario",
+        "hibernateLazyInitializer", "handler"}) // Ignora las listas hijas para no entrar en bucle
     private Inmueble inmueble;
 
     public Disponibilidad() {}
@@ -68,4 +68,3 @@ public class Disponibilidad {
     public Inmueble getInmueble() { return inmueble; }
     public void setInmueble(Inmueble inmueble) { this.inmueble = inmueble; }
 }
-

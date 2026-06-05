@@ -30,8 +30,7 @@ public class PoliticaCancelacionServiceTests {
     private PoliticaCancelacionService politicaCancelacionService;
 
     @Test
-    void testCrearPolitica_GuardadoExitoso(){
-        //Arrange
+    void testCrearPoliticaGuardadoExitoso(){        //Arrange
         PoliticaCancelacion politica = new PoliticaCancelacion();
 
         when(politicaCancelacionRepository.save(politica)).thenReturn(politica);
@@ -43,8 +42,7 @@ public class PoliticaCancelacionServiceTests {
     }
 
     @Test
-    void testObtenerTodas_ExistenPoliticas(){
-        //Arrange
+    void testObtenerTodasExistenPoliticas(){        //Arrange
         PoliticaCancelacion politica1 = new PoliticaCancelacion();
         PoliticaCancelacion politica2 = new PoliticaCancelacion();
 
@@ -62,8 +60,7 @@ public class PoliticaCancelacionServiceTests {
     }
 
     @Test
-    void testObtenerTodas_NoExistenPoliticas(){
-        //Arrange
+    void testObtenerTodasNoExistenPoliticas(){        //Arrange
         when(politicaCancelacionRepository.findAll()).thenReturn(List.of());
         //Act
         List <PoliticaCancelacion> politicasObtenidas = politicaCancelacionService.obtenerTodas();
@@ -75,8 +72,7 @@ public class PoliticaCancelacionServiceTests {
     }
 
     @Test
-    void testObtenerPorId_ExistePolitica(){
-        //Arrange
+    void testObtenerPorIdExistePolitica(){        //Arrange
         Long id = 1L;
         PoliticaCancelacion politica = new PoliticaCancelacion("Descripcion", 10.0);
         politica.setIdPolitica(id);
@@ -93,8 +89,7 @@ public class PoliticaCancelacionServiceTests {
     }
 
     @Test
-    void testObtenerPorId_NoExistePolitica(){
-        //Arrange
+    void testObtenerPorIdNoExistePolitica(){        //Arrange
         Long id = 1L;
 
         when(politicaCancelacionRepository.findById(id)).thenReturn(Optional.empty());
@@ -109,8 +104,7 @@ public class PoliticaCancelacionServiceTests {
     }
 
     @Test
-    void testActualizarPolitica_ExistePolitica(){
-        //Arrange
+    void testActualizarPoliticaExistePolitica(){        //Arrange
         Long id = 1L;
         String descripcion = "Descripcion";
         double penalizacion = 10.0;
@@ -133,8 +127,7 @@ public class PoliticaCancelacionServiceTests {
     }
 
     @Test
-    void testActualizarPolitica_NoExistePolitica(){
-        //Arrange
+    void testActualizarPoliticaNoExistePolitica(){        //Arrange
         Long id = 1L;
 
         PoliticaCancelacion nuevaPolitica = new PoliticaCancelacion("Descripcion", 10.0);
@@ -143,7 +136,7 @@ public class PoliticaCancelacionServiceTests {
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             politicaCancelacionService.actualizarPolitica(id, nuevaPolitica);
-        });
+        }, "verificacion");
 
         assertEquals("Política no encontrada", exception.getMessage(), "verificacion");
 
@@ -151,8 +144,7 @@ public class PoliticaCancelacionServiceTests {
     }
 
     @Test
-    void testEliminarPolitica_ExistePolitica(){
-        //Arrange
+    void testEliminarPoliticaExistePolitica(){        //Arrange
         Long id = 1L;
         
         when(politicaCancelacionRepository.existsById(id)).thenReturn(true);
@@ -164,15 +156,14 @@ public class PoliticaCancelacionServiceTests {
     }
 
     @Test
-    void testEliminarPolitica_noExistePolitica(){
-        //Arrange
+    void testEliminarPoliticaNoExistePolitica(){        //Arrange
         Long id = 1L;
 
         when(politicaCancelacionRepository.existsById(id)).thenReturn(false);
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             politicaCancelacionService.eliminarPolitica(id);
-        });
+        }, "verificacion");
 
         assertEquals("Política no encontrada", exception.getMessage(), "verificacion");
 
