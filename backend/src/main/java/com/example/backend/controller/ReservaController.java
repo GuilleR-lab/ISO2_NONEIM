@@ -1,19 +1,47 @@
 package com.example.backend.controller;
 
-import com.example.backend.model.*;
-import com.example.backend.repository.*;
-import com.example.backend.service.ReservaService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.backend.model.Disponibilidad;
+import com.example.backend.model.Inmueble;
+import com.example.backend.model.Pago;
+import com.example.backend.model.Reserva;
+import com.example.backend.model.SolicitudReserva;
+import com.example.backend.model.Usuario;
+import com.example.backend.repository.InmuebleRepository;
+import com.example.backend.repository.PagoRepository;
+import com.example.backend.repository.ReservaRepository;
+import com.example.backend.repository.SolicitudReservaRepository;
+import com.example.backend.repository.UsuarioRepository;
+import com.example.backend.service.ReservaService;
+
 @RestController
 @RequestMapping("/api/reservas")
 public class ReservaController {
+
+    private record InmuebleReservaDTO(Long idInmueble, String ciudad, String direccion) {}
+    private record PagoReservaDTO(String metodoPago) {}
+    private record ReservaPerfilDTO(
+        Long idReserva,
+        LocalDate fechaInicio,
+        LocalDate fechaFin,
+        boolean pagado,
+        boolean activa,
+        InmuebleReservaDTO inmueble,
+        PagoReservaDTO pago
+    ) {}
 
     private final ReservaService reservaService;
     private final UsuarioRepository usuarioRepository;
@@ -153,8 +181,27 @@ public class ReservaController {
 
     // Obtener reservas de un inquilino
     @GetMapping("/inquilino/{inquilinoId}")
-    public ResponseEntity<List<Reserva>> obtenerPorInquilino(@PathVariable Long inquilinoId) {
-        return ResponseEntity.ok(reservaService.obtenerPorInquilino(inquilinoId));
+        public ResponseEntity<List<ReservaPerfilDTO>> obtenerPorInquilino(@PathVariable Long inquilinoId) {
+        List<ReservaPerfilDTO> reservas = reservaService.obtenerPorInquilino(inquilinoId)
+            .stream()
+            .map(reserva -> new ReservaPerfilDTO(
+                reserva.getIdReserva(),
+                reserva.getFechaInicio(),
+                reserva.getFechaFin(),
+                reserva.isPagado(),
+                reserva.isActiva(),
+                reserva.getInmueble() == null
+                    ? null
+                    : new InmuebleReservaDTO(
+                        reserva.getInmueble().getIdInmueble(),
+                        reserva.getInmueble().getCiudad(),
+                        reserva.getInmueble().getDireccion()),
+                reserva.getPago() == null
+                    ? null
+                    : new PagoReservaDTO(reserva.getPago().getMetodoPago())))
+            .toList();
+
+        return ResponseEntity.ok(reservas);
     }
 
     // CRUD básico

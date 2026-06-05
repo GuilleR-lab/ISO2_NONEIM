@@ -10,10 +10,17 @@ function sleep(ms) {
 const PropiedadForm = () => {
     const [precioNoche, setPrecioNoche] = useState("");
     const [tipo, setTipo] = useState("VIVIENDA_COMPLETA");
-    const [ciudad, setCiudad] = useState("");
-    const [direccion, setDireccion] = useState("");
     const [descripcion, setDescripcion] = useState("");
     const [reservaDirecta, setReservaDirecta] = useState(false);
+
+    const [direccion, setDireccion] = useState({
+        pais: "",
+        ciudad: "",
+        codigoPostal: "",
+        calle: "",
+        edificio: "",
+        piso: ""
+    });
 
     const [message, setMessage] = useState("");
     const [messageColor, setMessageColor] = useState("red");
@@ -22,6 +29,11 @@ const PropiedadForm = () => {
     const { id } = useParams();
     const isEditing = Boolean(id);
 
+    const handleDireccionChange = (e) => {
+        const { name, value } = e.target;
+        setDireccion(prev => ({ ...prev, [name]: value }));
+    };
+
     useEffect(() => {
         if (isEditing) {
             fetch(`http://localhost:8090/api/inmuebles/${id}`)
@@ -29,11 +41,25 @@ const PropiedadForm = () => {
                 .then(data => {
                     setPrecioNoche(data.precioNoche);
                     setTipo(data.tipo);
-                    setCiudad(data.ciudad);
-                    setDireccion(data.direccion);
                     setDescripcion(data.descripcion);
                     const disp = data.disponibilidades?.[0];
                     setReservaDirecta(disp?.directa || false);
+                    if (data.direccion && typeof data.direccion === "object") {
+                        setDireccion({
+                            pais: data.direccion.pais || "",
+                            ciudad: data.direccion.ciudad || "",
+                            codigoPostal: data.direccion.codigoPostal || "",
+                            calle: data.direccion.calle || "",
+                            edificio: data.direccion.edificio || "",
+                            piso: data.direccion.piso || ""
+                        });
+                    } else {
+                        setDireccion(prev => ({
+                            ...prev,
+                            ciudad: data.ciudad || "",
+                            calle: data.direccion || ""
+                        }));
+                    }
                 })
                 .catch(error => console.error("Error al cargar:", error));
         }
@@ -42,24 +68,32 @@ const PropiedadForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!precioNoche || !tipo || !ciudad || !direccion || !descripcion) {
-            setMessage("Rellene todos los campos");
+        if (!precioNoche || !tipo || !descripcion ||
+            !direccion.pais || !direccion.ciudad || !direccion.codigoPostal ||
+            !direccion.calle || !direccion.edificio) {
+            setMessage("Rellene todos los campos obligatorios (el piso es opcional)");
             setMessageColor("red");
             return;
         }
 
         const propietarioId = sessionStorage.getItem("userId");
-
         const fechaInicio = new Date().toISOString().split("T")[0];
         const plusYear = new Date();
         plusYear.setFullYear(plusYear.getFullYear() + 1);
         const fechaFin = plusYear.toISOString().split("T")[0];
 
+        const direccionStr = [
+            direccion.calle,
+            direccion.edificio,
+            direccion.piso ? `Piso ${direccion.piso}` : null,
+            direccion.codigoPostal
+        ].filter(Boolean).join(", ");
+
         const body = {
             precioNoche: parseFloat(precioNoche),
             tipo: tipo,
-            ciudad: ciudad,
-            direccion: direccion,
+            ciudad: direccion.ciudad,
+            direccion: direccionStr,
             descripcion: descripcion,
             propietarioId: propietarioId,
             fechaInicio: fechaInicio,
@@ -70,7 +104,6 @@ const PropiedadForm = () => {
         const url = isEditing
             ? `http://localhost:8090/api/inmuebles/alta/${id}`
             : "http://localhost:8090/api/inmuebles/alta";
-
         const method = isEditing ? "PUT" : "POST";
 
         try {
@@ -98,6 +131,8 @@ const PropiedadForm = () => {
         }
     };
 
+    const labelStyle = { fontWeight: "bold", display: "block", marginBottom: "5px" };
+
     return (
         <div className="form-container">
             <header className="form-header">
@@ -108,7 +143,7 @@ const PropiedadForm = () => {
             </header>
 
             <form onSubmit={handleSubmit}>
-                <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>Precio por noche (€)</label>
+                <label style={labelStyle}>Precio por noche (€)</label>
                 <input
                     type="number"
                     placeholder="Precio por noche (€)"
@@ -116,7 +151,7 @@ const PropiedadForm = () => {
                     onChange={(e) => setPrecioNoche(e.target.value)}
                 />
 
-                <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>Tipo de propiedad</label>
+                <label style={labelStyle}>Tipo de propiedad</label>
                 <select
                     value={tipo}
                     onChange={(e) => setTipo(e.target.value)}
@@ -128,21 +163,13 @@ const PropiedadForm = () => {
                     <option value="ESTUDIO">Estudio</option>
                 </select>
 
-                <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>Ciudad</label>
-                <input
-                    type="text"
-                    placeholder="Ciudad"
-                    value={ciudad}
-                    onChange={(e) => setCiudad(e.target.value)}
-                />
-
-                <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>Dirección completa</label>
-                <input
-                    type="text"
-                    placeholder="Dirección completa"
-                    value={direccion}
-                    onChange={(e) => setDireccion(e.target.value)}
-                />
+                <label style={{ ...labelStyle, marginTop: "6px" }}>Dirección de la propiedad</label>
+                <input type="text" placeholder="País *" name="pais" value={direccion.pais} onChange={handleDireccionChange} />
+                <input type="text" placeholder="Ciudad *" name="ciudad" value={direccion.ciudad} onChange={handleDireccionChange} />
+                <input type="text" placeholder="Código postal *" name="codigoPostal" value={direccion.codigoPostal} onChange={handleDireccionChange} />
+                <input type="text" placeholder="Calle *" name="calle" value={direccion.calle} onChange={handleDireccionChange} />
+                <input type="text" placeholder="Edificio / número *" name="edificio" value={direccion.edificio} onChange={handleDireccionChange} />
+                <input type="text" placeholder="Piso (opcional)" name="piso" value={direccion.piso} onChange={handleDireccionChange} />
 
                 <div style={{ margin: "10px 0", display: "flex", alignItems: "center", gap: "10px" }}>
                     <input
@@ -154,7 +181,7 @@ const PropiedadForm = () => {
                     <label htmlFor="reservaCheck">Permitir reserva directa</label>
                 </div>
 
-                <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>Descripción</label>
+                <label style={labelStyle}>Descripción</label>
                 <textarea
                     placeholder="Descripción de la propiedad"
                     style={{
@@ -173,7 +200,10 @@ const PropiedadForm = () => {
                     </div>
                 )}
 
-                <button type="submit" style={{ backgroundColor: "#a1eafb", marginTop: "10px", width: "100%", padding: "10px", fontWeight: "bold", cursor: "pointer" }}>
+                <button
+                    type="submit"
+                    style={{ backgroundColor: "#a1eafb", marginTop: "10px", width: "100%", padding: "10px", fontWeight: "bold", cursor: "pointer" }}
+                >
                     {isEditing ? "Guardar Cambios" : "Publicar Propiedad"}
                 </button>
             </form>

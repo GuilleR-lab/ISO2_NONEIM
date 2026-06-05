@@ -1,11 +1,24 @@
 package com.example.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "Reserva")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Reserva {
 
     @Id
@@ -25,10 +38,12 @@ public class Reserva {
     private boolean isActiva;
 
     // Inquilino que hace la reserva
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "inquilino_id", nullable = false)
     private Usuario inquilino;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "idDisponibilidad", nullable = false)
     private Disponibilidad disponibilidad;
@@ -40,10 +55,12 @@ public class Reserva {
     @OneToOne(mappedBy = "reserva", cascade = CascadeType.ALL)
     private Pago pago;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "idPolitica")  // opcional
     private PoliticaCancelacion politicaCancelacion;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "idSolicitud")
     private SolicitudReserva solicitudReserva;
