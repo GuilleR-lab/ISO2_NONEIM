@@ -58,8 +58,7 @@ const Auth = () => {
     }
 
     try {
-      const isEmail = identifier.includes("@");
-      const body = isEmail ? { email: identifier, password } : { username: identifier, password };
+      const body = { identifier, password };
 
       const response = await fetch("http://localhost:8090/api/auth/login", {
         method: "POST",
@@ -95,11 +94,13 @@ const Auth = () => {
     e.preventDefault();
     // Validación de campos (en el caso del piso, puede estar vacío, pero el resto no)
     if (!username || !name || !surname || !email || !password || !confirmPassword || !address.pais || 
-      !address.ciudad || !address.codigoPostal || !address.calle || !address.edificio) {
+        !address.ciudad || !address.codigoPostal || !address.calle || !address.edificio) {
+
       setMessage("Es obligatorio rellenar todos los campos excepto el piso");
       setMessageColor("red");
       return;
     }
+
     if (password !== confirmPassword) {
       setMessage("Las contraseñas no coinciden");
       setMessageColor("red");
@@ -170,7 +171,7 @@ const Auth = () => {
               onChange={handleAddressChange} />
             <input type="text" placeholder="Ciudad" name="ciudad" value={address.ciudad}
               onChange={handleAddressChange} />
-            <input type="text" placeholder="Codigo postal" name="codigoPostal" value={address.codigoPostal}
+            <input type="number" placeholder="Codigo postal" name="codigoPostal" value={address.codigoPostal}
               onChange={handleAddressChange} />
             <input type="text" placeholder="Calle" name="calle" value={address.calle}
               onChange={handleAddressChange} />

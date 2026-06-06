@@ -42,16 +42,14 @@ public class UsuarioController {
         
         //TODO: manage session cookies
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(Map.of("message", "Sesion iniciada correctamente"));
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest dto) {
-        //TODO: poner todos los campos del form de registro como obligatorios en el frontend
-
         usuarioService.createUsuario(dto);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(Map.of("message", "Usuario creado correctamente"));
     }
 
     //@PatchMapping("/{id}/rol")
