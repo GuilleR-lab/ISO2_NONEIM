@@ -23,6 +23,8 @@ import com.example.backend.dto.request.RegisterRequest;
 //import com.example.backend.model.Usuario.Rol;
 import com.example.backend.service.UsuarioService;
 import com.example.backend.dto.response.UsuarioDTO;
+import com.example.backend.dto.response.JwtDTO;
+import com.example.backend.security.JwtService;
 
 @CrossOrigin(
     origins = "http://localhost:3000",
@@ -35,14 +37,16 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+    private JwtService jwtService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest dto) {
         UsuarioDTO usuario = usuarioService.authenticate(dto.getIdentifier(), dto.getPassword());
-        
-        //TODO: manage session cookies
 
-        return ResponseEntity.ok(Map.of("message", "Sesion iniciada correctamente"));
+        //generate token JWT
+        String token = jwtService.generateToken(usuario.getUsername());
+        
+        return ResponseEntity.ok(new JwtDTO(token));
     }
 
     @PostMapping("/register")
