@@ -100,7 +100,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         usuarioRepository.save(usuario);
     }
-    
+
     @Override
     public void deleteUsuario(Long usuarioId) {
         usuarioRepository.deleteById(usuarioId);

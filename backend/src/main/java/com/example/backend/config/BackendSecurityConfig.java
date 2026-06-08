@@ -15,15 +15,25 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.example.backend.security.JwtAuthFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import com.example.backend.repository.UsuarioRepository;
+import com.example.backend.model.Usuario;
+
 
 @Configuration
 @EnableWebSecurity
 public class BackendSecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final UsuarioRepository usuarioRepository;
 
-    public BackendSecurityConfig(JwtAuthFilter jwtAuthFilter) {
+
+    public BackendSecurityConfig(JwtAuthFilter jwtAuthFilter, UsuarioRepository usuarioRepository) {
         this.jwtAuthFilter = jwtAuthFilter;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Bean
@@ -53,10 +63,29 @@ public class BackendSecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return username -> {
+            Usuario usuario = usuarioRepository.findByUsername(username);
+
+            if (usuario == null) {
+                throw new UsernameNotFoundException("Usuario no encontrado: " + username);
+            }
+            return usuario; // usuario implements UserDetails
+        };
+
+
+    }
     
     //Specify tool to hash password
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new Argon2PasswordEncoder(16, 32, 1, 65536, 3);
     } 
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
 }

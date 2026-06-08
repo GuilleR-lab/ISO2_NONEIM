@@ -3,12 +3,11 @@ package com.example.backend.controller;
 import java.util.Map;
 //import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 //import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,16 +34,20 @@ import com.example.backend.security.JwtService;
 @RequestMapping("/api/auth")
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioService usuarioService;
-    private JwtService jwtService;
+    private final UsuarioService usuarioService;
+    private final JwtService jwtService;
+
+    public UsuarioController(UsuarioService usuarioService, JwtService jwtService){
+        this.usuarioService = usuarioService;
+        this.jwtService = jwtService;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest dto) {
         UsuarioDTO usuario = usuarioService.authenticate(dto.getIdentifier(), dto.getPassword());
 
         //generate token JWT
-        String token = jwtService.generateToken(usuario.getUsername());
+        String token = jwtService.generateToken(usuario);
         
         return ResponseEntity.ok(new JwtDTO(token));
     }
@@ -56,29 +59,25 @@ public class UsuarioController {
         return ResponseEntity.ok(Map.of("message", "Usuario creado correctamente"));
     }
 
-    //@PatchMapping("/{id}/rol")
-    //public ResponseEntity<?> cambiarRol(@PathVariable Long id, @RequestBody Map<String, String> body){
-    //    String nuevoRolStr = body.get("rol");
-    //    Optional<Usuario> usuarioOpt = usuarioService.findById(id);
-
-    //    if (usuarioOpt.isEmpty()){
-    //        return ResponseEntity.status(404).body(Map.of("message", "Usuario no encontrado"));
-    //    }
-
-    //    Usuario user = usuarioOpt.get();
-        
-    //    try{
-    //        Rol nuevoRol = Rol.valueOf(nuevoRolStr.toUpperCase()); 
-    //        user.setRol(nuevoRol);
-    //        usuarioService.updateUsuario(user, id);
-    //        return ResponseEntity.ok(Map.of(
-    //            "message", "Rol actualizado correctamente",
-    //            "nuevoRol", nuevoRol.name()
-    //        ));
-    //    } catch (IllegalArgumentException e) {
-    //        return ResponseEntity.badRequest().body(Map.of("message", "Rol no válido"));
-    //    }
+    //@PostMapping("/refresh")
+    //public void refreshToken(){
+        //TODO
     //}
+
+
+    @PatchMapping("/{id}/rol")
+    public ResponseEntity<?> updateRol(@PathVariable Long id, @RequestBody Map<String, String> body){
+        String newRol = body.get("rol");
+
+        UsuarioDTO usuario;
+
+        //TODO: obtain usuario by UsuarioService
+
+        //generate new token JWT
+        String newToken = jwtService.generateToken(usuario);
+
+        return ResponseEntity.ok(new JwtDTO(newToken));
+    }
     
     //@PatchMapping("/{id}/password")
     //public ResponseEntity<?> cambiarPassword(@PathVariable Long id, @RequestBody Map<String, String> body) {

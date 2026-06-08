@@ -2,6 +2,7 @@ import "../App.css";
 import { useEffect, useState } from "react";
 import { useNavigate, Outlet, useLocation, useOutletContext } from "react-router-dom";
 import { Menu, User, Home, X, LogOut, Sofa } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
 
 // ─── MODAL CAMBIAR CONTRASEÑA ───────────────────────────────────────────────
 const ModalCambiarPassword = ({ userId, onClose }) => {
@@ -441,7 +442,9 @@ export const MisPropiedades = () => {
 
 // ─── COMPONENTE PRINCIPAL PERFIL ──────────────────────────────────────────────
 const Perfil = () => {
-    const [user, setUser] = useState(null);
+    const [username, setUsername] = useState(null);
+    const [usuarioId, setUsuarioId] = useState(null);
+    const [usuarioRol, setUsuarioRol] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const navigate = useNavigate();
@@ -452,38 +455,39 @@ const Perfil = () => {
     const isReservas = location.pathname.includes("reservas");
 
     useEffect(() => {
-        const userId = sessionStorage.getItem("userId");
-        if (!userId) { navigate("/auth"); return; }
+        //verify JWT token
+        const token = localStorage.getItem('token');
+        if (!token) { navigate("/auth"); return; }
+        const decoded = jwtDecode(token);
+        setUsuarioId(decoded.id);
+        setUsuarioRol(decoded.rol);
+        setUsername(decoded.sub); //subject
 
-        fetch(`http://localhost:8090/api/auth/${userId}`)
-            .then(response => {
-                if (!response.ok) throw new Error("Error al obtener el usuario");
-                return response.json();
-            })
-            .then(data => setUser(data))
-            .catch(error => console.error(error));
     }, [navigate]);
 
-    if (!user) return <p>Cargando perfil...</p>;
+    //if (!token) return <p>Cargando perfil...</p>;
 
     const toggleRol = async () => {
-        const userId = sessionStorage.getItem("userId");
-        const nuevoRol = user.rol === "INQUILINO" ? "PROPIETARIO" : "INQUILINO";
+        const nuevoRol = usuarioRol === "INQUILINO" ? "PROPIETARIO" : "INQUILINO";
 
         try {
-            const response = await fetch(`http://localhost:8090/api/auth/${userId}/rol`, {
+            const response = await fetch(`http://localhost:8090/api/auth/${usuarioId}/rol`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ rol: nuevoRol }),
             });
 
+            const data = await response.json();
+
             if (response.ok) {
-                sessionStorage.setItem("rol", nuevoRol);
-                setUser({ ...user, rol: nuevoRol });
+                //sessionStorage.setItem("rol", nuevoRol);
+                //setUser({ ...user, rol: nuevoRol });
+                localStorage.setItem('token', data.token); //save new JWT token
                 alert(`Ahora eres ${nuevoRol.toLowerCase()}`);
             } else {
                 alert("Error en el servidor al cambiar el rol");
             }
+            
         } catch (error) {
             console.error("Error al conectar:", error);
             alert("No se pudo conectar con el servidor");
@@ -520,7 +524,7 @@ const Perfil = () => {
                     >
                         <Sofa size={18} /> Mis Reservas
                     </button>
-                    {user.rol === "PROPIETARIO" && (
+                    {usuarioRol === "PROPIETARIO" && (
                         <button
                             className={isPropiedades ? "active" : ""}
                             onClick={() => { navigate("/perfil/propiedades"); setIsSidebarOpen(false); }}
@@ -543,9 +547,9 @@ const Perfil = () => {
                         {location.pathname === "/perfil" && "Mi Perfil"}
                     </h1>
                 </header>
-                <h3>Bienvenid@ de nuevo, {user.name} 😎👍</h3>
+                <h3>Bienvenid@ de nuevo, {username} 😎👍</h3>
                 <section className="dashboard-content">
-                    <Outlet context={{ user, toggleRol, setUser }} />
+                   <Outlet context={{ user, toggleRol, setUser }} />
                 </section>
             </main>
         </div>

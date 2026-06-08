@@ -19,13 +19,19 @@ const HomePage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const storedUser = sessionStorage.getItem("username");
-        const storedId = sessionStorage.getItem("userId");
-        const storedRol = sessionStorage.getItem("rol");
+        const token = localStorage.getItem('token'); //obtain JWT token
+        
+        if (token){
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const username = payload.sub; //subject
+            setUsername(username);
+        }
+        //const storedId = sessionStorage.getItem("userId");
+        //const storedRol = sessionStorage.getItem("rol");
 
-        if (storedUser) setUsername(storedUser);
-        if (storedId) setUsuarioId(storedId);
-        if (storedRol === "PROPIETARIO") setEsPropietario(true);
+        //if (storedUser) setUsername(storedUser);
+        //if (storedId) setUsuarioId(storedId);
+        //if (storedRol === "PROPIETARIO") setEsPropietario(true);
     }, []);
 
     useEffect(() => {
@@ -71,12 +77,12 @@ const HomePage = () => {
     };
 
     const handleLogout = () => {
-        sessionStorage.clear();
+        localStorage.removeItem('token'); //delete JWT token
         setUsername(null);
-        setUsuarioId(null);
-        setEsPropietario(false);
-        setSolicitudesPendientes(0);
-        setMenuOpen(false);
+        //setUsuarioId(null);
+        //setEsPropietario(false);
+        //setSolicitudesPendientes(0);
+        //setMenuOpen(false);
         navigate("/");
     };
 

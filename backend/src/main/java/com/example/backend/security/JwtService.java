@@ -4,6 +4,9 @@ import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.Date;
 import org.springframework.stereotype.Service;
+
+import com.example.backend.dto.response.UsuarioDTO;
+
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
@@ -16,9 +19,11 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    public String generateToken(String username) {
+    public String generateToken(UsuarioDTO usuario) {
         return Jwts.builder()
-                .subject(username)
+                .subject(usuario.getUsername())
+                .claim("id", usuario.getId())
+                .claim("rol", usuario.getRol())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey())

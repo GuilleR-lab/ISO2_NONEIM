@@ -74,10 +74,12 @@ const Auth = () => {
         return;
       }
 
-      sessionStorage.setItem("userId", data.id);
-      sessionStorage.setItem("username", data.username);
-      sessionStorage.setItem("email", data.email);
-      sessionStorage.setItem("rol", data.rol);
+      localStorage.setItem('token', data.token); //save JWT token
+
+      //sessionStorage.setItem("userId", data.id);
+      //sessionStorage.setItem("username", data.username);
+      //sessionStorage.setItem("email", data.email);
+      //sessionStorage.setItem("rol", data.rol);
 
       setMessage("Inicio de sesión correcto");
       setMessageColor("green");
