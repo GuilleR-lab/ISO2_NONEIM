@@ -86,19 +86,26 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
     
     @Override
-    public void updateUsuario(Usuario newUsuario, Long usuarioId) {
+    public UsuarioDTO updateUsuario(Usuario newUsuario, Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
-        if (usuario == null) return;
+        if (usuario == null) return null;
 
         //Username, Email and Rol are always in DTO.
         if (newUsuario.getUsername() != usuario.getUsername()) usuario.setUsername(newUsuario.getUsername());
         if (newUsuario.getEmail() != usuario.getEmail()) usuario.setEmail(newUsuario.getEmail());
         if (newUsuario.getSurname() != null) usuario.setSurname(newUsuario.getSurname());
         if (newUsuario.getAddress() != null) usuario.setAddress(newUsuario.getAddress());
-        if (newUsuario.getPassword() != null) usuario.setPassword(passwordEncoder.encode(newUsuario.getPassword())); //hashing new password 
         if (newUsuario.getRol() != usuario.getRol()) usuario.setRol(newUsuario.getRol());
 
+        if (newUsuario.getPassword() != null && 
+            !passwordEncoder.matches(newUsuario.getPassword(), usuario.getPassword()) &&
+            !newUsuario.getPassword().equals(usuario.getPassword())) {
+            usuario.setPassword(passwordEncoder.encode(newUsuario.getPassword()));
+        }
+
         usuarioRepository.save(usuario);
+
+        return new UsuarioDTO(usuario.getId(), usuario.getUsername(), usuario.getEmail(), usuario.getRol());
     }
 
     @Override

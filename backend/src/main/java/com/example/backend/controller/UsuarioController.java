@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 //import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,10 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.backend.dto.request.LoginRequest;
 import com.example.backend.dto.request.RegisterRequest;
 //import com.example.backend.model.Direccion;
-//import com.example.backend.model.Usuario;
-//import com.example.backend.model.Usuario.Rol;
 import com.example.backend.service.UsuarioService;
 import com.example.backend.dto.response.UsuarioDTO;
+import com.example.backend.model.Usuario;
+import com.example.backend.model.Usuario.Rol;
 import com.example.backend.dto.response.JwtDTO;
 import com.example.backend.security.JwtService;
 
@@ -59,6 +60,15 @@ public class UsuarioController {
         return ResponseEntity.ok(Map.of("message", "Usuario creado correctamente"));
     }
 
+    @GetMapping("/usuarios/{id}")
+    public ResponseEntity<?> getUsuario(@PathVariable Long id){
+
+        //TODO: changue to return DTO not Usuario object       
+        Usuario usuario = usuarioService.findById(id).get();
+        
+        return ResponseEntity.ok(usuario);
+    }
+
     //@PostMapping("/refresh")
     //public void refreshToken(){
         //TODO
@@ -67,20 +77,30 @@ public class UsuarioController {
 
     @PatchMapping("/{id}/rol")
     public ResponseEntity<?> updateRol(@PathVariable Long id, @RequestBody Map<String, String> body){
-        String newRol = body.get("rol");
+        Rol newRol = Rol.valueOf(body.get("rol")); //parse String to Rol type
+        
+        //apply updates
+        Usuario newUsuario = usuarioService.findById(id).get();
+        newUsuario.setRol(newRol);
 
-        UsuarioDTO usuario;
+        UsuarioDTO usuario = usuarioService.updateUsuario(newUsuario, id);
 
-        //TODO: obtain usuario by UsuarioService
-
-        //generate new token JWT
+        //generate new token JWT (only for username, email, rol)
         String newToken = jwtService.generateToken(usuario);
 
         return ResponseEntity.ok(new JwtDTO(newToken));
     }
     
     //@PatchMapping("/{id}/password")
-    //public ResponseEntity<?> cambiarPassword(@PathVariable Long id, @RequestBody Map<String, String> body) {
+    //public ResponseEntity<?> updatePassword(@PathVariable Long id, @RequestBody Map<String, String> body) {
+    //    String passwordNueva = body.get("passwordNueva"); 
+
+        //apply updates
+    //    Usuario newUsuario = usuarioService.findById(id).get();
+    //    newUsuario.setPassword(passwordNueva);
+
+    //    usuarioService.updateUsuario(newUsuario, id);
+
     //    String passwordActual = body.get("passwordActual");
     //    String passwordNueva = body.get("passwordNueva");
 
@@ -106,7 +126,7 @@ public class UsuarioController {
     //}
 
     //@PatchMapping("/{id}/direccion")
-    //public ResponseEntity<?> editarDireccion(@PathVariable Long id, @RequestBody Direccion nuevaDireccion) {
+    //public ResponseEntity<?> updateDireccion(@PathVariable Long id, @RequestBody Direccion nuevaDireccion) {
     //    if (nuevaDireccion == null ||
     //        nuevaDireccion.getPais() == null || nuevaDireccion.getPais().isBlank() ||
     //        nuevaDireccion.getCiudad() == null || nuevaDireccion.getCiudad().isBlank() ||

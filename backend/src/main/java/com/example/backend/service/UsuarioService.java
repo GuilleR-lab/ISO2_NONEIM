@@ -10,8 +10,8 @@ import com.example.backend.dto.request.RegisterRequest;
 public interface UsuarioService {
     UsuarioDTO authenticate(String data, String password);
     //List<UsuarioDTO> showAllUsuarios();
-    Optional<Usuario> findById(Long id);
+    Optional<Usuario> findById(Long id); 
     void createUsuario(RegisterRequest usuario);
-    void updateUsuario(Usuario usuario, Long usuarioId);
+    UsuarioDTO updateUsuario(Usuario usuario, Long usuarioId);
     void deleteUsuario(Long usuarioId);
 }
