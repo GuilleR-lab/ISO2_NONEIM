@@ -1,6 +1,7 @@
 import "../App.css";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const Reservar = () => {
     const { id } = useParams();
@@ -14,9 +15,11 @@ const Reservar = () => {
     const [mensaje, setMensaje] = useState("");
     const [mensajeColor, setMensajeColor] = useState("red");
     const [procesando, setProcesando] = useState(false);
-
-    const inquilinoId = sessionStorage.getItem("userId");
-    const rol = sessionStorage.getItem("rol");
+    
+    const token = localStorage.getItem("token");
+    const decoded = token ? jwtDecode(token) : null;
+    const inquilinoId = decoded?.id;
+    const rol = decoded?.rol;
 
     useEffect(() => {
         if (!inquilinoId) {

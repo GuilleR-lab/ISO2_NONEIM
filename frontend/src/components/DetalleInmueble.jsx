@@ -1,14 +1,16 @@
 import "../App.css";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const DetalleInmueble = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [inmueble, setInmueble] = useState(null);
     const [cargando, setCargando] = useState(true);
-
-    const usuarioLogueado = sessionStorage.getItem("userId");
+    
+    const token = localStorage.getItem("token");
+    const usuarioLogueado = token ? jwtDecode(token).id : null;
     //const rol = sessionStorage.getItem("rol");
 
     useEffect(() => {

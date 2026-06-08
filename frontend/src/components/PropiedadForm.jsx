@@ -2,6 +2,7 @@ import "../App.css";
 import { HiArrowSmallLeft } from "react-icons/hi2";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -75,8 +76,11 @@ const PropiedadForm = () => {
             setMessageColor("red");
             return;
         }
-
-        const propietarioId = sessionStorage.getItem("userId");
+        
+        const token = localStorage.getItem("token");
+        const decoded = jwtDecode(token);
+        const propietarioId = decoded.id;
+        
         const fechaInicio = new Date().toISOString().split("T")[0];
         const plusYear = new Date();
         plusYear.setFullYear(plusYear.getFullYear() + 1);

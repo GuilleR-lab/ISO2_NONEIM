@@ -209,24 +209,34 @@ const inputStyle = {
 
 // ─── COMPONENTE ÁREA PERSONAL ─────────────────────────────────────────────────
 export const AreaPersonal = () => {
-    const { user, toggleRol, setUser } = useOutletContext();
+    const { usuarioId, toggleRol } = useOutletContext();
+    const [usuario, setUsuario] = useState(null);
     const [showModalPassword, setShowModalPassword] = useState(false);
     const [showModalDireccion, setShowModalDireccion] = useState(false);
+    
+    //obtain Usuario 
+    useEffect(() => {
+        fetch(`http://localhost:8090/api/auth/usuarios/${usuarioId}`)
+            .then(res => res.json())
+            .then(data => setUsuario(data));
+    }, [usuarioId]);
+
+    if (!usuario) return <p>Cargando...</p>;
 
     const handleDireccionUpdated = (newAddress) => {
-        setUser(prev => ({ ...prev, address: newAddress }));
+        setUsuario(prev => ({ ...prev, address: newAddress }));
     };
 
     return (
         <div className="grid-dashboard">
             <div className="dash-card profile-info">
                 <h3>Información de Perfil</h3>
-                <div className="info-row"><span><strong>Nombre:</strong></span> {user.name} {user.surname}</div>
-                <div className="info-row"><span><strong>Usuario:</strong></span> {user.username}</div>
-                <div className="info-row"><span><strong>Email:</strong></span> {user.email}</div>
-                <div className="info-row"><span><strong>Rol:</strong></span> {user.rol}</div>
+                <div className="info-row"><span><strong>Nombre:</strong></span> {usuario.name} {usuario.surname}</div>
+                <div className="info-row"><span><strong>Usuario:</strong></span> {usuario.username}</div>
+                <div className="info-row"><span><strong>Email:</strong></span> {usuario.email}</div>
+                <div className="info-row"><span><strong>Rol:</strong></span> {usuario.rol}</div>
                 <button className="btn-add" onClick={toggleRol}>
-                    {user.rol === "INQUILINO" ? "Hacerme Propietario" : "Volver a ser Inquilino"}
+                    {usuario.rol === "INQUILINO" ? "Hacerme Propietario" : "Volver a ser Inquilino"}
                 </button>
                 <button className="btn-secondary" onClick={() => setShowModalPassword(true)}>
                     Cambiar Contraseña
@@ -235,9 +245,9 @@ export const AreaPersonal = () => {
 
             <div className="dash-card address-info">
                 <h3>Dirección</h3>
-                <div><span><strong>País:</strong></span> {user.address?.pais}</div>
-                <div><span><strong>Ciudad:</strong></span> {user.address?.ciudad}, {user.address?.codigoPostal}</div>
-                <div><span><strong>Dirección:</strong></span> {user.address?.calle}, {user.address?.edificio}{user.address?.piso ? `, ${user.address.piso}` : ""}</div>
+                <div><span><strong>País:</strong></span> {usuario.address?.pais}</div>
+                <div><span><strong>Ciudad:</strong></span> {usuario.address?.ciudad}, {usuario.address?.codigoPostal}</div>
+                <div><span><strong>Dirección:</strong></span> {usuario.address?.calle}, {usuario.address?.edificio}{usuario.address?.piso ? `, ${usuario.address.piso}` : ""}</div>
                 <button className="btn-secondary" onClick={() => setShowModalDireccion(true)}>
                     Editar Dirección
                 </button>
@@ -245,15 +255,15 @@ export const AreaPersonal = () => {
 
             {showModalPassword && (
                 <ModalCambiarPassword
-                    userId={user.id}
+                    userId={usuarioId}
                     onClose={() => setShowModalPassword(false)}
                 />
             )}
 
             {showModalDireccion && (
                 <ModalEditarDireccion
-                    userId={user.id}
-                    addressActual={user.address}
+                    userId={usuarioId}
+                    addressActual={usuario.address}
                     onClose={() => setShowModalDireccion(false)}
                     onUpdated={handleDireccionUpdated}
                 />
@@ -267,11 +277,11 @@ export const MisReservas = () => {
     const [reservas, setReservas] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [errorReservas, setErrorReservas] = useState("");
-    const { user } = useOutletContext();
+    const { usuarioId } = useOutletContext();
 
     useEffect(() => {
-        if (user?.id) {
-            fetch(`http://localhost:8090/api/reservas/inquilino/${user.id}`)
+        //if (user?.id) {
+            fetch(`http://localhost:8090/api/reservas/inquilino/${usuarioId}`)
                 .then(async res => {
                     const data = await res.json();
                     if (!res.ok) {
@@ -295,8 +305,8 @@ export const MisReservas = () => {
                     setErrorReservas(error.message || "No se pudieron cargar las reservas.");
                     setCargando(false);
                 });
-        }
-    }, [user?.id]);
+        //}
+    }, [usuarioId]);
 
     if (cargando) return <p>Cargando reservas...</p>;
 
@@ -354,7 +364,7 @@ export const MisPropiedades = () => {
     const [propiedades, setPropiedades] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const { user } = useOutletContext();
+    const { usuarioId } = useOutletContext();
 
     const handleDelete = async (idInmueble) => {
         const confirmacion = window.confirm("¿Estás seguro de que quieres eliminar esta propiedad?");
@@ -375,16 +385,16 @@ export const MisPropiedades = () => {
     };
 
     useEffect(() => {
-        if (user?.id) {
-            fetch(`http://localhost:8090/api/inmuebles/propietario/${user.id}`)
+        //if (usuarioId) {
+            fetch(`http://localhost:8090/api/inmuebles/propietario/${usuarioId}`)
                 .then(response => {
                     if (!response.ok) throw new Error("Error al obtener inmuebles");
                     return response.json();
                 })
                 .then(data => { setPropiedades(data); setLoading(false); })
                 .catch(error => { console.error("Error cargando propiedades:", error); setLoading(false); });
-        }
-    }, [user?.id]);
+        //}
+    }, [usuarioId]);
 
     if (loading) return <p>Cargando tus propiedades...</p>;
 
@@ -478,11 +488,13 @@ const Perfil = () => {
             });
 
             const data = await response.json();
+            //console.log(data);
 
             if (response.ok) {
                 //sessionStorage.setItem("rol", nuevoRol);
                 //setUser({ ...user, rol: nuevoRol });
                 localStorage.setItem('token', data.token); //save new JWT token
+                setUsuarioRol(nuevoRol);
                 alert(`Ahora eres ${nuevoRol.toLowerCase()}`);
             } else {
                 alert("Error en el servidor al cambiar el rol");
@@ -532,7 +544,7 @@ const Perfil = () => {
                             <Sofa size={18} /> Mis Propiedades
                         </button>
                     )}
-                    <button onClick={() => { sessionStorage.clear(); navigate("/"); }}>
+                    <button onClick={() => { localStorage.removeItem('token'); navigate("/"); }}>
                         <LogOut size={18} /> Cerrar Sesión
                     </button>
                 </nav>
@@ -549,7 +561,7 @@ const Perfil = () => {
                 </header>
                 <h3>Bienvenid@ de nuevo, {username} 😎👍</h3>
                 <section className="dashboard-content">
-                   <Outlet context={{ user, toggleRol, setUser }} />
+                   <Outlet context={{ usuarioId, usuarioRol, username, toggleRol }} />
                 </section>
             </main>
         </div>

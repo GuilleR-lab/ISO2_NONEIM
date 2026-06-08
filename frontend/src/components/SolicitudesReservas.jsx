@@ -2,6 +2,7 @@ import "../App.css";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Home, ClipboardList, Key, Check, X, Hourglass } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
 
 // --- SUB-COMPONENTE 1:  (VISTA INQUILINO) ---
 const MisSolicitudesEnviadas = ({ userId, onUpdate }) => {
@@ -130,25 +131,23 @@ const GestionSolicitudesRecibidas = ({ userId, handleAccion, onUpdate }) => {
 // --- COMPONENTE PRINCIPAL ---
 const SolicitudesReservas = () => {
     const [activeTab, setActiveTab] = useState("enviadas");
-    const [usuarioId, setUsuarioId] = useState(sessionStorage.getItem("userId"));
-    const [esPropietario, setEsPropietario] = useState(sessionStorage.getItem("rol") === "PROPIETARIO");
+    
+    const token = localStorage.getItem("token");
+    const decoded = token ? jwtDecode(token) : null;
+
+    const [usuarioId, setUsuarioId] = useState(decoded?.id ?? null);
+    const [esPropietario, setEsPropietario] = useState(decoded?.rol === "PROPIETARIO"); 
+
     const [cargando, setCargando] = useState(true);
     const navigate = useNavigate();
     const refreshFuncRef = useRef(null);
 
     useEffect(() => {
-        const storedId = sessionStorage.getItem("userId");
-        const storedRol = sessionStorage.getItem("rol");
-
-        if (!storedId) {
-            // Si no hay ID, redirigimos inmediatamente al login
+        if (!decoded) {
             navigate("/auth");
-        } else {
-            // Si hay sesión, configuramos los datos y quitamos el estado de carga
-            setUsuarioId(storedId);
-            setEsPropietario(storedRol === "PROPIETARIO");
-            setCargando(false);
+            return;
         }
+        setCargando(false);
     }, [navigate]);
 
     if (cargando) {
