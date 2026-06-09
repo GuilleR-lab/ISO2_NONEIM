@@ -43,6 +43,23 @@ const Auth = () => {
       piso: ""
     });
   };
+  
+  // Controll only number input like CP
+  const handleKeyDown = (e) => {
+    const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
+    
+    //only numbers
+    if (!/^\d$/.test(e.key) && !allowedKeys.includes(e.key)) {
+      e.preventDefault();
+    }
+    
+    //controll number size >= 5
+    if (e.target.value.length >= 5 && !allowedKeys.includes(e.key)) {
+        e.preventDefault();
+        
+    }
+
+  };
 
   const handleAddressChange = (e) => {
     const {name, value} = e.target;
@@ -173,7 +190,7 @@ const Auth = () => {
               onChange={handleAddressChange} />
             <input type="text" placeholder="Ciudad" name="ciudad" value={address.ciudad}
               onChange={handleAddressChange} />
-            <input type="number" placeholder="Codigo postal" name="codigoPostal" value={address.codigoPostal}
+            <input type="text" onKeyDown={handleKeyDown} placeholder="Codigo postal" name="codigoPostal" value={address.codigoPostal}
               onChange={handleAddressChange} />
             <input type="text" placeholder="Calle" name="calle" value={address.calle}
               onChange={handleAddressChange} />

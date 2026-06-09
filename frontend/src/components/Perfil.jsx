@@ -119,6 +119,23 @@ const ModalEditarDireccion = ({ userId, addressActual, onClose, onUpdated }) => 
         setAddress(prev => ({ ...prev, [name]: value }));
     };
 
+    // Controll only number input like CP
+    const handleKeyDown = (e) => {
+        const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
+        
+        //only numbers
+        if (!/^\d$/.test(e.key) && !allowedKeys.includes(e.key)) {
+          e.preventDefault();
+        }
+        
+        //controll number size >= 5
+        if (e.target.value.length >= 5 && !allowedKeys.includes(e.key)) {
+            e.preventDefault();
+            
+        }
+
+    }; 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMsg("");
@@ -164,7 +181,7 @@ const ModalEditarDireccion = ({ userId, addressActual, onClose, onUpdated }) => 
                 <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                     <input type="text" placeholder="País *" name="pais" value={address.pais} onChange={handleChange} style={inputStyle} />
                     <input type="text" placeholder="Ciudad *" name="ciudad" value={address.ciudad} onChange={handleChange} style={inputStyle} />
-                    <input type="text" placeholder="Código postal *" name="codigoPostal" value={address.codigoPostal} onChange={handleChange} style={inputStyle} />
+                    <input type="text" onKeyDown={handleKeyDown} placeholder="Código postal *" name="codigoPostal" value={address.codigoPostal} onChange={handleChange} style={inputStyle} />
                     <input type="text" placeholder="Calle *" name="calle" value={address.calle} onChange={handleChange} style={inputStyle} />
                     <input type="text" placeholder="Edificio / número *" name="edificio" value={address.edificio} onChange={handleChange} style={inputStyle} />
                     <input type="text" placeholder="Piso (opcional)" name="piso" value={address.piso} onChange={handleChange} style={inputStyle} />
