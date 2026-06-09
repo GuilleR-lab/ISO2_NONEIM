@@ -1,11 +1,12 @@
 package com.example.backend.service;
 
-import com.example.backend.model.Reserva;
-import com.example.backend.repository.ReservaRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+import com.example.backend.model.Reserva;
+import com.example.backend.repository.ReservaRepository;
 
 @Service
 public class ReservaService {
@@ -37,6 +38,9 @@ public class ReservaService {
     }
 
     public void eliminarReserva(Long idReserva) {
+        if(!reservaRepository.existsById(idReserva)) {
+            throw new RuntimeException("Reserva no encontrada");
+        }
         reservaRepository.deleteById(idReserva);
     }
 }

@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.example.backend.model.Usuario;
 import com.example.backend.repository.UsuarioRepository;
 import com.example.backend.dto.response.UsuarioDTO;
@@ -140,6 +141,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public void deleteUsuario(Long usuarioId) {
+        if (!usuarioRepository.existsById(usuarioId)) {
+            throw new RuntimeException("Usuario no encontrado");
+        }
         usuarioRepository.deleteById(usuarioId);
     }
 }

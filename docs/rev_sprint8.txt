@@ -1,0 +1,13 @@
+> reservas: cuando se intenta reservar un inmueble en unas fechas en las que ya hay una reserva desaparece la opcion para reservar,
+    deberíamos indicar con el mensaje que no se puede reservar pero permitir que siga estando el botón para que pruebe con otra fecha
+
+> confirmar reserva: añadir funcionalidad para que el propietario acepte o no la reserva del usuario que la solicita (reserva no inmediata)
+    y se notifique de vuelta al inquilino
+
+> filtro en el buscador por disponibilidad de inmuebles? : podríamos implementar un filtro de busqueda para que si del 
+    6 al 23 de marzo no se puede alquilar o está reservado un inmuble no aparezca o indique que no está disponible
+
+> Cancelación: el inquilino desde el menú de "Mis reservas" no puede cancelar las reservas que ha realizado
+
+> Añadir fechas en las que está reservado el inmueble? : podríamos añadir en detalles de inmueble una sección con las fechas 
+    en las que está reservado un inmuble 

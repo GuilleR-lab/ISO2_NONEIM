@@ -1,16 +1,17 @@
 package com.example.backend.service;
 
-import com.example.backend.model.ListaDeseos;
-import com.example.backend.model.Inmueble;
-import com.example.backend.repository.ListaDeseosRepository;
-import com.example.backend.repository.InmuebleRepository;
-import com.example.backend.repository.UsuarioRepository;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.LinkedHashSet;
+import com.example.backend.model.Inmueble;
+import com.example.backend.model.ListaDeseos;
+import com.example.backend.repository.InmuebleRepository;
+import com.example.backend.repository.ListaDeseosRepository;
+import com.example.backend.repository.UsuarioRepository;
 
 @Service
 @Transactional
@@ -106,6 +107,9 @@ public class ListaDeseosService {
 
     // Eliminar lista
     public void eliminarLista(Long idLista) {
+        if (!listaDeseosRepository.existsById(idLista)) {
+            throw new RuntimeException("No se puede eliminar: Lista no encontrada");
+        }
         listaDeseosRepository.deleteById(idLista);
     }
 }

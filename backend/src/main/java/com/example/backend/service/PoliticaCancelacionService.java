@@ -39,6 +39,9 @@ public class PoliticaCancelacionService {
     }
 
     public void eliminarPolitica(Long id) {
+        if(!politicaRepository.existsById(id)) {
+            throw new RuntimeException("Política no encontrada");
+        }
         politicaRepository.deleteById(id);
     }
 }
