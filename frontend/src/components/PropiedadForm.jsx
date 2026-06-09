@@ -35,6 +35,23 @@ const PropiedadForm = () => {
         setDireccion(prev => ({ ...prev, [name]: value }));
     };
 
+    // Controll only number input like CP
+    const handleKeyDown = (e) => {
+        const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
+    
+        //only numbers
+        if (!/^\d$/.test(e.key) && !allowedKeys.includes(e.key)) {
+        e.preventDefault();
+        }
+    
+        //controll number size >= 5
+        if (e.target.value.length >= 5 && !allowedKeys.includes(e.key)) {
+            e.preventDefault();
+        
+        }
+
+    };
+
     useEffect(() => {
         if (isEditing) {
             fetch(`http://localhost:8090/api/inmuebles/${id}`)
@@ -170,7 +187,7 @@ const PropiedadForm = () => {
                 <label style={{ ...labelStyle, marginTop: "6px" }}>Dirección de la propiedad</label>
                 <input type="text" placeholder="País *" name="pais" value={direccion.pais} onChange={handleDireccionChange} />
                 <input type="text" placeholder="Ciudad *" name="ciudad" value={direccion.ciudad} onChange={handleDireccionChange} />
-                <input type="text" placeholder="Código postal *" name="codigoPostal" value={direccion.codigoPostal} onChange={handleDireccionChange} />
+                <input type="text" onKeyDown={handleKeyDown} placeholder="Código postal *" name="codigoPostal" value={direccion.codigoPostal} onChange={handleDireccionChange} />
                 <input type="text" placeholder="Calle *" name="calle" value={direccion.calle} onChange={handleDireccionChange} />
                 <input type="text" placeholder="Edificio / número *" name="edificio" value={direccion.edificio} onChange={handleDireccionChange} />
                 <input type="text" placeholder="Piso (opcional)" name="piso" value={direccion.piso} onChange={handleDireccionChange} />
