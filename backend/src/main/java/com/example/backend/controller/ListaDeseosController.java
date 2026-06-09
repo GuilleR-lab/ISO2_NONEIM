@@ -35,6 +35,11 @@ public class ListaDeseosController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<ListaDeseos> obtenerPorUsuario(@PathVariable Long usuarioId) {
+        return ResponseEntity.ok(listaDeseosService.obtenerPorUsuario(usuarioId));
+    }
+
     @PutMapping("/{id}/agregar-inmueble")
     public ResponseEntity<ListaDeseos> agregarInmueble(@PathVariable Long id, @RequestBody Inmueble inmueble) {
         return ResponseEntity.ok(listaDeseosService.agregarInmueble(id, inmueble));

@@ -284,6 +284,22 @@ h2 {
   color: #007bff;
 }
 
+.wishlist-icon {
+  position: fixed;
+  top: 34px;
+  right: 120px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: transform 0.2s ease;
+}
+
+.wishlist-icon:hover {
+  transform: scale(1.1);
+}
+
 .form-container {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.15);
   border-radius: 5px;
@@ -559,6 +575,63 @@ a {
     background: #1e7e34;
 }
 
+/* ===== LISTA DE DESEOS ===== */
+
+.whishlist-icon {
+  position: fixed;
+  top: 20px;
+  right: 60000px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease;
+  z-index: 1000;
+}
+
+.detalle-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.detalle-actions button {
+  width: auto;
+  flex: 1 1 220px;
+}
+
+.btn-lista-deseos {
+  background: #f0f0f0;
+  color: #222;
+}
+
+.btn-lista-deseos:hover {
+  background: #e0e0e0;
+}
+
+.wishlist-header {
+  align-items: flex-start;
+}
+
+.wishlist-subtitle {
+  margin: 4px 0 0;
+  color: #666;
+  font-size: 14px;
+  text-align: left;
+}
+
+.wishlist-card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+.wishlist-card-actions button {
+  width: auto;
+  flex: 1 1 140px;
+}
+
 /* ===== DETALLE INMUEBLE ===== */
 .detalle-container {
     max-width: 700px;
@@ -728,22 +801,19 @@ a {
     cursor: pointer;
     transition: background-color 0.3s;
     border-radius: 50%;
-    /* AÑADE ESTO: */
-    color: #333333 !important; 
+    color: #333333 ; 
 }
 
 .return_button:hover {
     background-color: #f0f0f0;
 }
 
-/* Por si el SVG tiene dimensiones 0 por error */
 .return_button svg {
     display: block;
     min-width: 28px;
     min-height: 28px;
 }
 
-/* Estilo universal para TODOS los inputs (text, number) y textareas */
 .form-container input[type="text"],
 .form-container input[type="number"],
 .form-container select,
@@ -759,7 +829,6 @@ a {
     background-color: white;
 }
 
-/* Enfoque (focus) para todos los campos */
 .form-container input:focus, 
 .form-container select:focus, 
 .form-container textarea:focus {

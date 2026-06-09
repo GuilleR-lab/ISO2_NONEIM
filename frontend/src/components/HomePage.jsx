@@ -2,7 +2,7 @@ import "../App.css";
 import { FaUserCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BsBell } from "react-icons/bs";
+import { BsBell, BsHeart } from "react-icons/bs";
 
 const HomePage = () => {
     const [username, setUsername] = useState(null);
@@ -132,6 +132,11 @@ const HomePage = () => {
                             <button onClick={handleLogout}>Cerrar sesión</button>
                         </div>
                     )}
+                </div>
+
+                {/*Icono lista de deseos*/}
+                <div className="wishlist-icon" onClick={() => navigate("/lista-deseos")}>
+                    <BsHeart size={30} color="#007bff" />
                 </div>
             </div>
 

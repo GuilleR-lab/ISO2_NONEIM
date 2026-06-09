@@ -2,6 +2,7 @@ import "../App.css";
 import { useEffect, useState } from "react";
 import { useNavigate, Outlet, useLocation, useOutletContext } from "react-router-dom";
 import { Menu, User, Home, X, LogOut, Sofa } from "lucide-react";
+import { BsHeart } from "react-icons/bs";
 import { jwtDecode } from "jwt-decode";
 
 // ─── MODAL CAMBIAR CONTRASEÑA ───────────────────────────────────────────────
@@ -518,6 +519,11 @@ const Perfil = () => {
             <button className="dashboard-home-btn" onClick={() => navigate("/")}>
                 <Home size={20} /> NONEIM
             </button>
+
+            {/*Icono lista de deseos*/}
+            <div className="wishlist-icon" onClick={() => navigate("/lista-deseos")}>
+                <BsHeart size={30} color="#007bff" />
+            </div>
 
             <aside className={`dashboard-sidebar ${isSidebarOpen ? "open" : ""}`}>
                 <div className="sidebar-header">
