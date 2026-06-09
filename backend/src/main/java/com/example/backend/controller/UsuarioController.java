@@ -91,39 +91,23 @@ public class UsuarioController {
         return ResponseEntity.ok(new JwtDTO(newToken));
     }
     
-    //@PatchMapping("/{id}/password")
-    //public ResponseEntity<?> updatePassword(@PathVariable Long id, @RequestBody Map<String, String> body) {
-    //    String passwordNueva = body.get("passwordNueva"); 
+    @PatchMapping("/{id}/password")
+    public ResponseEntity<?> updatePassword(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String passwordActual = body.get("passwordActual");
+        String passwordNueva = body.get("passwordNueva");
 
-        //apply updates
-    //    Usuario newUsuario = usuarioService.findById(id).get();
-    //    newUsuario.setPassword(passwordNueva);
+        if (passwordActual == null || passwordActual.isBlank() ||
+            passwordNueva == null || passwordNueva.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Faltan campos obligatorios"));
+        }
 
-    //    usuarioService.updateUsuario(newUsuario, id);
-
-    //    String passwordActual = body.get("passwordActual");
-    //    String passwordNueva = body.get("passwordNueva");
-
-    //    if (passwordActual == null || passwordActual.isBlank() ||
-    //        passwordNueva == null || passwordNueva.isBlank()) {
-    //        return ResponseEntity.badRequest().body(Map.of("message", "Faltan campos obligatorios"));
-    //    }
-
-    //    Optional<Usuario> usuarioOpt = usuarioService.findById(id);
-    //    if (usuarioOpt.isEmpty()) {
-    //        return ResponseEntity.status(404).body(Map.of("message", "Usuario no encontrado"));
-    //    }
-
-    //    Usuario user = usuarioOpt.get();
-
-    //    if (!user.getPassword().equals(passwordActual)) {
-    //        return ResponseEntity.status(401).body(Map.of("message", "La contraseña actual no es correcta"));
-    //    }
-
-    //    user.setPassword(passwordNueva);
-    //    usuarioService.updateUsuario(user, id);
-    //    return ResponseEntity.ok(Map.of("message", "Contraseña actualizada correctamente"));
-    //}
+        try {
+            usuarioService.updatePassword(id, passwordActual, passwordNueva);
+            return ResponseEntity.ok(Map.of("message", "Contraseña actualizada correctamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(401).body(Map.of("message", e.getMessage()));
+        }
+    }
 
     //@PatchMapping("/{id}/direccion")
     //public ResponseEntity<?> updateDireccion(@PathVariable Long id, @RequestBody Direccion nuevaDireccion) {

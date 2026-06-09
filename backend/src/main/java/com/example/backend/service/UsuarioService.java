@@ -13,5 +13,6 @@ public interface UsuarioService {
     Optional<Usuario> findById(Long id); 
     void createUsuario(RegisterRequest usuario);
     UsuarioDTO updateUsuario(Usuario usuario, Long usuarioId);
+    UsuarioDTO updatePassword(Long id, String passwordActual, String passwordNueva);
     void deleteUsuario(Long usuarioId);
 }

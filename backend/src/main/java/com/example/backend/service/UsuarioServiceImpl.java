@@ -107,6 +107,21 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return new UsuarioDTO(usuario.getId(), usuario.getUsername(), usuario.getEmail(), usuario.getRol());
     }
+    
+    public UsuarioDTO updatePassword(Long id, String passwordActual, String passwordNueva) {
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (!passwordEncoder.matches(passwordActual, usuario.getPassword())) {
+            throw new RuntimeException("La contraseña actual no es correcta");
+        }
+
+        usuario.setPassword(passwordEncoder.encode(passwordNueva));
+        usuarioRepository.save(usuario);
+
+        return new UsuarioDTO(usuario.getId(), usuario.getUsername(), usuario.getEmail(), usuario.getRol()); // reutiliza updateUsuario para hashear y guardar
+    }
+
 
     @Override
     public void deleteUsuario(Long usuarioId) {
