@@ -25,7 +25,7 @@ import com.example.backend.model.Usuario;
 import com.example.backend.repository.InmuebleRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class InmuebleServiceTests {
+class InmuebleServiceTests {
 
     @Mock
     private InmuebleRepository inmuebleRepository;

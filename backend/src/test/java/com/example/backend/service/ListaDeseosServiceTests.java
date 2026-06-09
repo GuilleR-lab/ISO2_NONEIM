@@ -25,7 +25,7 @@ import com.example.backend.model.Usuario;
 import com.example.backend.repository.ListaDeseosRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class ListaDeseosServiceTests {
+class ListaDeseosServiceTests {
 
     @Mock
     private ListaDeseosRepository listaDeseosRepository;

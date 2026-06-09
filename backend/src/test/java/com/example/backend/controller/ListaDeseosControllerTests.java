@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ListaDeseosController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class ListaDeseosControllerTests {
+class ListaDeseosControllerTests {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -37,7 +37,7 @@ public class ListaDeseosControllerTests {
     private MockMvc mockMvc;
 
     @Test
-    public void testCrearLista() throws Exception{
+    void testCrearLista() throws Exception{
         //Arrange
         ListaDeseos lista = new ListaDeseos();
         Usuario user = new Usuario();
@@ -54,7 +54,7 @@ public class ListaDeseosControllerTests {
     }
 
     @Test
-    public void testObtenerTodas() throws Exception{
+    void testObtenerTodas() throws Exception{
         //Arrange
         ListaDeseos lista1 = new ListaDeseos();
         ListaDeseos lista2 = new ListaDeseos();
@@ -68,7 +68,7 @@ public class ListaDeseosControllerTests {
     }
 
     @Test
-    public void testObtenerPorId() throws Exception{
+    void testObtenerPorId() throws Exception{
         //Arrange
         ListaDeseos lista = new ListaDeseos();
         Usuario user = new Usuario();
@@ -83,14 +83,14 @@ public class ListaDeseosControllerTests {
     }
 
     @Test
-    public void testObtenerPorIdNotFound() throws Exception{
+    void testObtenerPorIdNotFound() throws Exception{
         when(listaService.obtenerPorId(2L)).thenReturn(Optional.empty());
         mockMvc.perform(get("/api/listas-deseos/2"))
             .andExpect(status().isNotFound());
     }
 
     @Test
-    public void testAgregarInmueble() throws Exception{
+    void testAgregarInmueble() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -108,7 +108,7 @@ public class ListaDeseosControllerTests {
     }
 
     @Test
-    public void testEliminarInmueble() throws Exception{
+    void testEliminarInmueble() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -125,7 +125,7 @@ public class ListaDeseosControllerTests {
     }
 
     @Test
-    public void testEliminarLista() throws Exception{
+    void testEliminarLista() throws Exception{
         //Arrange
         doNothing().when(listaService).eliminarLista(1L);
         //Act & Assert

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import com.example.backend.model.Usuario;
 
-public class SessionServiceTest {
+class SessionServiceTest {
     
     private SessionService sessionService;
 

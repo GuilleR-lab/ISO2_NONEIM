@@ -21,7 +21,7 @@ import com.example.backend.model.PoliticaCancelacion;
 import com.example.backend.repository.PoliticaCancelacionRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class PoliticaCancelacionServiceTests {
+class PoliticaCancelacionServiceTests {
     
     @Mock
     private PoliticaCancelacionRepository politicaCancelacionRepository;

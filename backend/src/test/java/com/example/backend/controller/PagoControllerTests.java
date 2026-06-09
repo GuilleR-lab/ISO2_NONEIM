@@ -23,7 +23,7 @@ import com.example.backend.service.PagoService;
 
 @WebMvcTest(PagoController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class PagoControllerTests {
+class PagoControllerTests {
     
     @Autowired
     private ObjectMapper objectMapper;
@@ -35,7 +35,7 @@ public class PagoControllerTests {
     private MockMvc mockMvc;
 
     @Test
-    public void testCrearPago() throws Exception {
+    void testCrearPago() throws Exception {
         //Arrange
         Pago pago = new Pago();
         pago.setReferencia(1L);
@@ -52,7 +52,7 @@ public class PagoControllerTests {
     }
 
     @Test
-    public void testObtenerTodos() throws Exception{
+    void testObtenerTodos() throws Exception{
         //Arrange
         Pago pago1 = new Pago();
         Pago pago2 = new Pago();
@@ -68,7 +68,7 @@ public class PagoControllerTests {
     }
 
     @Test
-    public void testObtenerPorReferencia() throws Exception{
+    void testObtenerPorReferencia() throws Exception{
         //Arrange
         Pago pago = new Pago();
         pago.setReferencia(1L);
@@ -81,7 +81,7 @@ public class PagoControllerTests {
     }
 
     @Test
-    public void testObtenerPorReferenciaNotFound() throws Exception{
+    void testObtenerPorReferenciaNotFound() throws Exception{
         //Arrange
         when(pagoService.obtenerPorReferencia(1L)).thenReturn(Optional.empty());
         //Act & Assert
@@ -90,7 +90,7 @@ public class PagoControllerTests {
     }
 
     @Test
-    public void testActualizarPago() throws Exception{
+    void testActualizarPago() throws Exception{
         //Arrange
         Pago pagoActualizado = new Pago();
         pagoActualizado.setReferencia(1L);
@@ -106,7 +106,7 @@ public class PagoControllerTests {
     }
 
     @Test
-    public void testActualizarPagoNotFound() throws Exception{
+    void testActualizarPagoNotFound() throws Exception{
         Pago pagoActualizado = new Pago();
         pagoActualizado.setImporte(150.0);
 
@@ -119,7 +119,7 @@ public class PagoControllerTests {
     }
 
     @Test
-    public void testEliminarPago() throws Exception{
+    void testEliminarPago() throws Exception{
         //Arrange
         doNothing().when(pagoService).eliminarPago(1L);
         //Act & Assert

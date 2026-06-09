@@ -23,7 +23,7 @@ import com.example.backend.service.PoliticaCancelacionService;
 
 @WebMvcTest(PoliticaCancelacionController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class PoliticaCancelacionControllerTests {
+class PoliticaCancelacionControllerTests {
     
     @Autowired
     private ObjectMapper objectMapper;
@@ -35,7 +35,7 @@ public class PoliticaCancelacionControllerTests {
     private MockMvc mockMvc;
 
     @Test
-    public void testCrearPolitica() throws Exception{
+    void testCrearPolitica() throws Exception{
         //Arrange
         PoliticaCancelacion pol = new PoliticaCancelacion();
         pol.setDescripcion("Política de cancelación flexible");
@@ -50,7 +50,7 @@ public class PoliticaCancelacionControllerTests {
     }
 
     @Test
-    public void testObtenerTodas() throws Exception{
+    void testObtenerTodas() throws Exception{
         //Arrange
         PoliticaCancelacion pol1 = new PoliticaCancelacion();
         PoliticaCancelacion pol2 = new PoliticaCancelacion();
@@ -64,7 +64,7 @@ public class PoliticaCancelacionControllerTests {
     }
 
     @Test
-    public void testObtenerPorId() throws Exception{
+    void testObtenerPorId() throws Exception{
         //Arrange
         PoliticaCancelacion pol = new PoliticaCancelacion();
         pol.setIdPolitica(1L);
@@ -76,7 +76,7 @@ public class PoliticaCancelacionControllerTests {
     }
 
     @Test
-    public void testObtenerPorIdNotFound() throws Exception{
+    void testObtenerPorIdNotFound() throws Exception{
         //Arrange
         when(politicaService.obtenerPorId(1L)).thenReturn(Optional.empty());
         //Act & Assert
@@ -85,7 +85,7 @@ public class PoliticaCancelacionControllerTests {
     }
 
     @Test
-    public void testActualizarPolitica() throws Exception{
+    void testActualizarPolitica() throws Exception{
         //Arrange
         PoliticaCancelacion polActualizada = new PoliticaCancelacion();
         polActualizada.setDescripcion("Política de cancelación estricta");
@@ -106,7 +106,7 @@ public class PoliticaCancelacionControllerTests {
     }
 
     @Test
-    public void testActualizarPoliticaNotFound() throws Exception{
+    void testActualizarPoliticaNotFound() throws Exception{
         PoliticaCancelacion polActualizada = new PoliticaCancelacion();
         polActualizada.setDescripcion("Política de cancelación estricta");
 

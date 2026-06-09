@@ -35,7 +35,7 @@ import com.example.backend.repository.SolicitudReservaRepository;
 
 @WebMvcTest(ReservaController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class ReservaControllerTests {
+class ReservaControllerTests {
     
     @Autowired
     private ObjectMapper objectMapper;
@@ -62,7 +62,7 @@ public class ReservaControllerTests {
     private MockMvc mockMvc;
 
     @Test
-    public void testReservarNoExisteUsuario() throws Exception{
+    void testReservarNoExisteUsuario() throws Exception{
         //Arrange
         Map<String, Object> request = Map.of(
             "inquilinoId", 1L,
@@ -82,7 +82,7 @@ public class ReservaControllerTests {
     }
 
     @Test
-    public void testReservarNoExisteInmueble() throws Exception{
+    void testReservarNoExisteInmueble() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -106,7 +106,7 @@ public class ReservaControllerTests {
     }
 
     @Test
-    public void testReservarPropioInmueble() throws Exception{
+    void testReservarPropioInmueble() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -134,7 +134,7 @@ public class ReservaControllerTests {
     }
 
     @Test
-    public void testReservarSinDisponibilidad() throws Exception{
+    void testReservarSinDisponibilidad() throws Exception{
         //Arrange
         Usuario usuario = new Usuario();
         usuario.setId(1L);
@@ -166,7 +166,7 @@ public class ReservaControllerTests {
     }
 
     @Test
-    public void testReservarCeroDias() throws Exception{
+    void testReservarCeroDias() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -201,7 +201,7 @@ public class ReservaControllerTests {
     }
 
     @Test
-    public void testReservarReservasSolapadas() throws Exception{
+    void testReservarReservasSolapadas() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -241,7 +241,7 @@ public class ReservaControllerTests {
     }
 
     @Test
-    public void testReservarReservaDirecta() throws Exception{
+    void testReservarReservaDirecta() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -289,7 +289,7 @@ public class ReservaControllerTests {
     }
 
     @Test
-    public void testReservarSolicitudReserva() throws Exception{
+    void testReservarSolicitudReserva() throws Exception{
         //ARRANGE
         Usuario user = new Usuario();
         user.setId(1L);
@@ -342,7 +342,7 @@ public class ReservaControllerTests {
     }
 
     @Test
-    public void testObtenerPorInquilino() throws Exception {
+    void testObtenerPorInquilino() throws Exception {
         //ARRANGE
         Inmueble inmueble = new Inmueble();
         inmueble.setIdInmueble(10L);
@@ -378,7 +378,7 @@ public class ReservaControllerTests {
     }
 
     @Test
-    public void testObtenerTodas() throws Exception{
+    void testObtenerTodas() throws Exception{
         //Arrange
         Reserva reserva1 = new Reserva();
         Reserva reserva2 = new Reserva();
@@ -393,7 +393,7 @@ public class ReservaControllerTests {
     }
 
     @Test
-    public void testObtenerPorId() throws Exception{
+    void testObtenerPorId() throws Exception{
         //Arrange
         Reserva reserva = new Reserva();
         reserva.setIdReserva(1L);
@@ -405,7 +405,7 @@ public class ReservaControllerTests {
     }
 
     @Test
-    public void testObtenerPorIdNotFound() throws Exception{
+    void testObtenerPorIdNotFound() throws Exception{
         //Arrange
         when(reservaService.obtenerPorId(1L)).thenReturn(Optional.empty());
 
@@ -414,7 +414,7 @@ public class ReservaControllerTests {
     }
 
     @Test
-    public void testEliminarReserva() throws Exception {
+    void testEliminarReserva() throws Exception {
         //Arrange
         doNothing().when(reservaService).eliminarReserva(1L);
 

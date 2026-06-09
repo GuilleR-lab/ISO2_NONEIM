@@ -24,7 +24,7 @@ import com.example.backend.service.SolicitudReservaService;
 
 @WebMvcTest(SolicitudReservaController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class SolicitudReservaControllerTests {
+class SolicitudReservaControllerTests {
     
     @Autowired
     private ObjectMapper objectMapper;
@@ -36,7 +36,7 @@ public class SolicitudReservaControllerTests {
     private MockMvc mockMvc;
 
     @Test
-    public void testCrearSolicitud() throws Exception {
+    void testCrearSolicitud() throws Exception {
         //Arrange
         SolicitudReserva solicitud = new SolicitudReserva();
         solicitud.setIdSolicitud(1L);
@@ -53,7 +53,7 @@ public class SolicitudReservaControllerTests {
     }
 
     @Test
-    public void testObtenerTodas() throws Exception{
+    void testObtenerTodas() throws Exception{
         //Arrange
         SolicitudReserva solicitud1 = new SolicitudReserva();
         SolicitudReserva solicitud2 = new SolicitudReserva();
@@ -68,7 +68,7 @@ public class SolicitudReservaControllerTests {
     }
 
     @Test
-    public void testObtenerPorId() throws Exception{
+    void testObtenerPorId() throws Exception{
         //Arrange
         SolicitudReserva solicitud = new SolicitudReserva();
         solicitud.setIdSolicitud(1L);
@@ -80,7 +80,7 @@ public class SolicitudReservaControllerTests {
     }
 
     @Test
-    public void testObtenerPorIdNotFound() throws Exception{
+    void testObtenerPorIdNotFound() throws Exception{
         //Arrange
         when(solicitudService.obtenerPorId(1L)).thenReturn(Optional.empty());
 
@@ -89,7 +89,7 @@ public class SolicitudReservaControllerTests {
     }
 
     @Test
-    public void testObtenerPorInquilinoId() throws Exception {
+    void testObtenerPorInquilinoId() throws Exception {
         //Arrange
         SolicitudReserva solicitud1 = new SolicitudReserva();
         SolicitudReserva solicitud2 = new SolicitudReserva();
@@ -104,7 +104,7 @@ public class SolicitudReservaControllerTests {
     }
 
     @Test
-    public void testActualizarSolicitud() throws Exception {
+    void testActualizarSolicitud() throws Exception {
         //Arrange
         SolicitudReserva solicitudActualizada = new SolicitudReserva();
         solicitudActualizada.setIdSolicitud(1L);
@@ -121,7 +121,7 @@ public class SolicitudReservaControllerTests {
     }
 
     @Test
-    public void testActualizarSolicitudNotFound() throws Exception {
+    void testActualizarSolicitudNotFound() throws Exception {
         //Arrange
         SolicitudReserva solicitudActualizada = new SolicitudReserva();
         solicitudActualizada.setIdSolicitud(1L);
@@ -137,7 +137,7 @@ public class SolicitudReservaControllerTests {
     }   
     
     @Test
-    public void testEliminarSolicitud() throws Exception {
+    void testEliminarSolicitud() throws Exception {
         //Arrange
         doNothing().when(solicitudService).eliminarSolicitud(1L);
 
@@ -147,7 +147,7 @@ public class SolicitudReservaControllerTests {
     }
 
     @Test
-    public void testObtenerPendientes() throws Exception {
+    void testObtenerPendientes() throws Exception {
         //Arrange
         SolicitudReserva solicitud1 = new SolicitudReserva();
         SolicitudReserva solicitud2 = new SolicitudReserva();
@@ -162,7 +162,7 @@ public class SolicitudReservaControllerTests {
     }
 
     @Test
-    public void testContarPendientes() throws Exception {
+    void testContarPendientes() throws Exception {
         //Arrange
         when(solicitudService.contarPendientesPropietario(1L)).thenReturn(5L);
 
@@ -172,7 +172,7 @@ public class SolicitudReservaControllerTests {
     }
 
     @Test
-    public void testActualizarEstado() throws Exception {
+    void testActualizarEstado() throws Exception {
         //Arrange
         SolicitudReserva solicitudActualizada = new SolicitudReserva();
         solicitudActualizada.setIdSolicitud(1L);
@@ -189,7 +189,7 @@ public class SolicitudReservaControllerTests {
     }
 
     @Test
-    public void testActualizarEstadoInvalidState() throws Exception {
+    void testActualizarEstadoInvalidState() throws Exception {
         // Act & Assert
         mockMvc.perform(patch("/api/solicitudes/{id}/estado", 1L)
             .contentType(MediaType.APPLICATION_JSON)
@@ -199,7 +199,7 @@ public class SolicitudReservaControllerTests {
     }
 
     @Test
-    public void testActualizarEstadoNotFound() throws Exception {
+    void testActualizarEstadoNotFound() throws Exception {
         //Arrange
         when(solicitudService.cambiarEstadoSolicitud(eq(1L), eq("ACEPTADA"))).thenThrow(new RuntimeException("Solicitud no encontrada"));
 
@@ -212,7 +212,7 @@ public class SolicitudReservaControllerTests {
     }
 
     @Test
-    public void testActualizarEstadoErrorInterno() throws Exception {
+    void testActualizarEstadoErrorInterno() throws Exception {
         //Arrange
         doAnswer(invocation -> { throw new Exception("Error inesperado"); })
             .when(solicitudService).cambiarEstadoSolicitud(eq(1L), eq("ACEPTADA"));

@@ -26,7 +26,7 @@ import com.example.backend.model.Usuario;
 import com.example.backend.repository.SolicitudReservaRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class SolicitudReservaServiceTests {
+class SolicitudReservaServiceTests {
     
     @Mock
     private SolicitudReservaRepository solicitudRepository;

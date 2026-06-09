@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(InmuebleController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class InmuebleControllerTests {
+class InmuebleControllerTests {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -46,7 +46,7 @@ public class InmuebleControllerTests {
     private MockMvc mockMvc;
 
     @Test
-    public void testBuscarConFiltroTipo() throws Exception{
+    void testBuscarConFiltroTipo() throws Exception{
         Usuario prop1 = new Usuario();
         Usuario prop2 = new Usuario();
         Inmueble.Tipo tipo1 = Inmueble.Tipo.APARTAMENTO;
@@ -66,7 +66,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testBuscarFiltroFechas() throws Exception{
+    void testBuscarFiltroFechas() throws Exception{
         Usuario prop1 = new Usuario();
         Inmueble.Tipo tipo1 = Inmueble.Tipo.APARTAMENTO;
         Inmueble inmueble1 = new Inmueble("calle falsa 123", "Madrid", 100.0, tipo1, "Descripción del inmueble",prop1);
@@ -84,7 +84,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testBuscarSinFiltros() throws Exception{
+    void testBuscarSinFiltros() throws Exception{
         Usuario prop1 = new Usuario();
         Inmueble inmueble1 = new Inmueble("calle falsa 123", "Madrid", 100.0, Inmueble.Tipo.APARTAMENTO, "Descripción del inmueble",prop1);
         Inmueble inmueble2 = new Inmueble("calle falsa 456", "Barcelona", 150.0, Inmueble.Tipo.VIVIENDA_COMPLETA, "Descripción del inmueble 2", prop1);
@@ -99,7 +99,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testObtenerPorPropietario() throws Exception{
+    void testObtenerPorPropietario() throws Exception{
         Usuario prop = new Usuario();
         prop.setId(1L);
         Inmueble inmueble1 = new Inmueble("calle falsa 123", "Madrid", 100.0, Inmueble.Tipo.APARTAMENTO, "Descripción del inmueble",prop);
@@ -116,7 +116,7 @@ public class InmuebleControllerTests {
     }
     
     @Test
-    public void testObtenerPorPropietarioSinInmuebles() throws Exception{
+    void testObtenerPorPropietarioSinInmuebles() throws Exception{
         when(inmuebleService.obtenerPorPropietario(1L)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/inmuebles/propietario/{propietarioId}", 1L))
@@ -125,7 +125,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testDarDeAlta() throws Exception{
+    void testDarDeAlta() throws Exception{
         Usuario prop = new Usuario();
         prop.setRol(Usuario.Rol.PROPIETARIO);
         prop.setId(1L);
@@ -154,7 +154,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testDarDeAltaUsuarioInquilino() throws Exception{
+    void testDarDeAltaUsuarioInquilino() throws Exception{
         Usuario prop = new Usuario();
         prop.setRol(Usuario.Rol.INQUILINO);
         prop.setId(1L);
@@ -178,7 +178,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testDarDeAltaFaltaCampoObligatorio() throws Exception{
+    void testDarDeAltaFaltaCampoObligatorio() throws Exception{
         Map<String, Object> body = new HashMap<>();
         body.put("propietarioId", 1L);
         body.put("ciudad", "Madrid");
@@ -196,7 +196,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testDarDeAltaPropietarioNoExiste() throws Exception{
+    void testDarDeAltaPropietarioNoExiste() throws Exception{
         Map<String, Object> body = new HashMap<>();
         body.put("propietarioId", 1L);
         body.put("direccion", "Calle Falsa 123");
@@ -216,7 +216,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testDarDeAltaTipoInvalido() throws Exception{
+    void testDarDeAltaTipoInvalido() throws Exception{
         Usuario prop = new Usuario();
         prop.setRol(Usuario.Rol.PROPIETARIO);
         prop.setId(1L);
@@ -240,7 +240,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testDarDeAltaErrorInterno() throws Exception{
+    void testDarDeAltaErrorInterno() throws Exception{
         Usuario propietario = new Usuario();
         propietario.setId(1L);
         propietario.setRol(Usuario.Rol.PROPIETARIO);
@@ -265,7 +265,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testEditarInmueble() throws Exception{
+    void testEditarInmueble() throws Exception{
         Inmueble inmueble = new Inmueble();
         inmueble.setIdInmueble(1L);
 
@@ -293,7 +293,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testEditarInmuebleNoExiste() throws Exception{
+    void testEditarInmuebleNoExiste() throws Exception{
         Map<String, Object> body = new HashMap<>();
         body.put("direccion", "Nueva direccion");
         body.put("ciudad", "Madrid");
@@ -310,7 +310,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testEditarInmuebleTipoInvalido() throws Exception{
+    void testEditarInmuebleTipoInvalido() throws Exception{
         Inmueble inmueble = new Inmueble();
         inmueble.setIdInmueble(1L);
 
@@ -331,7 +331,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testEditarInmuebleErrorInterno() throws Exception{
+    void testEditarInmuebleErrorInterno() throws Exception{
         Inmueble inmueble = new Inmueble();
 
         Map<String, Object> body = new HashMap<>();
@@ -348,7 +348,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testListar() throws Exception{
+    void testListar() throws Exception{
         Inmueble inmueble1 = new Inmueble("calle falsa 123", "Madrid", 100.0, Inmueble.Tipo.APARTAMENTO, "Descripción del inmueble", new Usuario());
         Inmueble inmueble2 = new Inmueble("calle falsa 456", "Barcelona", 150.0, Inmueble.Tipo.VIVIENDA_COMPLETA, "Descripción del inmueble 2", new Usuario());
         List <Inmueble> inmuebles = List.of(inmueble1, inmueble2);
@@ -363,7 +363,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testObtenerInmueble() throws Exception{
+    void testObtenerInmueble() throws Exception{
         // ¡Arreglado aquí! Ahora el objeto se usa correctamente en la aserción simulada
         Inmueble inmueble = new Inmueble("calle falsa 123", "Madrid", 100.0, Inmueble.Tipo.APARTAMENTO, "Descripción del inmueble", new Usuario());
 
@@ -375,7 +375,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testActualizarInmueble() throws Exception{
+    void testActualizarInmueble() throws Exception{
         Inmueble inmuebleActualizado = new Inmueble("calle falsa 123", "Madrid", 150.0, Inmueble.Tipo.APARTAMENTO, "Descripción del inmueble", new Usuario());
 
         when(inmuebleService.actualizarInmueble(eq(1L), any(Inmueble.class))).thenReturn(inmuebleActualizado);
@@ -388,7 +388,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testActualizarInmuebleNotFound() throws Exception{
+    void testActualizarInmuebleNotFound() throws Exception{
         Usuario prop = new Usuario();
         Inmueble guardado = new Inmueble("calle falsa 123", "Madrid", 100.0, Inmueble.Tipo.APARTAMENTO, "Descripcion", prop);
         Long id = 4L;
@@ -402,7 +402,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testEliminarInmueble() throws Exception{
+    void testEliminarInmueble() throws Exception{
         Long id = 1L;
         doNothing().when(inmuebleService).eliminarInmueble(id);
 
@@ -411,7 +411,7 @@ public class InmuebleControllerTests {
     }
 
     @Test
-    public void testEliminarInmuebleNotFound() throws Exception{
+    void testEliminarInmuebleNotFound() throws Exception{
         Long id = 1L;
         doThrow(new RuntimeException("Inmueble no encontrado")).when(inmuebleService).eliminarInmueble(id);
 

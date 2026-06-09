@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(DisponibilidadController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class DisponibilidadControllerTests {
+class DisponibilidadControllerTests {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -36,7 +36,7 @@ public class DisponibilidadControllerTests {
     private MockMvc mockMvc;
 
     @Test
-    public void testObtenerTodasLasDisponibilidades() throws Exception{
+    void testObtenerTodasLasDisponibilidades() throws Exception{
         //Arrange
         Inmueble inmueble1 = new Inmueble();
         Inmueble inmueble2 = new Inmueble();
@@ -54,7 +54,7 @@ public class DisponibilidadControllerTests {
     }
 
     @Test
-    public void testObtenerTodasLasDisponibilidadesVacia() throws Exception{
+    void testObtenerTodasLasDisponibilidadesVacia() throws Exception{
         //Arrange
         when(dispoService.obtenerTodas()).thenReturn(List.of());
 
@@ -64,7 +64,7 @@ public class DisponibilidadControllerTests {
     }
 
     @Test
-    public void testObtenerPorId() throws Exception{
+    void testObtenerPorId() throws Exception{
         //Arrange
         Long id = 1L;
         Inmueble inmueble = new Inmueble();
@@ -80,7 +80,7 @@ public class DisponibilidadControllerTests {
     }
 
     @Test
-    public void testObtenerDisponibilidadPorIdNoExiste() throws Exception {
+    void testObtenerDisponibilidadPorIdNoExiste() throws Exception {
         when(dispoService.obtenerPorId(1L))
                 .thenReturn(Optional.empty());
 
@@ -89,7 +89,7 @@ public class DisponibilidadControllerTests {
     }
 
     @Test
-    public void testCrearNuevaDisponibilidad() throws Exception{
+    void testCrearNuevaDisponibilidad() throws Exception{
         //Arrange
         Inmueble inmueble = new Inmueble();
         inmueble.setIdInmueble(1L);
@@ -106,7 +106,7 @@ public class DisponibilidadControllerTests {
     }  
     
     @Test
-    public void testActualizarDisponibilidad() throws Exception{
+    void testActualizarDisponibilidad() throws Exception{
         //Arrange
         Long id = 1L;
         Inmueble inmueble = new Inmueble();
@@ -128,7 +128,7 @@ public class DisponibilidadControllerTests {
     }
 
     @Test
-    public void testActualizarDisponibilidadNotFound() throws Exception {
+    void testActualizarDisponibilidadNotFound() throws Exception {
         // Arrange
         Inmueble inmueble = new Inmueble();
         inmueble.setIdInmueble(1L);
@@ -152,7 +152,7 @@ public class DisponibilidadControllerTests {
     }
 
     @Test
-    public void testEliminarDisponibilidad() throws Exception{
+    void testEliminarDisponibilidad() throws Exception{
         // Arrange
         doNothing().when(dispoService).eliminarDisponibilidad(1L);
 
@@ -162,7 +162,7 @@ public class DisponibilidadControllerTests {
     }
 
     @Test
-    public void testEliminarDisponibilidadNotFound() throws Exception {
+    void testEliminarDisponibilidadNotFound() throws Exception {
         // Arrange
         doThrow(new RuntimeException())
                 .when(dispoService).eliminarDisponibilidad(1L);

@@ -23,7 +23,7 @@ import com.example.backend.model.Reserva;
 import com.example.backend.repository.PagoRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class PagoServiceTests {
+class PagoServiceTests {
     
     @Mock
     private PagoRepository pagoRepository;
