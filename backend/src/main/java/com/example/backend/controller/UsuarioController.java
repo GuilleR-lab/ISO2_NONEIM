@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.request.LoginRequest;
 import com.example.backend.dto.request.RegisterRequest;
-//import com.example.backend.model.Direccion;
+import com.example.backend.model.Direccion;
 import com.example.backend.service.UsuarioService;
 import com.example.backend.dto.response.UsuarioDTO;
 import com.example.backend.model.Usuario;
@@ -108,31 +108,25 @@ public class UsuarioController {
             return ResponseEntity.status(401).body(Map.of("message", e.getMessage()));
         }
     }
+    
+    @PatchMapping("/{id}/direccion")
+    public ResponseEntity<?> updateDireccion(@PathVariable Long id, @RequestBody Direccion nuevaDireccion) {
+        if (nuevaDireccion == null ||
+            nuevaDireccion.getPais() == null || nuevaDireccion.getPais().isBlank() ||
+            nuevaDireccion.getCiudad() == null || nuevaDireccion.getCiudad().isBlank() ||
+            nuevaDireccion.getCodigoPostal() == null || nuevaDireccion.getCodigoPostal().isBlank() ||
+            nuevaDireccion.getCalle() == null || nuevaDireccion.getCalle().isBlank() ||
+            nuevaDireccion.getEdificio() == null || nuevaDireccion.getEdificio().isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Faltan campos obligatorios de la dirección"));
+        }
 
-    //@PatchMapping("/{id}/direccion")
-    //public ResponseEntity<?> updateDireccion(@PathVariable Long id, @RequestBody Direccion nuevaDireccion) {
-    //    if (nuevaDireccion == null ||
-    //        nuevaDireccion.getPais() == null || nuevaDireccion.getPais().isBlank() ||
-    //        nuevaDireccion.getCiudad() == null || nuevaDireccion.getCiudad().isBlank() ||
-    //        nuevaDireccion.getCodigoPostal() == null || nuevaDireccion.getCodigoPostal().isBlank() ||
-    //        nuevaDireccion.getCalle() == null || nuevaDireccion.getCalle().isBlank() ||
-    //        nuevaDireccion.getEdificio() == null || nuevaDireccion.getEdificio().isBlank()) {
-    //        return ResponseEntity.badRequest().body(Map.of("message", "Faltan campos obligatorios de la dirección"));
-    //    }
-
-    //    Optional<Usuario> usuarioOpt = usuarioService.findById(id);
-    //    if (usuarioOpt.isEmpty()) {
-    //        return ResponseEntity.status(404).body(Map.of("message", "Usuario no encontrado"));
-    //    }
-
-    //    Usuario user = usuarioOpt.get();
-    //    if (nuevaDireccion.getPiso() == null || nuevaDireccion.getPiso().isBlank()) {
-    //        nuevaDireccion.setPiso(null);
-    //    }
-    //    user.setAddress(nuevaDireccion);
-    //    usuarioService.updateUsuario(user, id);
-    //    return ResponseEntity.ok(Map.of("message", "Dirección actualizada correctamente"));
-    //}
+        try {
+            usuarioService.updateDireccion(id, nuevaDireccion);
+            return ResponseEntity.ok(Map.of("message", "Dirección actualizada correctamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(Map.of("message", e.getMessage()));
+        }
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUsuario(@PathVariable Long id) {

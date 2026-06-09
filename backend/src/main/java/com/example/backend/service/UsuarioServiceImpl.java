@@ -12,6 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.example.backend.dto.request.RegisterRequest;
 import com.example.backend.model.Usuario.Rol;
+import com.example.backend.model.Direccion;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
@@ -120,6 +121,20 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuarioRepository.save(usuario);
 
         return new UsuarioDTO(usuario.getId(), usuario.getUsername(), usuario.getEmail(), usuario.getRol()); // reutiliza updateUsuario para hashear y guardar
+    }
+
+    public UsuarioDTO updateDireccion(Long id, Direccion nuevaDireccion) {
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (nuevaDireccion.getPiso() == null || nuevaDireccion.getPiso().isBlank()) {
+            nuevaDireccion.setPiso(null);
+        }
+
+        usuario.setAddress(nuevaDireccion);
+        usuarioRepository.save(usuario);
+
+        return new UsuarioDTO(usuario.getId(), usuario.getUsername(), usuario.getEmail(), usuario.getRol());
     }
 
 
