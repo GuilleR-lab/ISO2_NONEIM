@@ -1,6 +1,5 @@
 package com.example.backend.controller;
 
-
 import java.util.List;
 import java.util.Optional;
 
@@ -8,9 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.mockito.Mockito.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 
@@ -18,27 +16,28 @@ import com.example.backend.model.ListaDeseos;
 import com.example.backend.model.Inmueble;
 import com.example.backend.model.Usuario;
 import com.example.backend.service.ListaDeseosService;
-import com.example.backend.controller.ListaDeseosController;
 
-
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ListaDeseosController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class ListaDeseos_controller_Tests {
+class ListaDeseosControllerTests {
+
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private ListaDeseosService listaService;
 
     @Autowired
     private MockMvc mockMvc;
 
-
     @Test
-    public void crearLista_Test() throws Exception{
+    void testCrearLista() throws Exception{
         //Arrange
         ListaDeseos lista = new ListaDeseos();
         Usuario user = new Usuario();
@@ -55,7 +54,7 @@ public class ListaDeseos_controller_Tests {
     }
 
     @Test
-    public void obtenerTodas_Test() throws Exception{
+    void testObtenerTodas() throws Exception{
         //Arrange
         ListaDeseos lista1 = new ListaDeseos();
         ListaDeseos lista2 = new ListaDeseos();
@@ -69,7 +68,7 @@ public class ListaDeseos_controller_Tests {
     }
 
     @Test
-    public void obtenerPorId_Test() throws Exception{
+    void testObtenerPorId() throws Exception{
         //Arrange
         ListaDeseos lista = new ListaDeseos();
         Usuario user = new Usuario();
@@ -84,14 +83,14 @@ public class ListaDeseos_controller_Tests {
     }
 
     @Test
-    public void obtenerPorId_NotFound_Test() throws Exception{
+    void testObtenerPorIdNotFound() throws Exception{
         when(listaService.obtenerPorId(2L)).thenReturn(Optional.empty());
         mockMvc.perform(get("/api/listas-deseos/2"))
             .andExpect(status().isNotFound());
     }
 
     @Test
-    public void agregarInmueble_Test() throws Exception{
+    void testAgregarInmueble() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -109,7 +108,7 @@ public class ListaDeseos_controller_Tests {
     }
 
     @Test
-    public void eliminarInmueble_Test() throws Exception{
+    void testEliminarInmueble() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -125,18 +124,12 @@ public class ListaDeseos_controller_Tests {
             .andExpect(jsonPath("$.usuario.id").value(1));
     }
 
-
     @Test
-    public void eliminarLista_Test() throws Exception{
+    void testEliminarLista() throws Exception{
         //Arrange
-        Usuario user = new Usuario();
-        user.setId(1L);
-
         doNothing().when(listaService).eliminarLista(1L);
         //Act & Assert
         mockMvc.perform(delete("/api/listas-deseos/1"))
             .andExpect(status().isNoContent());
-        
     }
-
 }

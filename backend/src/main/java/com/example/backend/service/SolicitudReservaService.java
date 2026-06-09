@@ -1,4 +1,3 @@
-
 package com.example.backend.service;
 
 import java.util.List;
@@ -63,11 +62,13 @@ public class SolicitudReservaService {
 
     /* Perspectiva de propietario */
     public List<SolicitudReserva> obtenerPendientesPropietario(Long propietarioId){
-        return solicitudReservaRepository.obtenerConDisponibilidadInmueblePropietarioIdAndEstado(propietarioId, "PENDIENTE");
+        return solicitudReservaRepository
+            .obtenerConDisponibilidadInmueblePropietarioIdAndEstado(propietarioId, "PENDIENTE");
     }
 
     public Long contarPendientesPropietario(Long propietarioId){
-        return solicitudReservaRepository.countByDisponibilidadInmueblePropietarioIdAndEstado(propietarioId, "PENDIENTE");
+        return solicitudReservaRepository
+            .countByDisponibilidadInmueblePropietarioIdAndEstado(propietarioId, "PENDIENTE");
     }
 
     @Transactional

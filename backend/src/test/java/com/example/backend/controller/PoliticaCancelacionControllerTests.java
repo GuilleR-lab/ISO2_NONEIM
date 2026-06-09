@@ -7,12 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.mockito.Mockito.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -21,19 +23,19 @@ import com.example.backend.service.PoliticaCancelacionService;
 
 @WebMvcTest(PoliticaCancelacionController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class PoliticaCancelacion_controller_Tests {
+class PoliticaCancelacionControllerTests {
     
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private PoliticaCancelacionService politicaService;
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void crearPolitica_Test() throws Exception{
+    void testCrearPolitica() throws Exception{
         //Arrange
         PoliticaCancelacion pol = new PoliticaCancelacion();
         pol.setDescripcion("Política de cancelación flexible");
@@ -48,7 +50,7 @@ public class PoliticaCancelacion_controller_Tests {
     }
 
     @Test
-    public void obtenerTodas_Test() throws Exception{
+    void testObtenerTodas() throws Exception{
         //Arrange
         PoliticaCancelacion pol1 = new PoliticaCancelacion();
         PoliticaCancelacion pol2 = new PoliticaCancelacion();
@@ -62,7 +64,7 @@ public class PoliticaCancelacion_controller_Tests {
     }
 
     @Test
-    public void obtenerPorId_Test() throws Exception{
+    void testObtenerPorId() throws Exception{
         //Arrange
         PoliticaCancelacion pol = new PoliticaCancelacion();
         pol.setIdPolitica(1L);
@@ -74,7 +76,7 @@ public class PoliticaCancelacion_controller_Tests {
     }
 
     @Test
-    public void obtenerPorId_NotFound_Test() throws Exception{
+    void testObtenerPorIdNotFound() throws Exception{
         //Arrange
         when(politicaService.obtenerPorId(1L)).thenReturn(Optional.empty());
         //Act & Assert
@@ -83,7 +85,7 @@ public class PoliticaCancelacion_controller_Tests {
     }
 
     @Test
-    public void actualizarPolitica_Test() throws Exception{
+    void testActualizarPolitica() throws Exception{
         //Arrange
         PoliticaCancelacion polActualizada = new PoliticaCancelacion();
         polActualizada.setDescripcion("Política de cancelación estricta");
@@ -104,7 +106,7 @@ public class PoliticaCancelacion_controller_Tests {
     }
 
     @Test
-    public void actualizarPolitica_NotFound_Test() throws Exception{
+    void testActualizarPoliticaNotFound() throws Exception{
         PoliticaCancelacion polActualizada = new PoliticaCancelacion();
         polActualizada.setDescripcion("Política de cancelación estricta");
 

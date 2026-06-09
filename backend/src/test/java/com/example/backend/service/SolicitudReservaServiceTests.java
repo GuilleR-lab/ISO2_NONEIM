@@ -24,10 +24,9 @@ import com.example.backend.model.Reserva;
 import com.example.backend.model.SolicitudReserva;
 import com.example.backend.model.Usuario;
 import com.example.backend.repository.SolicitudReservaRepository;
-import com.example.backend.service.SolicitudReservaService;
 
 @ExtendWith(MockitoExtension.class)
-public class SolicitudReserva_service_Tests {
+class SolicitudReservaServiceTests {
     
     @Mock
     private SolicitudReservaRepository solicitudRepository;
@@ -36,23 +35,21 @@ public class SolicitudReserva_service_Tests {
     private SolicitudReservaService solicitudService;
 
     @Test
-    void crearSolicitud_GuardadoExitoso_Test(){
-        //Arrange
+    void testCrearSolicitudGuardadoExitoso(){        //Arrange
         SolicitudReserva solicitud = new SolicitudReserva();
 
         when(solicitudRepository.save(solicitud)).thenReturn(solicitud);
         //Act
         SolicitudReserva solicitudGuardada = solicitudService.crearSolicitud(solicitud);
         //Assert
-        assertNotNull(solicitudGuardada);
-        assertEquals(solicitud, solicitudGuardada);
+        assertNotNull(solicitudGuardada, "verificacion");
+        assertEquals(solicitud, solicitudGuardada, "verificacion");
 
         verify(solicitudRepository).save(solicitud);
     }
 
     @Test
-    void obtenerTodas_ExistenSolicitudes_Test(){
-        //Arrange
+    void testObtenerTodasExistenSolicitudes(){        //Arrange
         SolicitudReserva sol1 = new SolicitudReserva();
         SolicitudReserva sol2 = new SolicitudReserva();
 
@@ -64,29 +61,27 @@ public class SolicitudReserva_service_Tests {
         List<SolicitudReserva> resultado = solicitudService.obtenerTodas();
 
         //Assert
-        assertNotNull(resultado);
-        assertEquals(solicitudes.size(), resultado.size());
-        assertEquals(solicitudes.get(1), resultado.get(1));
+        assertNotNull(resultado, "verificacion");
+        assertEquals(solicitudes.size(), resultado.size(), "verificacion");
+        assertEquals(solicitudes.get(1), resultado.get(1), "verificacion");
 
         verify(solicitudRepository).findAll();
     }
 
     @Test
-    void obtenerTodas_NoExistenSolicitudes_Test(){
-        //Arrange
+    void testObtenerTodasNoExistenSolicitudes(){        //Arrange
         when(solicitudRepository.findAll()).thenReturn(emptyList());
         //Act y Assert
         List <SolicitudReserva> resultado = solicitudService.obtenerTodas();
 
-        assertNotNull(resultado);
-        assertTrue(resultado.isEmpty());
+        assertNotNull(resultado, "verificacion");
+        assertTrue(resultado.isEmpty(), "verificacion");
 
         verify(solicitudRepository).findAll();
     }
 
     @Test
-    void obtenerPorId_ExisteSolicitud_Test(){
-        //Arrange
+    void testObtenerPorIdExisteSolicitud(){        //Arrange
         Long id = 1L;
         SolicitudReserva sol = new SolicitudReserva();
         sol.setIdSolicitud(id);
@@ -96,30 +91,28 @@ public class SolicitudReserva_service_Tests {
         Optional <SolicitudReserva> resultado = solicitudService.obtenerPorId(id);
 
         //Assert
-        assertNotNull(resultado);
-        assertEquals(id, resultado.get().getIdSolicitud());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(id, resultado.get().getIdSolicitud(), "verificacion");
 
         verify(solicitudRepository).findById(id);
     }
 
     @Test
-    void obtenerPorId_NoExisteSolicitud_Test(){
-        //Arrange
+    void testObtenerPorIdNoExisteSolicitud(){        //Arrange
         Long id = 1L;
 
         when(solicitudRepository.findById(id)).thenReturn(Optional.empty());
         //Act y Assert
         Optional <SolicitudReserva> resultado = solicitudService.obtenerPorId(id);
 
-        assertNotNull(resultado);
-        assertTrue(resultado.isEmpty());
+        assertNotNull(resultado, "verificacion");
+        assertTrue(resultado.isEmpty(), "verificacion");
 
         verify(solicitudRepository).findById(id);
     }
 
     @Test
-    void actualizarSolicitud_ExisteSolicitud_Test(){
-        //Arrange
+    void testActualizarSolicitudExisteSolicitud(){        //Arrange
         Long id = 1L;
         Reserva res = new Reserva();
         Reserva resActualizada = new Reserva();
@@ -135,33 +128,31 @@ public class SolicitudReserva_service_Tests {
         SolicitudReserva solicitudActualizada = solicitudService.actualizarSolicitud(id, solActualizada);
 
         //Assert
-        assertNotNull(solicitudActualizada);
-        assertEquals(solOriginal.getIdSolicitud(), solicitudActualizada.getIdSolicitud());
-        assertEquals(solActualizada.getReserva(), solicitudActualizada.getReserva());
+        assertNotNull(solicitudActualizada, "verificacion");
+        assertEquals(solOriginal.getIdSolicitud(), solicitudActualizada.getIdSolicitud(), "verificacion");
+        assertEquals(solActualizada.getReserva(), solicitudActualizada.getReserva(), "verificacion");
 
         verify(solicitudRepository).findById(id);
         verify(solicitudRepository).save(any(SolicitudReserva.class));
     }
 
     @Test
-    void actualizarSolicitud_NoExisteSolicitud_Test(){
-        //Arrange
+    void testActualizarSolicitudNoExisteSolicitud(){        //Arrange
         Long id = 1L;
         SolicitudReserva nuevaSolicitud = new SolicitudReserva();
         when(solicitudRepository.findById(id)).thenReturn(Optional.empty());
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             solicitudService.actualizarSolicitud(id, nuevaSolicitud);
-        });
+        }, "verificacion");
 
-        assertEquals("Solicitud no encontrada", exception.getMessage());
+        assertEquals("Solicitud no encontrada", exception.getMessage(), "verificacion");
         verify(solicitudRepository, never()).save(any(SolicitudReserva.class));
 
     }
 
     @Test
-    void eliminarSolicitud_ExisteSolicitud_Test(){
-        //Arrange
+    void testEliminarSolicitudExisteSolicitud(){        //Arrange
         Long id = 1L;
 
         when(solicitudRepository.existsById(id)).thenReturn(true);
@@ -177,25 +168,23 @@ public class SolicitudReserva_service_Tests {
     }
 
     @Test
-    void eliminarSolicitud_NoExisteSolicitud_Test(){
-        //Arrange
+    void testEliminarSolicitudNoExisteSolicitud(){        //Arrange
         Long id = 1L;
 
         when(solicitudRepository.existsById(id)).thenReturn(false);
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             solicitudService.eliminarSolicitud(id);
-        });
+        }, "verificacion");
 
-        assertEquals("Solicitud no encontrada", exception.getMessage());
+        assertEquals("Solicitud no encontrada", exception.getMessage(), "verificacion");
         verify(solicitudRepository).existsById(id);
         verify(solicitudRepository, never()).deleteById(id);
     }
 
     //tests de la vista inquilino
     @Test
-    void findByUsuarioId_ExistenSolicitudes_Test(){
-        //Arrange
+    void testFindByUsuarioIdExistenSolicitudes(){        //Arrange
         Long id = 1L;
         Usuario usuario = new Usuario();
         usuario.setId(id);
@@ -213,16 +202,15 @@ public class SolicitudReserva_service_Tests {
         List <SolicitudReserva> resultado = solicitudService.findByUsuarioId(id);
 
         //Assert
-        assertNotNull(resultado);
-        assertEquals(solicitudes.size(), resultado.size());
-        assertEquals(id, resultado.get(0).getUsuario().getId());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(solicitudes.size(), resultado.size(), "verificacion");
+        assertEquals(id, resultado.get(0).getUsuario().getId(), "verificacion");
 
         verify(solicitudRepository).findByUsuarioId(id);
     }
 
     @Test
-    void findByUsuarioId_NoExistenSolicitudes_Test(){
-        //Arrange
+    void testFindByUsuarioIdNoExistenSolicitudes(){        //Arrange
         Long id = 1L;
 
         when(solicitudRepository.findByUsuarioId(id)).thenReturn(emptyList());
@@ -231,16 +219,15 @@ public class SolicitudReserva_service_Tests {
         List <SolicitudReserva> resultado = solicitudService.findByUsuarioId(id);
 
         //Assert
-        assertNotNull(resultado);
-        assertTrue(resultado.isEmpty());
+        assertNotNull(resultado, "verificacion");
+        assertTrue(resultado.isEmpty(), "verificacion");
 
         verify(solicitudRepository).findByUsuarioId(id);
     }
 
     //test de la vista de propietario
     @Test
-    void obtenerPendientesPropietario_ExistenSolicitudes_Test(){
-        Long idUsuario = 1L;
+    void testObtenerPendientesPropietarioExistenSolicitudes(){        Long idUsuario = 1L;
         String estado = "PENDIENTE";
         SolicitudReserva sol1 = new SolicitudReserva();
         SolicitudReserva sol2 = new SolicitudReserva();
@@ -255,30 +242,28 @@ public class SolicitudReserva_service_Tests {
         List <SolicitudReserva> resultado = solicitudService.obtenerPendientesPropietario(idUsuario);
 
         //Assert
-        assertNotNull(resultado);
-        assertEquals(solicitudes.size(), resultado.size());
-        assertEquals(estado, resultado.get(0).getEstado());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(solicitudes.size(), resultado.size(), "verificacion");
+        assertEquals(estado, resultado.get(0).getEstado(), "verificacion");
 
         verify(solicitudRepository).obtenerConDisponibilidadInmueblePropietarioIdAndEstado(idUsuario, estado);
     }
 
     @Test
-    void obtenerPendientesPropietario_NoExistenSolicitudes_Test(){
-        Long idUsuario = 1L;
+    void testObtenerPendientesPropietarioNoExistenSolicitudes(){        Long idUsuario = 1L;
         String estado = "PENDIENTE";
 
         when(solicitudRepository.obtenerConDisponibilidadInmueblePropietarioIdAndEstado(idUsuario, estado)).thenReturn(emptyList());
         //Act
         List <SolicitudReserva> resultado = solicitudService.obtenerPendientesPropietario(idUsuario);
         //Assert
-        assertNotNull(resultado);
-        assertTrue(resultado.isEmpty());
+        assertNotNull(resultado, "verificacion");
+        assertTrue(resultado.isEmpty(), "verificacion");
         verify(solicitudRepository).obtenerConDisponibilidadInmueblePropietarioIdAndEstado(idUsuario, estado);
     }
 
     @Test
-    void contarPendientesPropietario_ExistenSolicitudes_Test(){
-        Long idUsuario = 1L;
+    void testContarPendientesPropietarioExistenSolicitudes(){        Long idUsuario = 1L;
         String estado = "PENDIENTE";
 
         SolicitudReserva sol1 = new SolicitudReserva();
@@ -289,15 +274,14 @@ public class SolicitudReserva_service_Tests {
         Long resultado = solicitudService.contarPendientesPropietario(idUsuario);
 
         //Assert
-        assertNotNull(resultado);
-        assertEquals(2L, resultado);
+        assertNotNull(resultado, "verificacion");
+        assertEquals(2L, resultado, "verificacion");
 
         verify(solicitudRepository).countByDisponibilidadInmueblePropietarioIdAndEstado(idUsuario, estado);
     }
 
     @Test
-    void contarPendientesPropietario_NoExistenSolicitudes_Test(){
-        Long idUsuario = 1L;
+    void testContarPendientesPropietarioNoExistenSolicitudes(){        Long idUsuario = 1L;
         String estado = "PENDIENTE";
 
         when(solicitudRepository.countByDisponibilidadInmueblePropietarioIdAndEstado(idUsuario, estado)).thenReturn(0L);
@@ -305,15 +289,14 @@ public class SolicitudReserva_service_Tests {
         Long resultado = solicitudService.contarPendientesPropietario(idUsuario);
 
         //Assert
-        assertNotNull(resultado);
-        assertEquals(0L, resultado);
+        assertNotNull(resultado, "verificacion");
+        assertEquals(0L, resultado, "verificacion");
 
         verify(solicitudRepository).countByDisponibilidadInmueblePropietarioIdAndEstado(idUsuario, estado);
     }
 
     @Test
-    void cambiarEstadoSolicitud_ExisteSolicitud_Test(){
-        Long id = 1L;
+    void testCambiarEstadoSolicitudExisteSolicitud(){        Long id = 1L;
         Reserva res = new Reserva();
         res.setActiva(false);
 
@@ -330,17 +313,16 @@ public class SolicitudReserva_service_Tests {
         SolicitudReserva resultado = solicitudService.cambiarEstadoSolicitud(id, nuevoEstado);
 
         //Assert
-        assertNotNull(resultado);
-        assertEquals(nuevoEstado, resultado.getEstado());
-        assertTrue(resultado.getReserva().isActiva());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(nuevoEstado, resultado.getEstado(), "verificacion");
+        assertTrue(resultado.getReserva().isActiva(), "verificacion");
 
         verify(solicitudRepository).findById(id);
         verify(solicitudRepository).save(any(SolicitudReserva.class));
     }
 
     @Test
-    void cambiarEstadoSolicitud_ExisteSolicitudSinReserva_Test(){
-        Long id = 1L;
+    void testCambiarEstadoSolicitudExisteSolicitudSinReserva(){        Long id = 1L;
         String nuevoEstado = "RECHAZADA";
 
         SolicitudReserva sol = new SolicitudReserva();
@@ -352,16 +334,15 @@ public class SolicitudReserva_service_Tests {
         SolicitudReserva resultado = solicitudService.cambiarEstadoSolicitud(id, nuevoEstado);
 
         //Assert
-        assertNotNull(resultado);
-        assertEquals(nuevoEstado, resultado.getEstado());
-        assertNull(resultado.getReserva());
+        assertNotNull(resultado, "verificacion");
+        assertEquals(nuevoEstado, resultado.getEstado(), "verificacion");
+        assertNull(resultado.getReserva(), "verificacion");
         verify(solicitudRepository).findById(id);
         verify(solicitudRepository).save(any(SolicitudReserva.class));
     }
 
     @Test
-    void cambiarEstadoSolicitud_noExisteSolicitud_Test(){
-        Long id = 1L;
+    void testCambiarEstadoSolicitudNoExisteSolicitud(){        Long id = 1L;
         String nuevoEstado = "ACEPTADA";
 
         when(solicitudRepository.findById(id)).thenReturn(Optional.empty());
@@ -369,9 +350,9 @@ public class SolicitudReserva_service_Tests {
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () ->{
             solicitudService.cambiarEstadoSolicitud(id, nuevoEstado);
-        });
+        }, "verificacion");
 
-        assertEquals("Solicitud no encontrada", exception.getMessage());
+        assertEquals("Solicitud no encontrada", exception.getMessage(), "verificacion");
         verify(solicitudRepository, never()).save(any(SolicitudReserva.class));
     }
 }

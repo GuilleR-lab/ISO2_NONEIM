@@ -25,7 +25,7 @@ class SolicitudReservaTest {
     void testConstructorVacioYFechaSolicitudPorDefecto() {
         SolicitudReserva s = new SolicitudReserva();
         assertNotNull(s.getFechaSolicitud(), "La fecha de solicitud debe inicializarse automáticamente");
-        assertNull(s.getEstado(), "El estado debe ser nulo en constructor vacío");
+        assertEquals("PENDIENTE", s.getEstado(), "El estado debe ser PENDIENTE en constructor vacío");
     }
 
     @Test

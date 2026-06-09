@@ -21,10 +21,9 @@ import com.example.backend.model.Inmueble;
 import com.example.backend.model.Reserva;
 import com.example.backend.model.Usuario;
 import com.example.backend.repository.ReservaRepository;
-import com.example.backend.service.ReservaService;
 
 @ExtendWith(MockitoExtension.class)
-public class Reserva_service_Tests {
+class ReservaServiceTests {
 
     @Mock
     private ReservaRepository reservaRepository;
@@ -33,8 +32,7 @@ public class Reserva_service_Tests {
     private ReservaService reservaService;
 
     @Test
-    void crearReserva_GuardadoExitoso_Test(){
-        //Arrange
+    void testCrearReservaGuardadoExitoso(){        //Arrange
         Reserva reserva = new Reserva();
 
         when(reservaRepository.save(reserva)).thenReturn(reserva);
@@ -42,16 +40,15 @@ public class Reserva_service_Tests {
         Reserva reservaGuardada = reservaService.crearReserva(reserva);
 
         //Assert
-        assertNotNull(reservaGuardada);
-        assertEquals(reserva, reservaGuardada);
+        assertNotNull(reservaGuardada, "verificacion");
+        assertEquals(reserva, reservaGuardada, "verificacion");
 
         verify(reservaRepository).save(reserva);
 
     }
 
     @Test
-    void obtenerTodas_ExistenReservas_Test(){
-        //Arrange
+    void testObtenerTodasExistenReservas(){        //Arrange
         Reserva reserva1 = new Reserva();
         Reserva reserva2 = new Reserva();
 
@@ -62,30 +59,28 @@ public class Reserva_service_Tests {
         List <Reserva> reservasObtenidas = reservaService.obtenerTodas();
 
         //Assert
-        assertNotNull(reservasObtenidas);
-        assertEquals(reservas.size(), reservasObtenidas.size());
-        assertEquals(reservas.get(0), reservasObtenidas.get(0));
+        assertNotNull(reservasObtenidas, "verificacion");
+        assertEquals(reservas.size(), reservasObtenidas.size(), "verificacion");
+        assertEquals(reservas.get(0), reservasObtenidas.get(0), "verificacion");
 
         verify(reservaRepository).findAll();
     }
 
     @Test
-    void obtenerTodas_NoExistenReservas_Test(){
-        //Arrange
+    void testObtenerTodasNoExistenReservas(){        //Arrange
 
         when(reservaRepository.findAll()).thenReturn(emptyList());
         //Act y Assert
         List <Reserva> reservasObtenidas = reservaService.obtenerTodas();
 
-        assertNotNull(reservasObtenidas);
-        assertTrue(reservasObtenidas.isEmpty());
+        assertNotNull(reservasObtenidas, "verificacion");
+        assertTrue(reservasObtenidas.isEmpty(), "verificacion");
 
         verify(reservaRepository).findAll();
     }
 
     @Test
-    void obtenerPorId_ExisteReserva_Test(){
-        //Arrange
+    void testObtenerPorIdExisteReserva(){        //Arrange
         Long id = 1L;
         Reserva reserva = new Reserva();
         reserva.setIdReserva(id);
@@ -94,31 +89,29 @@ public class Reserva_service_Tests {
         //Act
         Optional<Reserva> reservaObtenida = reservaService.obtenerPorId(id);
         //Assert
-        assertNotNull(reservaObtenida);
-        assertEquals(id, reservaObtenida.get().getIdReserva());
+        assertNotNull(reservaObtenida, "verificacion");
+        assertEquals(id, reservaObtenida.get().getIdReserva(), "verificacion");
 
         verify(reservaRepository).findById(id);
 
     }
 
     @Test
-    void obtenerPorId_NoExisteReserva_Test(){
-        //Arrange
+    void testObtenerPorIdNoExisteReserva(){        //Arrange
         Long id = 1L;
 
         when(reservaRepository.findById(id)).thenReturn(Optional.empty());
         //Act y Assert
         Optional<Reserva> reservaObtenida = reservaService.obtenerPorId(id);
 
-        assertNotNull(reservaObtenida);
-        assertTrue(reservaObtenida.isEmpty());
+        assertNotNull(reservaObtenida, "verificacion");
+        assertTrue(reservaObtenida.isEmpty(), "verificacion");
 
         verify(reservaRepository).findById(id);
     }
 
     @Test
-    void obtenerPorInquilino_ExisteReserva_Test(){
-        //Arrange
+    void testObtenerPorInquilinoExisteReserva(){        //Arrange
 
         Long inquilinoId = 1L;
 
@@ -137,32 +130,30 @@ public class Reserva_service_Tests {
         List <Reserva> reservasObtenidas = reservaService.obtenerPorInquilino(inquilinoId);
 
         //Assert
-        assertNotNull(reservasObtenidas);
-        assertEquals(reservas.size(), reservasObtenidas.size());
-        assertEquals(reservas.get(0).getInquilino().getId(), reservasObtenidas.get(0).getInquilino().getId());
+        assertNotNull(reservasObtenidas, "verificacion");
+        assertEquals(reservas.size(), reservasObtenidas.size(), "verificacion");
+        assertEquals(reservas.get(0).getInquilino().getId(), reservasObtenidas.get(0).getInquilino().getId(), "verificacion");
 
         verify(reservaRepository).findByInquilinoId(inquilinoId);
     }
 
     @Test
-    void obtenerPorInquilino_NoExisteReserva_Test(){
-        //Arrange
+    void testObtenerPorInquilinoNoExisteReserva(){        //Arrange
         Long inquilinoId = 1L;
 
         when(reservaRepository.findByInquilinoId(inquilinoId)).thenReturn(emptyList());
         //Act y Assert
         List <Reserva> reservasObtenidas = reservaService.obtenerPorInquilino(inquilinoId);
 
-        assertNotNull(reservasObtenidas);
-        assertTrue(reservasObtenidas.isEmpty());
+        assertNotNull(reservasObtenidas, "verificacion");
+        assertTrue(reservasObtenidas.isEmpty(), "verificacion");
 
         verify(reservaRepository).findByInquilinoId(inquilinoId);
 
     }
 
     @Test
-    void obtenerPorInmueble_ExisteReserva_Test(){
-        //Arrange
+    void testObtenerPorInmuebleExisteReserva(){        //Arrange
         Long inmuebleId = 1L;
 
         Reserva reserva1 = new Reserva();
@@ -179,31 +170,29 @@ public class Reserva_service_Tests {
         List <Reserva> reservasObtenidas = reservaService.obtenerPorInmueble(inmuebleId);
 
         //Assert
-        assertNotNull(reservasObtenidas);
-        assertEquals(reservas.size(), reservasObtenidas.size());
-        assertEquals(reservas.get(0).getInmueble().getIdInmueble(), reservasObtenidas.get(0).getInmueble().getIdInmueble());
+        assertNotNull(reservasObtenidas, "verificacion");
+        assertEquals(reservas.size(), reservasObtenidas.size(), "verificacion");
+        assertEquals(reservas.get(0).getInmueble().getIdInmueble(), reservasObtenidas.get(0).getInmueble().getIdInmueble(), "verificacion");
 
         verify(reservaRepository).findByInmuebleId(inmuebleId);
     }
 
     @Test
-    void obtenerPorInmueble_NoExisteReserva_Test(){
-        //Arrange
+    void testObtenerPorInmuebleNoExisteReserva(){        //Arrange
         Long inmuebleId = 1L;
 
         when(reservaRepository.findByInmuebleId(inmuebleId)).thenReturn(emptyList());
         //Act y Assert
         List <Reserva> reservasObtenidas = reservaService.obtenerPorInmueble(inmuebleId);
 
-        assertNotNull(reservasObtenidas);
-        assertTrue(reservasObtenidas.isEmpty());
+        assertNotNull(reservasObtenidas, "verificacion");
+        assertTrue(reservasObtenidas.isEmpty(), "verificacion");
 
         verify(reservaRepository).findByInmuebleId(inmuebleId);
     }
 
     @Test
-    void eliminarReserva_ExisteReserva_Test(){
-        //Arrange
+    void testEliminarReservaExisteReserva(){        //Arrange
         Long idReserva = 1L;
 
         when(reservaRepository.existsById(idReserva)).thenReturn(true);
@@ -216,17 +205,16 @@ public class Reserva_service_Tests {
     }
 
     @Test
-    void eliminarReserva_NoExisteReserva_Test(){
-        //Arrange
+    void testEliminarReservaNoExisteReserva(){        //Arrange
         Long idReserva = 1L;
 
         when(reservaRepository.existsById(idReserva)).thenReturn(false);
         //Act y Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             reservaService.eliminarReserva(idReserva);
-        });
+        }, "verificacion");
 
-        assertEquals("Reserva no encontrada", exception.getMessage());
+        assertEquals("Reserva no encontrada", exception.getMessage(), "verificacion");
 
         verify(reservaRepository).existsById(idReserva);
         verify(reservaRepository, never()).deleteById(idReserva);

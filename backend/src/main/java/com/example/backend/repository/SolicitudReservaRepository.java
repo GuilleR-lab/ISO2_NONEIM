@@ -11,7 +11,6 @@ import com.example.backend.model.SolicitudReserva;
 
 @Repository
 public interface SolicitudReservaRepository extends JpaRepository<SolicitudReserva, Long> {
-    //List<SolicitudReserva> findByUsuarioId(Long usuarioId);
     List<SolicitudReserva> findByDisponibilidadInmueblePropietarioId(Long propietarioId);
     List<SolicitudReserva> findByEstado(String estado);
     @Query("SELECT s FROM SolicitudReserva s " +

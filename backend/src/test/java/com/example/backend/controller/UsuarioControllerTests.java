@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Map;
@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
@@ -20,29 +21,26 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.example.backend.dto.AuthDTO.LoginRequest;
-import com.example.backend.dto.AuthDTO.LoginResponse;
 import com.example.backend.dto.AuthDTO.RegisterRequest;
 import com.example.backend.model.Direccion;
 import com.example.backend.model.Usuario;
-import com.example.backend.model.Usuario.Rol;
 import com.example.backend.service.UsuarioService;
-import com.example.backend.controller.UsuarioController;
 
 @WebMvcTest(UsuarioController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class Usuario_controller_Tests {
+class UsuarioControllerTests {
 
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private UsuarioService usuarioService;
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void login_IdNull_Test() throws Exception{
+    void testLoginIdNull() throws Exception{
         //Arrange
         LoginRequest request = new LoginRequest();
         request.setEmail(null);
@@ -57,7 +55,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void login_NoExisteUsuario_Test() throws Exception{
+    void testLoginNoExisteUsuario() throws Exception{
         //Arrange
         LoginRequest request = new LoginRequest();
         request.setEmail("user@test.com");
@@ -73,8 +71,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void login_ContraseñaIncorrecta_Test() throws Exception {
-        //Arrange
+    void testLoginContrasenaIncorrecta() throws Exception {        //Arrange
         Usuario user = new Usuario();
         user.setPassword("claveGuardada");
 
@@ -92,7 +89,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void login_Ok_Test() throws Exception{
+    void testLoginOk() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setPassword("password");
@@ -111,10 +108,8 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void register_YaExiste_Test() throws Exception{
+    void testRegisterYaExiste() throws Exception{
         //Arrange
-        Usuario user = new Usuario();
-        user.setEmail("user@test.com");
         RegisterRequest request = new RegisterRequest();
         request.setEmail("user@test.com");
 
@@ -125,11 +120,10 @@ public class Usuario_controller_Tests {
             .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isConflict())
             .andExpect(jsonPath("$.message").value("Error usuario ya registrado"));
-
     }
 
     @Test
-    public void register_FaltanCampos_Test() throws Exception{
+    void testRegisterFaltanCampos() throws Exception{
         //Arrange
         RegisterRequest request = new RegisterRequest();
         request.setEmail("user@test.com");
@@ -144,7 +138,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void register_Ok_Test() throws Exception{
+    void testRegisterOk() throws Exception{
         //Arrange
         Usuario nuevo = new Usuario();
         Direccion address = new Direccion();
@@ -174,7 +168,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void cambiarRol_UsuarioNoExiste_Test() throws Exception {
+    void testCambiarRolUsuarioNoExiste() throws Exception {
         //Arrange
         when(usuarioService.findById(1L)).thenReturn(Optional.empty());
 
@@ -187,7 +181,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void cambiarRol_Ok_Test() throws Exception{
+    void testCambiarRolOk() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         Usuario.Rol INQUILINO = Usuario.Rol.INQUILINO;
@@ -207,7 +201,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void cambiarRol_RolNoValido_Test() throws Exception {
+    void testCambiarRolRolNoValido() throws Exception {
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -224,7 +218,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void findById_UsuarioNoExiste_Test() throws Exception {
+    void testFindByIdUsuarioNoExiste() throws Exception {
         //Arrange
         when(usuarioService.findById(1L)).thenReturn(Optional.empty());
 
@@ -235,7 +229,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void findById_Ok_Test() throws Exception {
+    void testFindByIdOk() throws Exception {
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -257,8 +251,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void cambiarPassword_ContraseñaVacia_Test() throws Exception{
-        //Arrange
+    void testCambiarPasswordContrasenaVacia() throws Exception{        //Arrange
         Map<String, String> body = Map.of(
             "passwordActual", "",
             "passwordNueva", "newPassword"
@@ -273,7 +266,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void cambiarPassword_UsuarioNoExiste_Test() throws Exception{
+    void testCambiarPasswordUsuarioNoExiste() throws Exception{
         //Arrange
         Map<String, String> body = Map.of(
             "passwordActual", "oldPassword",
@@ -291,8 +284,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void cambiarPassword_ContraseñaActualIncorrecta_Test() throws Exception{
-        //Arrange
+    void testCambiarPasswordContrasenaActualIncorrecta() throws Exception{        //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
         user.setPassword("oldPassword");
@@ -313,7 +305,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void cambiarPassword_Ok_Test() throws Exception{
+    void testCambiarPasswordOk() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -336,7 +328,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void editarDireccion_FaltanCampos_Test() throws Exception{
+    void testEditarDireccionFaltanCampos() throws Exception{
         //Arrange
         Direccion nueva = new Direccion();
         nueva.setPais("España");
@@ -351,7 +343,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void editarDireccion_UsuarioNoExiste_Test() throws Exception{
+    void testEditarDireccionUsuarioNoExiste() throws Exception{
         //Arrange
         Direccion nueva = new Direccion();
         nueva.setPais("España");
@@ -371,7 +363,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void editarDireccion_Ok_Test() throws Exception{
+    void testEditarDireccionOk() throws Exception{
         //Arrange
         Usuario user = new Usuario();
         user.setId(1L);
@@ -395,7 +387,7 @@ public class Usuario_controller_Tests {
     }
 
     @Test
-    public void deleteUsuario_Test() throws Exception{
+    void testDeleteUsuario() throws Exception{
         //Arrange
         when(usuarioService.findById(1L)).thenReturn(Optional.of(new Usuario()));
         doNothing().when(usuarioService).deleteUsuario(1L);
@@ -405,5 +397,4 @@ public class Usuario_controller_Tests {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.message").value("Usuario eliminado"));
     }
-
 }
