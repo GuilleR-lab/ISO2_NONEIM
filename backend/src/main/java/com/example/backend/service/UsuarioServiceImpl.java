@@ -8,58 +8,136 @@ import org.springframework.stereotype.Service;
 
 import com.example.backend.model.Usuario;
 import com.example.backend.repository.UsuarioRepository;
+import com.example.backend.dto.response.UsuarioDTO;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import com.example.backend.dto.request.RegisterRequest;
+import com.example.backend.model.Usuario.Rol;
+import com.example.backend.model.Direccion;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Override
-    public List<Usuario> showAllUsuarios() {
-        return usuarioRepository.findAll();
+    
+    private final PasswordEncoder passwordEncoder;
+    private final UsuarioRepository usuarioRepository;
+    
+    //Dependence inyect
+    public UsuarioServiceImpl(PasswordEncoder passwordEncoder, UsuarioRepository usuarioRepository) {
+        this.passwordEncoder = passwordEncoder;
+        this.usuarioRepository = usuarioRepository;
     }
-
-    @Override
-    public Usuario createUsuario(Usuario usuario) {
-        return usuarioRepository.save(usuario);
-    }
-
-    @Override
-    public boolean usuarioExists(String data) {
-        return usuarioRepository.existsByEmail(data) || usuarioRepository.existsByUsername(data);
-    }
-
-    @Override
-    public Optional<Usuario> findByEmailOrUsername(String identifier) {
-        if (identifier.contains("@")) {
-            return Optional.ofNullable(usuarioRepository.findByEmail(identifier));
-        } else {
-            return Optional.ofNullable(usuarioRepository.findByUsername(identifier));
-        }
-    }
-
+    
+    //TODO: Changue to return UsuarioDTO and Changue controllerInmueble
     @Override
     public Optional<Usuario> findById(Long id) {
         return usuarioRepository.findById(id);
     }
 
+    //@Override
+    //public List<UsuarioDTO> showAllUsuarios() {
+    //    return usuarioRepository.findAll();
+    //}
+    
     @Override
-    public Usuario updateUsuario(Usuario newUsuario, Long usuarioId) {
+    public UsuarioDTO authenticate(String data, String password) {
+        
+        Usuario usuario;
+        
+        //verify usuario exists
+        if(usuarioRepository.findByUsername(data) == null && usuarioRepository.findByEmail(data) == null) {
+            throw new BadCredentialsException("Credenciales invalidas");
+        }
+        
+        //found usuario
+        usuario = usuarioRepository.findByEmail(data); 
+        if (usuario == null) usuario = usuarioRepository.findByUsername(data);
+
+        //verify hashing password 
+        if (!passwordEncoder.matches(password, usuario.getPassword())){
+            throw new BadCredentialsException("Credenciales invalidas");
+        }
+
+        return new UsuarioDTO(usuario.getId(), usuario.getUsername(), usuario.getEmail(), usuario.getRol());
+    }
+
+    @Override
+    public void createUsuario(RegisterRequest dto) {
+        //usuario already exists 
+        if (usuarioRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalStateException("Este usuario ya existe");
+        }
+
+        //hashing password
+        String hash = passwordEncoder.encode(dto.getPassword());
+        dto.setPassword(hash);
+        
+        //dto.setRol(Rol.INQUILINO);
+        
+        //create Usuario object
+        Usuario nuevo = new Usuario(
+            dto.getUsername(),
+            dto.getName(),
+            dto.getSurname(),
+            dto.getEmail(),
+            dto.getPassword(),
+            dto.getAddress(), 
+            dto.getRol()
+        );
+
+        usuarioRepository.save(nuevo);
+    }
+    
+    @Override
+    public UsuarioDTO updateUsuario(Usuario newUsuario, Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
         if (usuario == null) return null;
 
-        usuario.setUsername(newUsuario.getUsername());
-        usuario.setSurname(newUsuario.getSurname());
-        usuario.setAddress(newUsuario.getAddress());
-        usuario.setEmail(newUsuario.getEmail());
-        usuario.setPassword(newUsuario.getPassword());
-        if (newUsuario.getRol() != null) {
-            usuario.setRol(newUsuario.getRol());
+        //Username, Email and Rol are always in DTO.
+        if (newUsuario.getUsername() != usuario.getUsername()) usuario.setUsername(newUsuario.getUsername());
+        if (newUsuario.getEmail() != usuario.getEmail()) usuario.setEmail(newUsuario.getEmail());
+        if (newUsuario.getSurname() != null) usuario.setSurname(newUsuario.getSurname());
+        if (newUsuario.getAddress() != null) usuario.setAddress(newUsuario.getAddress());
+        if (newUsuario.getRol() != usuario.getRol()) usuario.setRol(newUsuario.getRol());
+
+        if (newUsuario.getPassword() != null && 
+            !passwordEncoder.matches(newUsuario.getPassword(), usuario.getPassword()) &&
+            !newUsuario.getPassword().equals(usuario.getPassword())) {
+            usuario.setPassword(passwordEncoder.encode(newUsuario.getPassword()));
         }
 
-        return usuarioRepository.save(usuario);
+        usuarioRepository.save(usuario);
+
+        return new UsuarioDTO(usuario.getId(), usuario.getUsername(), usuario.getEmail(), usuario.getRol());
     }
+    
+    public UsuarioDTO updatePassword(Long id, String passwordActual, String passwordNueva) {
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (!passwordEncoder.matches(passwordActual, usuario.getPassword())) {
+            throw new RuntimeException("La contraseña actual no es correcta");
+        }
+
+        usuario.setPassword(passwordEncoder.encode(passwordNueva));
+        usuarioRepository.save(usuario);
+
+        return new UsuarioDTO(usuario.getId(), usuario.getUsername(), usuario.getEmail(), usuario.getRol()); // reutiliza updateUsuario para hashear y guardar
+    }
+
+    public UsuarioDTO updateDireccion(Long id, Direccion nuevaDireccion) {
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (nuevaDireccion.getPiso() == null || nuevaDireccion.getPiso().isBlank()) {
+            nuevaDireccion.setPiso(null);
+        }
+
+        usuario.setAddress(nuevaDireccion);
+        usuarioRepository.save(usuario);
+
+        return new UsuarioDTO(usuario.getId(), usuario.getUsername(), usuario.getEmail(), usuario.getRol());
+    }
+
 
     @Override
     public void deleteUsuario(Long usuarioId) {

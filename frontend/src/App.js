@@ -5,6 +5,7 @@ import HomePage from './components/HomePage';
 import Perfil, { AreaPersonal, MisPropiedades, MisReservas } from './components/Perfil';
 import Resultados from './components/Resultados';
 import DetalleInmueble from './components/DetalleInmueble';
+import ListaDeseos from './components/ListaDeseos';
 import PropiedadForm from './components/PropiedadForm';
 import Reservar from './components/Reservar';
 import SolicitudesReservas from './components/SolicitudesReservas';
@@ -23,6 +24,7 @@ function App() {
           <Route path="reservas" element={<MisReservas />} />
         </Route>
         <Route path="/resultados" element={<Resultados />} />
+        <Route path="/lista-deseos" element={<ListaDeseos />} />
         <Route path="/inmueble/:id" element={<DetalleInmueble />} />
         <Route path="/propiedadform/" element={<PropiedadForm />} />
         <Route path="/propiedadform/:id" element={<PropiedadForm />} />

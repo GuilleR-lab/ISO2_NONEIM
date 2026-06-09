@@ -1,6 +1,7 @@
 import "../App.css";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const Resultados = () => {
     const [inmuebles, setInmuebles] = useState([]);
@@ -28,8 +29,9 @@ const Resultados = () => {
                 setCargando(false);
             });
     }, [location.search]);
-
-    const usuarioLogueado = sessionStorage.getItem("userId");
+    
+    const token = localStorage.getItem("token");
+    const usuarioLogueado = token ? jwtDecode(token).id : null;
 
     return (
         <div className="resultados-container">
@@ -85,7 +87,7 @@ const Resultados = () => {
                                 }
                             }}
                         >
-                            Ver detalle
+                            Ver detalles
                         </button>
                     </div>
                 ))}

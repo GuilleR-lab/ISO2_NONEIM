@@ -43,6 +43,23 @@ const Auth = () => {
       piso: ""
     });
   };
+  
+  // Controll only number input like CP
+  const handleKeyDown = (e) => {
+    const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
+    
+    //only numbers
+    if (!/^\d$/.test(e.key) && !allowedKeys.includes(e.key)) {
+      e.preventDefault();
+    }
+    
+    //controll number size >= 5
+    if (e.target.value.length >= 5 && !allowedKeys.includes(e.key)) {
+        e.preventDefault();
+        
+    }
+
+  };
 
   const handleAddressChange = (e) => {
     const {name, value} = e.target;
@@ -58,8 +75,7 @@ const Auth = () => {
     }
 
     try {
-      const isEmail = identifier.includes("@");
-      const body = isEmail ? { email: identifier, password } : { username: identifier, password };
+      const body = { identifier, password };
 
       const response = await fetch("http://localhost:8090/api/auth/login", {
         method: "POST",
@@ -75,10 +91,12 @@ const Auth = () => {
         return;
       }
 
-      sessionStorage.setItem("userId", data.id);
-      sessionStorage.setItem("username", data.username);
-      sessionStorage.setItem("email", data.email);
-      sessionStorage.setItem("rol", data.rol);
+      localStorage.setItem('token', data.token); //save JWT token
+
+      //sessionStorage.setItem("userId", data.id);
+      //sessionStorage.setItem("username", data.username);
+      //sessionStorage.setItem("email", data.email);
+      //sessionStorage.setItem("rol", data.rol);
 
       setMessage("Inicio de sesión correcto");
       setMessageColor("green");
@@ -95,11 +113,13 @@ const Auth = () => {
     e.preventDefault();
     // Validación de campos (en el caso del piso, puede estar vacío, pero el resto no)
     if (!username || !name || !surname || !email || !password || !confirmPassword || !address.pais || 
-      !address.ciudad || !address.codigoPostal || !address.calle || !address.edificio) {
+        !address.ciudad || !address.codigoPostal || !address.calle || !address.edificio) {
+
       setMessage("Es obligatorio rellenar todos los campos excepto el piso");
       setMessageColor("red");
       return;
     }
+
     if (password !== confirmPassword) {
       setMessage("Las contraseñas no coinciden");
       setMessageColor("red");
@@ -170,7 +190,7 @@ const Auth = () => {
               onChange={handleAddressChange} />
             <input type="text" placeholder="Ciudad" name="ciudad" value={address.ciudad}
               onChange={handleAddressChange} />
-            <input type="text" placeholder="Codigo postal" name="codigoPostal" value={address.codigoPostal}
+            <input type="text" onKeyDown={handleKeyDown} placeholder="Codigo postal" name="codigoPostal" value={address.codigoPostal}
               onChange={handleAddressChange} />
             <input type="text" placeholder="Calle" name="calle" value={address.calle}
               onChange={handleAddressChange} />
